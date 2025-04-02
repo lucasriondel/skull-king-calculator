@@ -530,8 +530,8 @@ export default function GamePage() {
             <CardContent className="space-y-4">
               {players.map((player, index) => (
                 <div key={player.name} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <div>
+                  <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
+                    <div className="w-full flex flex-row gap-2 items-center justify-between md:flex-col md:items-start md:w-auto">
                       <Label className="text-base font-medium">
                         {player.name}
                       </Label>
@@ -547,6 +547,7 @@ export default function GamePage() {
                         )}
                       </p>
                     </div>
+
                     <div>
                       <div className="mb-2">
                         <ToggleGroup
