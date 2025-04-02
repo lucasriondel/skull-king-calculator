@@ -31,6 +31,7 @@ type BonusType = {
   yellowBonus: boolean;
   purpleBonus: boolean;
   darkBonus: boolean;
+  treasure: number;
   mermaid: number;
   pirate: number;
   skullKing: boolean;
@@ -83,19 +84,47 @@ export default function GamePage() {
     setRoundData(newRoundData);
   };
 
-  const calculateScore = (bid: number, tricks: number): number => {
+  const calculateScore = (
+    bid: number,
+    tricks: number,
+    playerBonuses?: BonusType
+  ): number => {
+    let baseScore = 0;
+
+    // Base score calculation
     if (bid === 0) {
-      return tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound;
+      baseScore = tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound;
     } else {
-      return bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks);
+      baseScore = bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks);
     }
+
+    // If no bonuses, return base score
+    if (!playerBonuses) return baseScore;
+
+    let bonusScore = 0;
+
+    // Color bonuses (+10)
+    if (playerBonuses.greenBonus) bonusScore += 10;
+    if (playerBonuses.yellowBonus) bonusScore += 10;
+    if (playerBonuses.purpleBonus) bonusScore += 10;
+
+    // Dark bonus (+20)
+    if (playerBonuses.darkBonus) bonusScore += 20;
+
+    // Special cards bonuses
+    bonusScore += playerBonuses.treasure * 20; // Each treasure gives 20 points
+    bonusScore += playerBonuses.mermaid * 20; // Each mermaid gives 20 points
+    bonusScore += playerBonuses.pirate * 30; // Each pirate gives 30 points
+    if (playerBonuses.skullKing) bonusScore += 40; // Skull king gives 40 points
+
+    return baseScore + bonusScore;
   };
 
   const completeRound = () => {
     // Calculate scores
-    const newRoundData = roundData.map((data) => ({
+    const newRoundData = roundData.map((data, idx) => ({
       ...data,
-      score: calculateScore(data.bid, data.tricks),
+      score: calculateScore(data.bid, data.tricks, bonuses[idx]),
     }));
 
     // Update player data
@@ -218,7 +247,7 @@ export default function GamePage() {
 
   const adjustSpecialCard = (
     playerIndex: number,
-    cardType: "mermaid" | "pirate",
+    cardType: "mermaid" | "pirate" | "treasure",
     delta: number
   ) => {
     setBonuses((prev) => {
@@ -232,7 +261,8 @@ export default function GamePage() {
         skullKing: false,
       };
 
-      const maxValue = cardType === "mermaid" ? 2 : 6;
+      const maxValue =
+        cardType === "mermaid" ? 2 : cardType === "treasure" ? 2 : 6;
       const currentValue = playerBonuses[cardType] || 0;
       const newValue = Math.min(maxValue, Math.max(0, currentValue + delta));
 
@@ -512,7 +542,8 @@ export default function GamePage() {
                         Score:{" "}
                         {calculateScore(
                           roundData[index]?.bid || 0,
-                          roundData[index]?.tricks || 0
+                          roundData[index]?.tricks || 0,
+                          bonuses[index]
                         )}
                       </p>
                     </div>
@@ -631,6 +662,7 @@ export default function GamePage() {
                           type="multiple"
                           className="flex flex-wrap"
                           value={[
+                            bonuses[index]?.treasure > 0 ? "treasure" : "",
                             bonuses[index]?.mermaid > 0 ? "mermaid" : "",
                             bonuses[index]?.pirate > 0 ? "pirate" : "",
                             bonuses[index]?.skullKing ? "skullKing" : "",
@@ -642,6 +674,7 @@ export default function GamePage() {
                                 yellowBonus: false,
                                 purpleBonus: false,
                                 darkBonus: false,
+                                treasure: 0,
                                 mermaid: 0,
                                 pirate: 0,
                                 skullKing: false,
@@ -657,6 +690,9 @@ export default function GamePage() {
                                   ...prev,
                                   [index]: {
                                     ...playerBonuses,
+                                    treasure: values.includes("treasure")
+                                      ? playerBonuses.treasure
+                                      : 0,
                                     mermaid: values.includes("mermaid")
                                       ? playerBonuses.mermaid
                                       : 0,
@@ -689,6 +725,9 @@ export default function GamePage() {
                               // Add the bonus to the current player
                               result[index] = {
                                 ...playerBonuses,
+                                treasure: values.includes("treasure")
+                                  ? Math.max(1, playerBonuses.treasure)
+                                  : 0,
                                 mermaid: values.includes("mermaid")
                                   ? Math.max(1, playerBonuses.mermaid)
                                   : 0,
@@ -702,6 +741,44 @@ export default function GamePage() {
                             });
                           }}
                         >
+                          <div className="flex items-center gap-1">
+                            <ToggleGroupItem value="treasure">
+                              🏆 {bonuses[index]?.treasure || 0}
+                            </ToggleGroupItem>
+                            {bonuses[index]?.treasure > 0 && (
+                              <div className="flex flex-col gap-0.5">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(
+                                      index,
+                                      "treasure" as any,
+                                      1
+                                    )
+                                  }
+                                  disabled={bonuses[index]?.treasure >= 2}
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(
+                                      index,
+                                      "treasure" as any,
+                                      -1
+                                    )
+                                  }
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                           <div className="flex items-center gap-1">
                             <ToggleGroupItem value="mermaid">
                               🧜‍♀️ {bonuses[index]?.mermaid || 0}
@@ -731,35 +808,33 @@ export default function GamePage() {
                               </div>
                             )}
                           </div>
-                          <div className="flex items-center gap-1">
-                            <ToggleGroupItem value="pirate" className="">
-                              🏴‍☠️ {bonuses[index]?.pirate || 0}
-                            </ToggleGroupItem>
-                            {bonuses[index]?.pirate > 0 && (
-                              <div className="flex flex-col gap-0.5">
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  className="h-5 w-5"
-                                  onClick={() =>
-                                    adjustSpecialCard(index, "pirate", 1)
-                                  }
-                                >
-                                  <Plus className="h-3 w-3" />
-                                </Button>
-                                <Button
-                                  size="icon"
-                                  variant="outline"
-                                  className="h-5 w-5"
-                                  onClick={() =>
-                                    adjustSpecialCard(index, "pirate", -1)
-                                  }
-                                >
-                                  <Minus className="h-3 w-3" />
-                                </Button>
-                              </div>
-                            )}
-                          </div>
+                          <ToggleGroupItem value="pirate">
+                            🏴‍☠️ {bonuses[index]?.pirate || 0}
+                          </ToggleGroupItem>
+                          {bonuses[index]?.pirate > 0 && (
+                            <div className="flex flex-col gap-0.5">
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-5 w-5"
+                                onClick={() =>
+                                  adjustSpecialCard(index, "pirate", 1)
+                                }
+                              >
+                                <Plus className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="outline"
+                                className="h-5 w-5"
+                                onClick={() =>
+                                  adjustSpecialCard(index, "pirate", -1)
+                                }
+                              >
+                                <Minus className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                           <ToggleGroupItem value="skullKing">
                             💀👑
                           </ToggleGroupItem>
