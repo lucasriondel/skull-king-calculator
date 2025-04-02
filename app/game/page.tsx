@@ -232,7 +232,9 @@ export default function GamePage() {
         skullKing: false,
       };
 
-      const newValue = Math.max(0, (playerBonuses[cardType] || 0) + delta);
+      const maxValue = cardType === "mermaid" ? 2 : 6;
+      const currentValue = playerBonuses[cardType] || 0;
+      const newValue = Math.min(maxValue, Math.max(0, currentValue + delta));
 
       return {
         ...prev,
