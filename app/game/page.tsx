@@ -244,6 +244,49 @@ export default function GamePage() {
     });
   };
 
+  const isColorBonusTaken = (
+    color: "green" | "yellow" | "purple" | "dark",
+    currentPlayerIndex: number
+  ) => {
+    return Object.entries(bonuses).some(([playerIndex, playerBonuses]) => {
+      const index = parseInt(playerIndex);
+      if (index === currentPlayerIndex) return false;
+
+      switch (color) {
+        case "green":
+          return playerBonuses.greenBonus;
+        case "yellow":
+          return playerBonuses.yellowBonus;
+        case "purple":
+          return playerBonuses.purpleBonus;
+        case "dark":
+          return playerBonuses.darkBonus;
+        default:
+          return false;
+      }
+    });
+  };
+
+  const getPlayerWithBonus = (
+    color: "green" | "yellow" | "purple" | "dark"
+  ): number | null => {
+    const entry = Object.entries(bonuses).find(([_, playerBonuses]) => {
+      switch (color) {
+        case "green":
+          return playerBonuses.greenBonus;
+        case "yellow":
+          return playerBonuses.yellowBonus;
+        case "purple":
+          return playerBonuses.purpleBonus;
+        case "dark":
+          return playerBonuses.darkBonus;
+        default:
+          return false;
+      }
+    });
+    return entry ? parseInt(entry[0]) : null;
+  };
+
   if (gameComplete) {
     return (
       <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8">
@@ -353,7 +396,7 @@ export default function GamePage() {
         </div>
 
         <div className="w-full sm:w-auto">
-          <div className="flex items-center justify-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg px-4 py-3 shadow-md">
+          <div className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg px-4 py-3 shadow-md">
             <div className="mr-3 relative">
               <div className="absolute inset-0 bg-white/20 rounded-md transform rotate-6"></div>
               <div className="absolute inset-0 bg-white/20 rounded-md transform -rotate-3"></div>
@@ -473,7 +516,6 @@ export default function GamePage() {
                       <div className="mb-2">
                         <ToggleGroup
                           type="multiple"
-                          // className="flex flex-wrap gap-2"
                           value={[
                             bonuses[index]?.greenBonus ? "green" : "",
                             bonuses[index]?.yellowBonus ? "yellow" : "",
@@ -491,16 +533,71 @@ export default function GamePage() {
                                 pirate: 0,
                                 skullKing: false,
                               };
-                              return {
-                                ...prev,
-                                [index]: {
-                                  ...playerBonuses,
-                                  greenBonus: values.includes("green"),
-                                  yellowBonus: values.includes("yellow"),
-                                  purpleBonus: values.includes("purple"),
-                                  darkBonus: values.includes("dark"),
-                                },
+
+                              // Handle turning off bonuses
+                              if (
+                                values.length <
+                                Object.values(prev[index] || {}).filter(Boolean)
+                                  .length
+                              ) {
+                                return {
+                                  ...prev,
+                                  [index]: {
+                                    ...playerBonuses,
+                                    greenBonus: values.includes("green"),
+                                    yellowBonus: values.includes("yellow"),
+                                    purpleBonus: values.includes("purple"),
+                                    darkBonus: values.includes("dark"),
+                                  },
+                                };
+                              }
+
+                              // Handle turning on bonuses
+                              const newValue = values[values.length - 1] as
+                                | "green"
+                                | "yellow"
+                                | "purple"
+                                | "dark";
+                              if (!newValue) return prev;
+
+                              // Find if another player has this bonus
+                              const otherPlayerIndex =
+                                getPlayerWithBonus(newValue);
+                              const result = { ...prev };
+
+                              // If another player has the bonus, remove it from them
+                              if (otherPlayerIndex !== null) {
+                                result[otherPlayerIndex] = {
+                                  ...result[otherPlayerIndex],
+                                  greenBonus:
+                                    newValue === "green"
+                                      ? false
+                                      : result[otherPlayerIndex].greenBonus,
+                                  yellowBonus:
+                                    newValue === "yellow"
+                                      ? false
+                                      : result[otherPlayerIndex].yellowBonus,
+                                  purpleBonus:
+                                    newValue === "purple"
+                                      ? false
+                                      : result[otherPlayerIndex].purpleBonus,
+                                  darkBonus:
+                                    newValue === "dark"
+                                      ? false
+                                      : result[otherPlayerIndex].darkBonus,
+                                };
+                              }
+
+                              // Add the bonus to the current player
+                              result[index] = {
+                                ...playerBonuses,
+                                greenBonus: values.includes("green"),
+                                yellowBonus: values.includes("yellow"),
+                                purpleBonus: values.includes("purple"),
+                                darkBonus: values.includes("dark"),
                               };
+
+                              return result;
                             });
                           }}
                         >
