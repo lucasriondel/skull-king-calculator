@@ -1,28 +1,57 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Trophy, Crown, CircleEllipsis, ArrowRight, Check, Home } from "lucide-react"
-import { useGameStore, type RoundData } from "@/lib/store"
-import { useMobile } from "@/hooks/use-mobile"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Trophy,
+  Crown,
+  CircleEllipsis,
+  ArrowRight,
+  Check,
+  Home,
+  Plus,
+  Minus,
+} from "lucide-react";
+import { useGameStore, type RoundData } from "@/lib/store";
+import { useMobile } from "@/hooks/use-mobile";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+type BonusType = {
+  greenBonus: boolean;
+  yellowBonus: boolean;
+  purpleBonus: boolean;
+  darkBonus: boolean;
+  mermaid: number;
+  pirate: number;
+  skullKing: boolean;
+};
 
 export default function GamePage() {
-  const router = useRouter()
-  const isMobile = useMobile()
-  const { gameMode, players, updatePlayerRound, resetGame } = useGameStore()
-  const [currentRound, setCurrentRound] = useState(1)
-  const [activeTab, setActiveTab] = useState<"bids" | "tricks" | "scores">("bids")
-  const [roundData, setRoundData] = useState<RoundData[]>([])
-  const [gameComplete, setGameComplete] = useState(false)
+  const router = useRouter();
+  const isMobile = useMobile();
+  const { gameMode, players, updatePlayerRound, resetGame } = useGameStore();
+  const [currentRound, setCurrentRound] = useState(1);
+  const [activeTab, setActiveTab] = useState<"bids" | "tricks" | "scores">(
+    "bids"
+  );
+  const [roundData, setRoundData] = useState<RoundData[]>([]);
+  const [gameComplete, setGameComplete] = useState(false);
+  const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
 
   useEffect(() => {
     if (!gameMode || !players.length) {
-      router.push("/game-modes")
-      return
+      router.push("/game-modes");
+      return;
     }
 
     // Initialize round data
@@ -32,70 +61,74 @@ export default function GamePage() {
         bid: 0,
         tricks: 0,
         score: 0,
-      })),
-    )
-  }, [gameMode, players, router])
+      }))
+    );
+  }, [gameMode, players, router]);
 
-  const cardsThisRound = gameMode ? gameMode.cardsPerRound(currentRound) : 0
+  const cardsThisRound = gameMode ? gameMode.cardsPerRound(currentRound) : 0;
 
   const updateBid = (playerIndex: number, bid: number) => {
-    if (bid < 0 || bid > cardsThisRound) return
+    if (bid < 0 || bid > cardsThisRound) return;
 
-    const newRoundData = [...roundData]
-    newRoundData[playerIndex] = { ...newRoundData[playerIndex], bid }
-    setRoundData(newRoundData)
-  }
+    const newRoundData = [...roundData];
+    newRoundData[playerIndex] = { ...newRoundData[playerIndex], bid };
+    setRoundData(newRoundData);
+  };
 
   const updateTricks = (playerIndex: number, tricks: number) => {
-    if (tricks < 0 || tricks > cardsThisRound) return
+    if (tricks < 0 || tricks > cardsThisRound) return;
 
-    const newRoundData = [...roundData]
-    newRoundData[playerIndex] = { ...newRoundData[playerIndex], tricks }
-    setRoundData(newRoundData)
-  }
+    const newRoundData = [...roundData];
+    newRoundData[playerIndex] = { ...newRoundData[playerIndex], tricks };
+    setRoundData(newRoundData);
+  };
 
   const calculateScore = (bid: number, tricks: number): number => {
     if (bid === 0) {
-      return tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound
+      return tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound;
     } else {
-      return bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks)
+      return bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks);
     }
-  }
+  };
 
   const completeRound = () => {
     // Calculate scores
     const newRoundData = roundData.map((data) => ({
       ...data,
       score: calculateScore(data.bid, data.tricks),
-    }))
+    }));
 
     // Update player data
     newRoundData.forEach((data, index) => {
-      updatePlayerRound(index, currentRound, data)
-    })
+      updatePlayerRound(index, currentRound, data);
+    });
 
     if (currentRound < gameMode!.rounds) {
       // Move to next round
-      setCurrentRound(currentRound + 1)
+      setCurrentRound(currentRound + 1);
       setRoundData(
         players.map((player) => ({
           playerId: player.name,
           bid: 0,
           tricks: 0,
           score: 0,
-        })),
-      )
-      setActiveTab("bids")
+        }))
+      );
+      setActiveTab("bids");
     } else {
       // Game complete
-      setGameComplete(true)
+      setGameComplete(true);
     }
-  }
+  };
 
-  const canCompleteBids = roundData.every((data) => data.bid >= 0 && data.bid <= cardsThisRound)
-  const canCompleteTricks = roundData.every((data) => data.tricks >= 0 && data.tricks <= cardsThisRound)
+  const canCompleteBids = roundData.every(
+    (data) => data.bid >= 0 && data.bid <= cardsThisRound
+  );
+  const canCompleteTricks = roundData.every(
+    (data) => data.tricks >= 0 && data.tricks <= cardsThisRound
+  );
 
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score)
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 
   // Get the current action button based on active tab
   const getActionButton = () => {
@@ -115,7 +148,7 @@ export default function GamePage() {
             "Continue to Tricks"
           )}
         </Button>
-      )
+      );
     } else if (activeTab === "tricks") {
       return (
         <Button
@@ -132,20 +165,84 @@ export default function GamePage() {
             "Complete Round"
           )}
         </Button>
-      )
+      );
     } else {
       return (
-        <Button className="w-full" onClick={() => setActiveTab("bids")} size={isMobile ? "lg" : "default"}>
+        <Button
+          className="w-full"
+          onClick={() => setActiveTab("bids")}
+          size={isMobile ? "lg" : "default"}
+        >
           {isMobile ? "Back to Bids" : "Back to Bids"}
         </Button>
-      )
+      );
     }
-  }
+  };
 
   const handleNewGame = () => {
-    resetGame()
-    router.push("/game-modes")
-  }
+    resetGame();
+    router.push("/game-modes");
+  };
+
+  const toggleBonus = (playerIndex: number, bonusKey: keyof BonusType) => {
+    setBonuses((prev) => {
+      const playerBonuses = prev[playerIndex] || {
+        greenBonus: false,
+        yellowBonus: false,
+        purpleBonus: false,
+        darkBonus: false,
+        mermaid: 0,
+        pirate: 0,
+        skullKing: false,
+      };
+
+      if (bonusKey === "mermaid" || bonusKey === "pirate") {
+        return {
+          ...prev,
+          [playerIndex]: {
+            ...playerBonuses,
+            [bonusKey]: playerBonuses[bonusKey] > 0 ? 0 : 1,
+          },
+        };
+      }
+
+      return {
+        ...prev,
+        [playerIndex]: {
+          ...playerBonuses,
+          [bonusKey]: !playerBonuses[bonusKey],
+        },
+      };
+    });
+  };
+
+  const adjustSpecialCard = (
+    playerIndex: number,
+    cardType: "mermaid" | "pirate",
+    delta: number
+  ) => {
+    setBonuses((prev) => {
+      const playerBonuses = prev[playerIndex] || {
+        greenBonus: false,
+        yellowBonus: false,
+        purpleBonus: false,
+        darkBonus: false,
+        mermaid: 0,
+        pirate: 0,
+        skullKing: false,
+      };
+
+      const newValue = Math.max(0, (playerBonuses[cardType] || 0) + delta);
+
+      return {
+        ...prev,
+        [playerIndex]: {
+          ...playerBonuses,
+          [cardType]: newValue,
+        },
+      };
+    });
+  };
 
   if (gameComplete) {
     return (
@@ -159,10 +256,21 @@ export default function GamePage() {
             <h2 className="text-xl font-semibold mb-4">Final Standings</h2>
             <div className="space-y-4">
               {sortedPlayers.map((player, index) => (
-                <div key={player.name} className="flex items-center justify-between p-3 rounded-lg bg-accent/50">
+                <div
+                  key={player.name}
+                  className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
+                >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${index === 0 ? "bg-yellow-500 text-black" : index === 1 ? "bg-gray-300 text-black" : index === 2 ? "bg-amber-700 text-white" : "bg-muted text-muted-foreground"}`}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                        index === 0
+                          ? "bg-yellow-500 text-black"
+                          : index === 1
+                          ? "bg-gray-300 text-black"
+                          : index === 2
+                          ? "bg-amber-700 text-white"
+                          : "bg-muted text-muted-foreground"
+                      }`}
                     >
                       {index + 1}
                     </div>
@@ -193,7 +301,7 @@ export default function GamePage() {
           </div>
         )}
       </div>
-    )
+    );
   }
 
   return (
@@ -209,8 +317,12 @@ export default function GamePage() {
                 </div>
               </div>
               <div>
-                <div className="text-xs uppercase tracking-wider opacity-80">Game Mode</div>
-                <div className="text-xl font-bold truncate">{gameMode?.name}</div>
+                <div className="text-xs uppercase tracking-wider opacity-80">
+                  Game Mode
+                </div>
+                <div className="text-xl font-bold truncate">
+                  {gameMode?.name}
+                </div>
               </div>
             </div>
           </div>
@@ -226,9 +338,14 @@ export default function GamePage() {
                 </div>
               </div>
               <div>
-                <div className="text-xs uppercase tracking-wider opacity-80">Round</div>
+                <div className="text-xs uppercase tracking-wider opacity-80">
+                  Round
+                </div>
                 <div className="text-xl font-bold">
-                  {currentRound} <span className="text-sm opacity-80">of {gameMode?.rounds}</span>
+                  {currentRound}{" "}
+                  <span className="text-sm opacity-80">
+                    of {gameMode?.rounds}
+                  </span>
                 </div>
               </div>
             </div>
@@ -260,17 +377,25 @@ export default function GamePage() {
               </div>
             </div>
             <div>
-              <div className="text-xs uppercase tracking-wider opacity-80">Cards this round</div>
+              <div className="text-xs uppercase tracking-wider opacity-80">
+                Cards this round
+              </div>
               <div className="text-xl font-bold">{cardsThisRound}</div>
             </div>
           </div>
         </div>
       </div>
 
-      <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as any)}
+      >
         <TabsList className="grid w-full grid-cols-3 mb-6">
           <TabsTrigger value="bids">Bids</TabsTrigger>
-          <TabsTrigger value="tricks" disabled={activeTab === "bids" && !canCompleteBids}>
+          <TabsTrigger
+            value="tricks"
+            disabled={activeTab === "bids" && !canCompleteBids}
+          >
             Tricks
           </TabsTrigger>
           <TabsTrigger value="scores">Scores</TabsTrigger>
@@ -285,11 +410,15 @@ export default function GamePage() {
               {players.map((player, index) => (
                 <div key={player.name} className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label className="text-base font-medium">{player.name}</Label>
-                    <span className="text-sm font-medium">Bid: {roundData[index]?.bid || 0}</span>
+                    <Label className="text-base font-medium">
+                      {player.name}
+                    </Label>
                   </div>
                   <div className="overflow-x-auto pb-2">
-                    <div className="flex space-x-1" style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}>
+                    <div
+                      className="flex space-x-1"
+                      style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}
+                    >
                       {Array.from({ length: cardsThisRound + 1 }, (_, i) => (
                         <div
                           key={i}
@@ -326,13 +455,182 @@ export default function GamePage() {
                 <div key={player.name} className="space-y-2">
                   <div className="flex justify-between items-center">
                     <div>
-                      <Label className="text-base font-medium">{player.name}</Label>
-                      <p className="text-sm text-muted-foreground">Bid: {roundData[index]?.bid}</p>
+                      <Label className="text-base font-medium">
+                        {player.name}
+                      </Label>
+                      <p className="text-sm text-muted-foreground">
+                        Bid: {roundData[index]?.bid}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        Score:{" "}
+                        {calculateScore(
+                          roundData[index]?.bid || 0,
+                          roundData[index]?.tricks || 0
+                        )}
+                      </p>
                     </div>
-                    <span className="text-sm font-medium">Tricks: {roundData[index]?.tricks || 0}</span>
+                    <div>
+                      <div className="mb-2">
+                        <ToggleGroup
+                          type="multiple"
+                          // className="flex flex-wrap gap-2"
+                          value={[
+                            bonuses[index]?.greenBonus ? "green" : "",
+                            bonuses[index]?.yellowBonus ? "yellow" : "",
+                            bonuses[index]?.purpleBonus ? "purple" : "",
+                            bonuses[index]?.darkBonus ? "dark" : "",
+                          ].filter(Boolean)}
+                          onValueChange={(values) => {
+                            setBonuses((prev) => {
+                              const playerBonuses = prev[index] || {
+                                greenBonus: false,
+                                yellowBonus: false,
+                                purpleBonus: false,
+                                darkBonus: false,
+                                mermaid: 0,
+                                pirate: 0,
+                                skullKing: false,
+                              };
+                              return {
+                                ...prev,
+                                [index]: {
+                                  ...playerBonuses,
+                                  greenBonus: values.includes("green"),
+                                  yellowBonus: values.includes("yellow"),
+                                  purpleBonus: values.includes("purple"),
+                                  darkBonus: values.includes("dark"),
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          <ToggleGroupItem
+                            value="green"
+                            className="text-green-500 hover:text-green-600 data-[state=on]:text-green-600 active:bg-transparent focus:bg-transparent focus:text-green-500"
+                          >
+                            +10
+                          </ToggleGroupItem>
+                          <ToggleGroupItem
+                            value="yellow"
+                            className="text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 active:bg-transparent focus:bg-transparent focus:text-yellow-500"
+                          >
+                            +10
+                          </ToggleGroupItem>
+                          <ToggleGroupItem
+                            value="purple"
+                            className="text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 active:bg-transparent focus:bg-transparent focus:text-purple-500"
+                          >
+                            +10
+                          </ToggleGroupItem>
+                          <ToggleGroupItem value="dark">+20</ToggleGroupItem>
+                        </ToggleGroup>
+                      </div>
+                      <div className="flex">
+                        <ToggleGroup
+                          type="multiple"
+                          className="flex flex-wrap"
+                          value={[
+                            bonuses[index]?.mermaid > 0 ? "mermaid" : "",
+                            bonuses[index]?.pirate > 0 ? "pirate" : "",
+                            bonuses[index]?.skullKing ? "skullKing" : "",
+                          ].filter(Boolean)}
+                          onValueChange={(values) => {
+                            setBonuses((prev) => {
+                              const playerBonuses = prev[index] || {
+                                greenBonus: false,
+                                yellowBonus: false,
+                                purpleBonus: false,
+                                darkBonus: false,
+                                mermaid: 0,
+                                pirate: 0,
+                                skullKing: false,
+                              };
+                              return {
+                                ...prev,
+                                [index]: {
+                                  ...playerBonuses,
+                                  mermaid: values.includes("mermaid")
+                                    ? Math.max(1, playerBonuses.mermaid)
+                                    : 0,
+                                  pirate: values.includes("pirate")
+                                    ? Math.max(1, playerBonuses.pirate)
+                                    : 0,
+                                  skullKing: values.includes("skullKing"),
+                                },
+                              };
+                            });
+                          }}
+                        >
+                          <div className="flex items-center gap-1">
+                            <ToggleGroupItem value="mermaid">
+                              🧜‍♀️ {bonuses[index]?.mermaid || 0}
+                            </ToggleGroupItem>
+                            {bonuses[index]?.mermaid > 0 && (
+                              <div className="flex flex-col gap-0.5">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(index, "mermaid", 1)
+                                  }
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(index, "mermaid", -1)
+                                  }
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <ToggleGroupItem value="pirate" className="">
+                              🏴‍☠️ {bonuses[index]?.pirate || 0}
+                            </ToggleGroupItem>
+                            {bonuses[index]?.pirate > 0 && (
+                              <div className="flex flex-col gap-0.5">
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(index, "pirate", 1)
+                                  }
+                                >
+                                  <Plus className="h-3 w-3" />
+                                </Button>
+                                <Button
+                                  size="icon"
+                                  variant="outline"
+                                  className="h-5 w-5"
+                                  onClick={() =>
+                                    adjustSpecialCard(index, "pirate", -1)
+                                  }
+                                >
+                                  <Minus className="h-3 w-3" />
+                                </Button>
+                              </div>
+                            )}
+                          </div>
+                          <ToggleGroupItem value="skullKing">
+                            💀👑
+                          </ToggleGroupItem>
+                        </ToggleGroup>
+                      </div>
+                    </div>
                   </div>
                   <div className="overflow-x-auto pb-2">
-                    <div className="flex space-x-1" style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}>
+                    <div
+                      className="flex space-x-1"
+                      style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}
+                    >
                       {Array.from({ length: cardsThisRound + 1 }, (_, i) => (
                         <div
                           key={i}
@@ -369,7 +667,10 @@ export default function GamePage() {
                 {[...players]
                   .sort((a, b) => b.score - a.score)
                   .map((player) => (
-                    <div key={player.name} className="flex justify-between items-center p-3 rounded-lg bg-accent/50">
+                    <div
+                      key={player.name}
+                      className="flex justify-between items-center p-3 rounded-lg bg-accent/50"
+                    >
                       <span className="font-medium">{player.name}</span>
                       <span className="font-bold">{player.score}</span>
                     </div>
@@ -388,6 +689,5 @@ export default function GamePage() {
         </div>
       )}
     </div>
-  )
+  );
 }
-
