@@ -268,7 +268,7 @@ export default function GamePage() {
   };
 
   const getPlayerWithBonus = (
-    color: "green" | "yellow" | "purple" | "dark"
+    color: "green" | "yellow" | "purple" | "dark" | "skullKing"
   ): number | null => {
     const entry = Object.entries(bonuses).find(([_, playerBonuses]) => {
       switch (color) {
@@ -280,6 +280,8 @@ export default function GamePage() {
           return playerBonuses.purpleBonus;
         case "dark":
           return playerBonuses.darkBonus;
+        case "skullKing":
+          return playerBonuses.skullKing;
         default:
           return false;
       }
@@ -642,19 +644,59 @@ export default function GamePage() {
                                 pirate: 0,
                                 skullKing: false,
                               };
-                              return {
-                                ...prev,
-                                [index]: {
-                                  ...playerBonuses,
-                                  mermaid: values.includes("mermaid")
-                                    ? Math.max(1, playerBonuses.mermaid)
-                                    : 0,
-                                  pirate: values.includes("pirate")
-                                    ? Math.max(1, playerBonuses.pirate)
-                                    : 0,
-                                  skullKing: values.includes("skullKing"),
-                                },
+
+                              // Handle turning off bonuses
+                              if (
+                                values.length <
+                                Object.values(prev[index] || {}).filter(Boolean)
+                                  .length
+                              ) {
+                                return {
+                                  ...prev,
+                                  [index]: {
+                                    ...playerBonuses,
+                                    mermaid: values.includes("mermaid")
+                                      ? playerBonuses.mermaid
+                                      : 0,
+                                    pirate: values.includes("pirate")
+                                      ? playerBonuses.pirate
+                                      : 0,
+                                    skullKing: values.includes("skullKing"),
+                                  },
+                                };
+                              }
+
+                              // Handle turning on bonuses
+                              const newValue = values[values.length - 1];
+                              if (!newValue) return prev;
+
+                              const result = { ...prev };
+
+                              // Special handling for Skull King
+                              if (newValue === "skullKing") {
+                                const otherPlayerIndex =
+                                  getPlayerWithBonus("skullKing");
+                                if (otherPlayerIndex !== null) {
+                                  result[otherPlayerIndex] = {
+                                    ...result[otherPlayerIndex],
+                                    skullKing: false,
+                                  };
+                                }
+                              }
+
+                              // Add the bonus to the current player
+                              result[index] = {
+                                ...playerBonuses,
+                                mermaid: values.includes("mermaid")
+                                  ? Math.max(1, playerBonuses.mermaid)
+                                  : 0,
+                                pirate: values.includes("pirate")
+                                  ? Math.max(1, playerBonuses.pirate)
+                                  : 0,
+                                skullKing: values.includes("skullKing"),
                               };
+
+                              return result;
                             });
                           }}
                         >
