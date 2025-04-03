@@ -33,5 +33,13 @@
         "description": "1 manche avec 1 carte, puis un bisou de bonne nuit !"
       }
     }
+  },
+  "PlayersPage": {
+    "title": "Configuration des Joueurs",
+    "modeInfo": "Mode {mode} • {rounds} manches",
+    "playersHeader": "Joueurs ({count}/8)",
+    "addPlayer": "Ajouter un Joueur",
+    "startGame": "Commencer la Partie",
+    "defaultPlayerName": "Joueur {number}"
   }
 }
