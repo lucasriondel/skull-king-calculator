@@ -52,7 +52,12 @@ export default function GamePage() {
     if (bid < 0 || bid > cardsThisRound) return;
 
     const newRoundData = [...roundData];
-    newRoundData[playerIndex] = { ...newRoundData[playerIndex], bid };
+    newRoundData[playerIndex] = {
+      ...newRoundData[playerIndex],
+      bid,
+      bonuses: bonuses[playerIndex],
+      cardsThisRound,
+    };
     setRoundData(newRoundData);
   };
 
@@ -60,7 +65,12 @@ export default function GamePage() {
     if (tricks < 0 || tricks > cardsThisRound) return;
 
     const newRoundData = [...roundData];
-    newRoundData[playerIndex] = { ...newRoundData[playerIndex], tricks };
+    newRoundData[playerIndex] = {
+      ...newRoundData[playerIndex],
+      tricks,
+      bonuses: bonuses[playerIndex],
+      cardsThisRound,
+    };
     setRoundData(newRoundData);
   };
 
@@ -91,11 +101,14 @@ export default function GamePage() {
       return {
         ...data,
         score,
+        bonuses: bonuses[idx],
+        cardsThisRound,
       };
     });
 
-    // Update player data
+    // Update player data with the correct round number
     newRoundData.forEach((data, index) => {
+      console.log(`Updating player ${index} for round ${currentRound}`);
       updatePlayerRound(index, currentRound, data);
     });
 
