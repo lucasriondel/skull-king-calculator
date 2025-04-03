@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { setRequestLocale } from "next-intl/server";
 
 import "@/styles/globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -40,7 +41,14 @@ export default async function LocaleLayout({
           fontSans.variable
         )}
       >
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
