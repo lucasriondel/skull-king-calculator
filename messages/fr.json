@@ -1,0 +1,37 @@
+{
+  "GameModesPage": {
+    "title": "Calculateur de Score Skull King",
+    "subtitle": "Sélectionnez le Mode de Jeu",
+    "continueButton": "Continuer vers la Configuration des Joueurs",
+    "gameModes": {
+      "classic": {
+        "name": "Classique",
+        "description": "Le jeu traditionnel Skull King avec 10 manches."
+      },
+      "noOddRounds": {
+        "name": "Sans Manches Impaires",
+        "description": "Deux manches de 2, 4, 6, 8, 10 cartes."
+      },
+      "readyToFight": {
+        "name": "Prêt au Combat",
+        "description": "5 manches: 6, 7, 8, 9 et 10 cartes."
+      },
+      "flashAttack": {
+        "name": "Attaque Éclair",
+        "description": "5 manches avec 5 cartes."
+      },
+      "damShooting": {
+        "name": "Tir de Barrage",
+        "description": "10 manches avec 10 cartes."
+      },
+      "whirlwind": {
+        "name": "Tourbillon",
+        "description": "Deux manches de 9, 7, 5, 3, et 1 carte."
+      },
+      "bedTime": {
+        "name": "Heure du Coucher",
+        "description": "1 manche avec 1 carte, puis un bisou de bonne nuit !"
+      }
+    }
+  }
+}

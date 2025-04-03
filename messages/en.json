@@ -1,0 +1,37 @@
+{
+  "GameModesPage": {
+    "title": "Skull King Score Tracker",
+    "subtitle": "Select Game Mode",
+    "continueButton": "Continue to Player Setup",
+    "gameModes": {
+      "classic": {
+        "name": "Classic",
+        "description": "The traditional Skull King game with 10 rounds."
+      },
+      "noOddRounds": {
+        "name": "No Odd Rounds",
+        "description": "Two rounds of 2, 4, 6, 8, 10 cards."
+      },
+      "readyToFight": {
+        "name": "Ready to Fight",
+        "description": "5 rounds: 6, 7, 8, 9 and 10 cards."
+      },
+      "flashAttack": {
+        "name": "Flash Attack",
+        "description": "5 rounds with 5 cards."
+      },
+      "damShooting": {
+        "name": "Dam Shooting",
+        "description": "10 rounds with 10 cards."
+      },
+      "whirlwind": {
+        "name": "Whirlwind",
+        "description": "Two round of 9, 7, 5, 3, and 1 card."
+      },
+      "bedTime": {
+        "name": "Bed Time",
+        "description": "1 round with 1 card, then a goodnight kiss!"
+      }
+    }
+  }
+}
