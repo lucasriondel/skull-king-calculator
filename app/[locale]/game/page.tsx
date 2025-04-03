@@ -97,6 +97,9 @@ export default function GamePage() {
       tricks,
       playerBonuses,
       cardsThisRound,
+      bidType: typeof bid,
+      tricksType: typeof tricks,
+      cardsThisRoundType: typeof cardsThisRound,
     });
 
     let baseScore = 0;
@@ -104,10 +107,19 @@ export default function GamePage() {
     // Base score calculation
     if (bid === 0) {
       baseScore = tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound;
-      console.log("Zero bid calculation:", { baseScore, cardsThisRound });
+      console.log("Zero bid calculation:", {
+        baseScore,
+        cardsThisRound,
+        tricks,
+      });
     } else {
       baseScore = bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks);
-      console.log("Non-zero bid calculation:", { baseScore, bid, tricks });
+      console.log("Non-zero bid calculation:", {
+        baseScore,
+        bid,
+        tricks,
+        diff: Math.abs(bid - tricks),
+      });
     }
 
     // If no bonuses, return base score
@@ -127,21 +139,30 @@ export default function GamePage() {
     if (playerBonuses.darkBonus) bonusScore += 20;
 
     // Special cards bonuses
-    bonusScore += (playerBonuses?.treasure ?? 0) * 20; // Each treasure gives 20 points
-    bonusScore += (playerBonuses?.mermaid ?? 0) * 20; // Each mermaid gives 20 points
-    bonusScore += (playerBonuses?.pirate ?? 0) * 30; // Each pirate gives 30 points
-    if (playerBonuses.skullKing) bonusScore += 40; // Skull king gives 40 points
+    const treasureBonus = (playerBonuses?.treasure ?? 0) * 20;
+    const mermaidBonus = (playerBonuses?.mermaid ?? 0) * 20;
+    const pirateBonus = (playerBonuses?.pirate ?? 0) * 30;
+    const skullKingBonus = playerBonuses.skullKing ? 40 : 0;
 
-    console.log("Bonus calculation:", {
+    bonusScore += treasureBonus;
+    bonusScore += mermaidBonus;
+    bonusScore += pirateBonus;
+    bonusScore += skullKingBonus;
+
+    console.log("Bonus calculation details:", {
       bonusScore,
       greenBonus: playerBonuses.greenBonus,
       yellowBonus: playerBonuses.yellowBonus,
       purpleBonus: playerBonuses.purpleBonus,
       darkBonus: playerBonuses.darkBonus,
       treasure: playerBonuses.treasure,
+      treasureBonus,
       mermaid: playerBonuses.mermaid,
+      mermaidBonus,
       pirate: playerBonuses.pirate,
+      pirateBonus,
       skullKing: playerBonuses.skullKing,
+      skullKingBonus,
     });
 
     const finalScore = baseScore + bonusScore;
@@ -155,11 +176,29 @@ export default function GamePage() {
   };
 
   const completeRound = () => {
+    console.log("completeRound called with:", {
+      roundData,
+      currentRound,
+      bonuses,
+      players,
+    });
+
     // Calculate scores
-    const newRoundData = roundData.map((data, idx) => ({
-      ...data,
-      score: calculateScore(data.bid, data.tricks, bonuses[idx]),
-    }));
+    const newRoundData = roundData.map((data, idx) => {
+      const score = calculateScore(data.bid, data.tricks, bonuses[idx]);
+      console.log(`Player ${idx} score calculation:`, {
+        playerName: players[idx]?.name,
+        bid: data.bid,
+        tricks: data.tricks,
+        bonuses: bonuses[idx],
+        score,
+      });
+
+      return {
+        ...data,
+        score,
+      };
+    });
 
     // Update player data
     newRoundData.forEach((data, index) => {
@@ -247,38 +286,6 @@ export default function GamePage() {
     router.push("/game-modes");
   };
 
-  const toggleBonus = (playerIndex: number, bonusKey: keyof BonusType) => {
-    setBonuses((prev) => {
-      const playerBonuses = prev[playerIndex] || {
-        greenBonus: false,
-        yellowBonus: false,
-        purpleBonus: false,
-        darkBonus: false,
-        mermaid: 0,
-        pirate: 0,
-        skullKing: false,
-      };
-
-      if (bonusKey === "mermaid" || bonusKey === "pirate") {
-        return {
-          ...prev,
-          [playerIndex]: {
-            ...playerBonuses,
-            [bonusKey]: playerBonuses[bonusKey] > 0 ? 0 : 1,
-          },
-        };
-      }
-
-      return {
-        ...prev,
-        [playerIndex]: {
-          ...playerBonuses,
-          [bonusKey]: !playerBonuses[bonusKey],
-        },
-      };
-    });
-  };
-
   const adjustSpecialCard = (
     playerIndex: number,
     cardType: "mermaid" | "pirate" | "treasure",
@@ -308,29 +315,6 @@ export default function GamePage() {
           [cardType]: newValue,
         },
       };
-    });
-  };
-
-  const isColorBonusTaken = (
-    color: "green" | "yellow" | "purple" | "dark",
-    currentPlayerIndex: number
-  ) => {
-    return Object.entries(bonuses).some(([playerIndex, playerBonuses]) => {
-      const index = parseInt(playerIndex);
-      if (index === currentPlayerIndex) return false;
-
-      switch (color) {
-        case "green":
-          return playerBonuses.greenBonus;
-        case "yellow":
-          return playerBonuses.yellowBonus;
-        case "purple":
-          return playerBonuses.purpleBonus;
-        case "dark":
-          return playerBonuses.darkBonus;
-        default:
-          return false;
-      }
     });
   };
 
@@ -423,7 +407,7 @@ export default function GamePage() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <LanguageSwitcher />
+      {/* <LanguageSwitcher /> */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
         <div className="w-full sm:w-auto">
           <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg px-4 py-3 shadow-md">
