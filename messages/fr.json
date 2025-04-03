@@ -41,5 +41,33 @@
     "addPlayer": "Ajouter un Joueur",
     "startGame": "Commencer la Partie",
     "defaultPlayerName": "Joueur {number}"
+  },
+  "GamePage": {
+    "gameMode": "Mode de Jeu",
+    "round": "Manche",
+    "of": "sur",
+    "cardsThisRound": "Cartes cette manche",
+    "tabs": {
+      "bids": "Enchères",
+      "tricks": "Plis",
+      "scores": "Scores"
+    },
+    "enterBids": "Saisir les Enchères",
+    "enterTricksWon": "Saisir les Plis Gagnés",
+    "currentScores": "Scores Actuels",
+    "bid": "Enchère",
+    "score": "Score",
+    "buttons": {
+      "continue": "Continuer",
+      "continueToTricks": "Continuer aux Plis",
+      "complete": "Terminer",
+      "completeRound": "Terminer la Manche",
+      "backToBids": "Retour aux Enchères"
+    },
+    "gameComplete": {
+      "title": "Partie Terminée !",
+      "finalStandings": "Classement Final",
+      "newGame": "Nouvelle Partie"
+    }
   }
 }

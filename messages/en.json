@@ -41,5 +41,33 @@
     "addPlayer": "Add Player",
     "startGame": "Start Game",
     "defaultPlayerName": "Player {number}"
+  },
+  "GamePage": {
+    "gameMode": "Game Mode",
+    "round": "Round",
+    "of": "of",
+    "cardsThisRound": "Cards this round",
+    "tabs": {
+      "bids": "Bids",
+      "tricks": "Tricks",
+      "scores": "Scores"
+    },
+    "enterBids": "Enter Bids",
+    "enterTricksWon": "Enter Tricks Won",
+    "currentScores": "Current Scores",
+    "bid": "Bid",
+    "score": "Score",
+    "buttons": {
+      "continue": "Continue",
+      "continueToTricks": "Continue to Tricks",
+      "complete": "Complete",
+      "completeRound": "Complete Round",
+      "backToBids": "Back to Bids"
+    },
+    "gameComplete": {
+      "title": "Game Complete!",
+      "finalStandings": "Final Standings",
+      "newGame": "New Game"
+    }
   }
 }
