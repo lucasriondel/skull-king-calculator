@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,11 +17,24 @@ export default function PlayersPage() {
   const { setPlayers, gameMode } = useGameStore();
   const t = useTranslations("PlayersPage");
 
-  // Set initial player names with translated default names
-  const [playerNames, setPlayerNames] = useState<string[]>([
-    t("defaultPlayerName", { number: 1 }),
-    t("defaultPlayerName", { number: 2 }),
-  ]);
+  // Set initial player names with translated default names or from localStorage
+  const [playerNames, setPlayerNames] = useState<string[]>(() => {
+    if (typeof window !== "undefined") {
+      const savedPlayers = localStorage.getItem("skullKingPlayers");
+      if (savedPlayers) {
+        return JSON.parse(savedPlayers);
+      }
+    }
+    return [
+      t("defaultPlayerName", { number: 1 }),
+      t("defaultPlayerName", { number: 2 }),
+    ];
+  });
+
+  // Save player names to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("skullKingPlayers", JSON.stringify(playerNames));
+  }, [playerNames]);
 
   const addPlayer = () => {
     if (playerNames.length < 8) {
