@@ -195,38 +195,33 @@ export function BonusControls({
               };
 
               // Handle turning off bonuses
-              if (
-                values.length <
-                Object.values(prev[playerIndex] || {}).filter(Boolean).length
-              ) {
-                return {
-                  ...prev,
-                  [playerIndex]: {
-                    ...playerBonuses,
-                    treasure: values.includes("treasure")
-                      ? playerBonuses.treasure
-                      : 0,
-                    mermaid: values.includes("mermaid")
-                      ? playerBonuses.mermaid
-                      : 0,
-                    pirate: values.includes("pirate")
-                      ? playerBonuses.pirate
-                      : 0,
-                    skullKing: values.includes("skullKing"),
-                  },
-                };
-              }
-
-              // Handle turning on bonuses
-              const newValue = values[values.length - 1];
-              if (!newValue) return prev;
-
               const result = { ...prev };
+              result[playerIndex] = {
+                ...playerBonuses,
+                treasure: values.includes("treasure")
+                  ? playerBonuses.treasure || 1
+                  : 0,
+                mermaid: values.includes("mermaid")
+                  ? playerBonuses.mermaid || 1
+                  : 0,
+                pirate: values.includes("pirate")
+                  ? playerBonuses.pirate || 1
+                  : 0,
+                skullKing: values.includes("skullKing"),
+              };
 
               // Special handling for Skull King
-              if (newValue === "skullKing") {
+              if (values.includes("skullKing")) {
                 const otherPlayerIndex = getPlayerWithBonus("skullKing");
-                if (otherPlayerIndex !== null) {
+                console.log("🔍 Debug - Skull King Check:", {
+                  otherPlayerIndex,
+                  currentPlayer: playerIndex,
+                });
+
+                if (
+                  otherPlayerIndex !== null &&
+                  otherPlayerIndex !== playerIndex
+                ) {
                   result[otherPlayerIndex] = {
                     ...result[otherPlayerIndex],
                     skullKing: false,
@@ -234,20 +229,10 @@ export function BonusControls({
                 }
               }
 
-              // Add the bonus to the current player
-              result[playerIndex] = {
-                ...playerBonuses,
-                treasure: values.includes("treasure")
-                  ? Math.max(1, playerBonuses.treasure)
-                  : 0,
-                mermaid: values.includes("mermaid")
-                  ? Math.max(1, playerBonuses.mermaid)
-                  : 0,
-                pirate: values.includes("pirate")
-                  ? Math.max(1, playerBonuses.pirate)
-                  : 0,
-                skullKing: values.includes("skullKing"),
-              };
+              console.log("🔍 Debug - New State:", {
+                result,
+                updatedPlayerBonuses: result[playerIndex],
+              });
 
               return result;
             });
