@@ -123,6 +123,7 @@ export default function GamePage() {
           score: 0,
         }))
       );
+      setBonuses({}); // Reset bonuses for the new round
       setActiveTab("bids");
     } else {
       // Game complete
