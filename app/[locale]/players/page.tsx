@@ -8,9 +8,92 @@ import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { useMobile } from "@/hooks/use-mobile";
 import { useGameStore } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
-import { Play, Trash2, UserPlus } from "lucide-react";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  MouseSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { GripVertical, Play, Trash2, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
+
+// Define SortablePlayerItem component
+function SortablePlayerItem({
+  id,
+  name,
+  index,
+  updatePlayerName,
+  removePlayer,
+  t,
+}: {
+  id: string;
+  name: string;
+  index: number;
+  updatePlayerName: (index: number, name: string) => void;
+  removePlayer: (index: number) => void;
+  t: (key: string, params?: any) => string;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    touchAction: "none",
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-2 p-2 bg-background rounded-md shadow"
+    >
+      {/* Drag handle */}
+      <span
+        className="cursor-grab active:cursor-grabbing touch-none select-none flex items-center pr-2"
+        {...attributes}
+        {...listeners}
+        tabIndex={0}
+        aria-label={t("dragHandleLabel", { number: index + 1 })}
+      >
+        <GripVertical className="w-5 h-5 text-muted-foreground" />
+      </span>
+      <Input
+        value={name}
+        onChange={(e) => updatePlayerName(index, e.target.value)}
+        placeholder={t("defaultPlayerName", { number: index + 1 })}
+        className="flex-grow"
+      />
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={() => removePlayer(index)}
+        // disabled prop is handled by the parent component's logic for playerNames.length
+      >
+        <Trash2 className="h-5 w-5" />
+      </Button>
+    </div>
+  );
+}
 
 export default function PlayersPage() {
   const router = useRouter();
@@ -18,7 +101,6 @@ export default function PlayersPage() {
   const { setPlayers, gameMode } = useGameStore();
   const t = useTranslations("PlayersPage");
 
-  // Set initial player names with translated default names or from localStorage
   const [playerNames, setPlayerNames] = useState<string[]>(() => {
     if (typeof window !== "undefined") {
       const savedPlayers = localStorage.getItem("skullKingPlayers");
@@ -32,10 +114,37 @@ export default function PlayersPage() {
     ];
   });
 
-  // Save player names to localStorage whenever they change
   useEffect(() => {
     localStorage.setItem("skullKingPlayers", JSON.stringify(playerNames));
   }, [playerNames]);
+
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  function handleDragEnd(event: any) {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      setPlayerNames((items) => {
+        const oldIndex = parseInt(String(active.id).split("-")[1]);
+        const newIndex = parseInt(String(over.id).split("-")[1]);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  }
 
   const addPlayer = () => {
     if (playerNames.length < 8) {
@@ -84,23 +193,28 @@ export default function PlayersPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {playerNames.map((name, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <Input
-                value={name}
-                onChange={(e) => updatePlayerName(index, e.target.value)}
-                placeholder={t("defaultPlayerName", { number: index + 1 })}
-              />
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => removePlayer(index)}
-                disabled={playerNames.length <= 2}
-              >
-                <Trash2 className="h-5 w-5" />
-              </Button>
-            </div>
-          ))}
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={playerNames.map((_, index) => `item-${index}`)}
+              strategy={verticalListSortingStrategy}
+            >
+              {playerNames.map((name, index) => (
+                <SortablePlayerItem
+                  key={`item-${index}`}
+                  id={`item-${index}`}
+                  name={name}
+                  index={index}
+                  updatePlayerName={updatePlayerName}
+                  removePlayer={removePlayer}
+                  t={t}
+                />
+              ))}
+            </SortableContext>
+          </DndContext>
 
           <Button
             variant="outline"
