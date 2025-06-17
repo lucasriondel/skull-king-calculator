@@ -27,7 +27,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, Trash2, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Define SortablePlayerItem component
 function SortablePlayerItem({
@@ -35,12 +35,14 @@ function SortablePlayerItem({
   player,
   updatePlayerName,
   removePlayer,
+  disableDelete,
   t,
 }: {
   id: string;
   player: { id: string; name: string };
   updatePlayerName: (id: string, name: string) => void;
   removePlayer: (id: string) => void;
+  disableDelete: boolean;
   t: (key: string, params?: any) => string;
 }) {
   const {
@@ -76,6 +78,7 @@ function SortablePlayerItem({
         <GripVertical className="w-5 h-5 text-muted-foreground" />
       </span>
       <Input
+        id={`player-input-${player.id}`}
         value={player.name}
         onChange={(e) => updatePlayerName(player.id, e.target.value)}
         placeholder={t("defaultPlayerName", {
@@ -87,6 +90,7 @@ function SortablePlayerItem({
         variant="ghost"
         size="icon"
         onClick={() => removePlayer(player.id)}
+        disabled={disableDelete}
       >
         <Trash2 className="h-5 w-5" />
       </Button>
@@ -120,9 +124,22 @@ export default function PlayersPage() {
     }
   );
 
+  const prevPlayerNamesLengthRef = useRef(playerList.length);
+
+  // Save player names to localStorage whenever they change
+  // And focus the last input if a player was added
   useEffect(() => {
     const playerNames = playerList.map((player) => player.name);
     localStorage.setItem("skullKingPlayers", JSON.stringify(playerNames));
+    if (playerNames.length > prevPlayerNamesLengthRef.current) {
+      const lastInput = document.getElementById(
+        `player-input-${playerNames.length - 1}`
+      );
+      if (lastInput) {
+        lastInput.focus();
+      }
+    }
+    prevPlayerNamesLengthRef.current = playerNames.length;
   }, [playerList]);
 
   const sensors = useSensors(
@@ -226,6 +243,7 @@ export default function PlayersPage() {
                   player={player}
                   updatePlayerName={updatePlayerName}
                   removePlayer={removePlayer}
+                  disableDelete={playerList.length <= 2}
                   t={t}
                 />
               ))}
