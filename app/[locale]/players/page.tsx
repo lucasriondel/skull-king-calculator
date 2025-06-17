@@ -1,15 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Trash2, UserPlus, Play } from "lucide-react";
-import { useGameStore } from "@/lib/store";
+import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { useMobile } from "@/hooks/use-mobile";
-import { useTranslations } from "next-intl";
+import { useGameStore } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
-import LanguageSwitcher from "@/components/language-switcher";
+import { Play, Trash2, UserPlus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 export default function PlayersPage() {
   const router = useRouter();
@@ -70,6 +71,7 @@ export default function PlayersPage() {
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
       <LanguageSwitcher />
+      <ThemeToggleButton />
       <h1 className="text-3xl font-bold text-center mb-2">{t("title")}</h1>
       <p className="text-center text-muted-foreground mb-8">
         {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
