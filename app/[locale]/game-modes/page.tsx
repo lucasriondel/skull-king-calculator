@@ -1,7 +1,6 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
+import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,11 +9,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { type GameMode, useGameStore } from "@/lib/store";
+import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { useMobile } from "@/hooks/use-mobile";
-import { ArrowRight } from "lucide-react";
+import { type GameMode, useGameStore } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
-import LanguageSwitcher from "@/components/language-switcher";
+import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useState } from "react";
 
 const gameModes: GameMode[] = [
   {
@@ -134,6 +135,8 @@ export default function GameModesPage() {
   return (
     <div className="container max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
       <LanguageSwitcher />
+      <ThemeToggleButton />
+
       <h1 className="text-3xl font-bold text-center mb-8">{t("title")}</h1>
       <h2 className="text-xl font-semibold mb-4">{t("subtitle")}</h2>
 
