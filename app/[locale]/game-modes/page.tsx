@@ -44,10 +44,11 @@ const gameModes: GameMode[] = [
     rounds: 5,
     description: "5 rounds: 6, 7, 8, 9 and 10 cards.",
     cardsPerRound: (round) => {
-      if (round === 1 || round === 2) return 6;
-      if (round === 3 || round === 4) return 7;
-      if (round === 5 || round === 6) return 8;
-      if (round === 7 || round === 8) return 9;
+      if (round === 1) return 6;
+      if (round === 2) return 7;
+      if (round === 3) return 8;
+      if (round === 4) return 9;
+      if (round === 5) return 10;
       return 10;
     },
   },
