@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,11 +7,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+import { useMobile } from "@/hooks/use-mobile";
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMobile } from "@/hooks/use-mobile";
 import { BonusControls, BonusType } from "./BonusControls";
+import { NumberSelector } from "./NumberSelector";
 
 interface Player {
   name: string;
@@ -92,28 +93,11 @@ export function TricksTab({
               </div>
             </div>
             <div className="overflow-x-auto pb-2">
-              <div
-                className="flex space-x-1"
-                style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}
-              >
-                {Array.from({ length: cardsThisRound + 1 }, (_, i) => (
-                  <div
-                    key={i}
-                    onClick={() => updateTricks(index, i)}
-                    className={`
-                      flex items-center justify-center w-9 h-9 rounded-full cursor-pointer
-                      border transition-colors
-                      ${
-                        roundData[index]?.tricks === i
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-accent border-input"
-                      }
-                    `}
-                  >
-                    {i}
-                  </div>
-                ))}
-              </div>
+              <NumberSelector
+                length={cardsThisRound + 1}
+                selected={roundData[index]?.tricks}
+                onSelect={(num: number) => updateTricks(index, num)}
+              />
             </div>
           </div>
         ))}

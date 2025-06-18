@@ -12,6 +12,7 @@ import { useGameStore } from "@/lib/store";
 import { ArrowRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Badge } from "../ui/badge";
+import { NumberSelector } from "./NumberSelector";
 
 interface Player {
   name: string;
@@ -62,28 +63,11 @@ export function BidsTab({
               )}
             </div>
             <div className="overflow-x-auto pb-2">
-              <div
-                className="flex space-x-1"
-                style={{ minWidth: `${(cardsThisRound + 1) * 40}px` }}
-              >
-                {Array.from({ length: cardsThisRound + 1 }, (_, i) => (
-                  <div
-                    key={i}
-                    onClick={() => updateBid(index, i)}
-                    className={`
-                      flex items-center justify-center w-9 h-9 rounded-full cursor-pointer
-                      border transition-colors
-                      ${
-                        roundData[index]?.bid === i
-                          ? "bg-primary text-primary-foreground border-primary"
-                          : "bg-background hover:bg-accent border-input"
-                      }
-                    `}
-                  >
-                    {i}
-                  </div>
-                ))}
-              </div>
+              <NumberSelector
+                length={cardsThisRound + 1}
+                selected={roundData[index]?.bid}
+                onSelect={(num: number) => updateBid(index, num)}
+              />
             </div>
           </div>
         ))}
