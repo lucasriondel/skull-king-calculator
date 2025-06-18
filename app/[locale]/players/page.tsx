@@ -3,6 +3,7 @@
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { useMobile } from "@/hooks/use-mobile";
@@ -99,7 +100,11 @@ const SortablePlayerItem = forwardRef<
 export default function PlayersPage() {
   const router = useRouter();
   const isMobile = useMobile();
-  const { setPlayers: setGamePlayers, gameMode } = useGameStore();
+  const {
+    setPlayers: setGamePlayers,
+    setStartingPlayerIndex,
+    gameMode,
+  } = useGameStore();
   const t = useTranslations("PlayersPage");
 
   // Use objects with stable IDs instead of just strings
@@ -199,12 +204,37 @@ export default function PlayersPage() {
     );
   };
 
+  const [randomizeStarter, setRandomizeStarter] = useState(false);
+
   const handleStartGame = () => {
+    if (randomizeStarter) {
+      setStartingPlayerIndex(Math.floor(Math.random() * playerList.length));
+    } else {
+      setStartingPlayerIndex(0);
+    }
     setGamePlayers(
       playerList.map((player) => ({ name: player.name, score: 0, rounds: [] }))
     );
     router.push("/game");
   };
+
+  function RandomizeStarterCheckbox() {
+    return (
+      <div className="flex items-center mb-4 gap-2">
+        <Checkbox
+          id="randomize-starter"
+          checked={randomizeStarter}
+          onCheckedChange={(checked) => setRandomizeStarter(!!checked)}
+        />
+        <label
+          htmlFor="randomize-starter"
+          className="select-none cursor-pointer"
+        >
+          {t("randomizeStarter", { default: "Randomize who starts first" })}
+        </label>
+      </div>
+    );
+  }
 
   if (!gameMode) {
     router.push("/game-modes");
@@ -269,9 +299,11 @@ export default function PlayersPage() {
       </Card>
 
       {!isMobile && (
-        <div className="flex justify-center">
+        <div className="flex justify-center flex-col items-center">
+          <RandomizeStarterCheckbox />
+
           <Button size="lg" onClick={handleStartGame}>
-            {t("startGame")}
+            {t("startGame")} <Play className="ml-2 h-5 w-5" />
           </Button>
         </div>
       )}
@@ -279,6 +311,8 @@ export default function PlayersPage() {
       {/* Mobile Bottom Navigation Bar */}
       {isMobile && (
         <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
+          <RandomizeStarterCheckbox />
+
           <div className="container max-w-2xl mx-auto">
             <Button className="w-full" size="lg" onClick={handleStartGame}>
               {t("startGame")} <Play className="ml-2 h-5 w-5" />

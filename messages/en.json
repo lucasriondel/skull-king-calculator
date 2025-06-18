@@ -40,7 +40,8 @@
     "playersHeader": "Players ({count}/8)",
     "addPlayer": "Add Player",
     "startGame": "Start Game",
-    "defaultPlayerName": "Player {number}"
+    "defaultPlayerName": "Player {number}",
+    "randomizeStarter": "Randomize who starts first"
   },
   "GamePage": {
     "gameMode": "Game Mode",

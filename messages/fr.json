@@ -40,7 +40,8 @@
     "playersHeader": "Joueurs ({count}/8)",
     "addPlayer": "Ajouter un Joueur",
     "startGame": "Commencer la Partie",
-    "defaultPlayerName": "Joueur {number}"
+    "defaultPlayerName": "Joueur {number}",
+    "randomizeStarter": "Joueur de départ aléatoire"
   },
   "GamePage": {
     "gameMode": "Mode de Jeu",

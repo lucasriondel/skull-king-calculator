@@ -33,6 +33,7 @@ type GameStore = {
   startingPlayerIndex: number;
   setGameMode: (mode: GameMode) => void;
   setPlayers: (players: Player[]) => void;
+  setStartingPlayerIndex: (index: number) => void;
   updatePlayerRound: (
     playerIndex: number,
     roundNumber: number,
@@ -50,6 +51,8 @@ export const useGameStore = create<GameStore>((set) => ({
   setGameMode: (mode) => set({ gameMode: mode }),
 
   setPlayers: (players) => set({ players }),
+
+  setStartingPlayerIndex: (index) => set({ startingPlayerIndex: index }),
 
   updatePlayerRound: (playerIndex, roundNumber, data) =>
     set((state) => {
