@@ -62,7 +62,7 @@ export function BidsTab({
                 <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
               )}
             </div>
-            <div className="overflow-x-auto pb-2">
+            <div className="overflow-x-auto pb-2 mx-auto">
               <NumberSelector
                 length={cardsThisRound + 1}
                 selected={roundData[index]?.bid}

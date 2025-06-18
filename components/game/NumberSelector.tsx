@@ -18,8 +18,8 @@ export function NumberSelector({
 
   return (
     <div
-      className="grid gap-1"
-      style={{ gridTemplateColumns: `repeat(${rowSize}, minmax(0, 1fr))` }}
+      className="grid gap-1 w-fit mx-auto"
+      style={{ gridTemplateColumns: `repeat(${rowSize}, minmax(0, 48px))` }}
     >
       {numbers.map((num) => (
         <div

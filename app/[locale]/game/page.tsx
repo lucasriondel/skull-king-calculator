@@ -177,7 +177,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
+    <div className="container max-w-2xl mx-auto px-4 py-8 pt-4 pb-24 md:pb-8 relative">
       <GameHeader
         gameModeName={gameMode?.name || ""}
         currentRound={currentRound}
@@ -189,7 +189,7 @@ export default function GamePage() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as any)}
       >
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
