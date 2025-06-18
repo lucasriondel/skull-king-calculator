@@ -1,4 +1,5 @@
-import { Crown, CircleEllipsis } from "lucide-react";
+import { useMobile } from "@/hooks/use-mobile";
+import { CircleEllipsis, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 interface GameHeaderProps {
@@ -15,29 +16,32 @@ export function GameHeader({
   cardsThisRound,
 }: GameHeaderProps) {
   const t = useTranslations("GamePage");
+  const isMobile = useMobile();
 
   return (
-    <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8">
-      <div className="w-full sm:w-auto">
-        <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg px-4 py-3 shadow-md">
-          <div className="flex items-center">
-            <div className="relative mr-3">
-              <div className="absolute inset-0 bg-white/20 rounded-full transform rotate-12"></div>
-              <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1.5">
-                <Crown className="h-5 w-5" />
+    <div className="flex flex-row justify-between items-center gap-4 mb-4">
+      {!isMobile && (
+        <div className="w-full ">
+          <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg px-4 py-3 shadow-md">
+            <div className="flex items-center">
+              <div className="relative mr-3">
+                <div className="absolute inset-0 bg-white/20 rounded-full transform rotate-12"></div>
+                <div className="relative bg-white/10 backdrop-blur-sm rounded-full p-1.5">
+                  <Crown className="h-5 w-5" />
+                </div>
               </div>
-            </div>
-            <div>
-              <div className="text-xs uppercase tracking-wider opacity-80">
-                {t("gameMode")}
+              <div>
+                <div className="text-xs uppercase tracking-wider opacity-80">
+                  {t("gameMode")}
+                </div>
+                <div className="text-xl font-bold truncate">{gameModeName}</div>
               </div>
-              <div className="text-xl font-bold truncate">{gameModeName}</div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="w-full sm:w-auto">
+      <div className="w-full ">
         <div className="bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-lg px-4 py-3 shadow-md">
           <div className="flex items-center">
             <div className="relative mr-3">
@@ -61,7 +65,7 @@ export function GameHeader({
         </div>
       </div>
 
-      <div className="w-full sm:w-auto">
+      <div className="w-full ">
         <div className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-lg px-4 py-3 shadow-md">
           <div className="mr-3 relative">
             <div className="absolute inset-0 bg-white/20 rounded-md transform rotate-6"></div>

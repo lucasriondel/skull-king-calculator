@@ -1,8 +1,8 @@
 "use client";
 
-import { create } from "zustand";
 import { BonusType } from "@/components/game/BonusControls";
 import { calculateScore } from "@/lib/game-utils";
+import { create } from "zustand";
 
 export type GameMode = {
   id: string;
@@ -30,23 +30,29 @@ export type Player = {
 type GameStore = {
   gameMode: GameMode | null;
   players: Player[];
+  startingPlayerIndex: number;
   setGameMode: (mode: GameMode) => void;
   setPlayers: (players: Player[]) => void;
+  setStartingPlayerIndex: (index: number) => void;
   updatePlayerRound: (
     playerIndex: number,
     roundNumber: number,
     data: RoundData
   ) => void;
+  moveToNextStartingPlayer: () => void;
   resetGame: () => void;
 };
 
 export const useGameStore = create<GameStore>((set) => ({
   gameMode: null,
   players: [],
+  startingPlayerIndex: 0,
 
   setGameMode: (mode) => set({ gameMode: mode }),
 
   setPlayers: (players) => set({ players }),
+
+  setStartingPlayerIndex: (index) => set({ startingPlayerIndex: index }),
 
   updatePlayerRound: (playerIndex, roundNumber, data) =>
     set((state) => {
@@ -73,5 +79,14 @@ export const useGameStore = create<GameStore>((set) => ({
       return { players: newPlayers };
     }),
 
-  resetGame: () => set({ gameMode: null, players: [] }),
+  moveToNextStartingPlayer: () =>
+    set((state) => {
+      const nextIndex =
+        state.players.length === 0
+          ? 0
+          : (state.startingPlayerIndex + 1) % state.players.length;
+      return { startingPlayerIndex: nextIndex };
+    }),
+
+  resetGame: () => set({ gameMode: null, players: [], startingPlayerIndex: 0 }),
 }));

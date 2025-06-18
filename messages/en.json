@@ -40,13 +40,15 @@
     "playersHeader": "Players ({count}/8)",
     "addPlayer": "Add Player",
     "startGame": "Start Game",
-    "defaultPlayerName": "Player {number}"
+    "defaultPlayerName": "Player {number}",
+    "randomizeStarter": "Randomize who starts first"
   },
   "GamePage": {
     "gameMode": "Game Mode",
     "round": "Round",
     "of": "of",
-    "cardsThisRound": "Cards this round",
+    "cardsThisRound": "Cards",
+    "startingPlayer": "Starts",
     "tabs": {
       "bids": "Bids",
       "tricks": "Tricks",

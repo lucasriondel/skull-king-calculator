@@ -1,25 +1,31 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { BidsTab } from "@/components/game/BidsTab";
+import { BonusType } from "@/components/game/BonusControls";
+import { GameComplete } from "@/components/game/GameComplete";
+import { GameHeader } from "@/components/game/GameHeader";
+import { ScoresTab } from "@/components/game/ScoresTab";
+import { TricksTab } from "@/components/game/TricksTab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useGameStore, type RoundData } from "@/lib/store";
 import { useMobile } from "@/hooks/use-mobile";
-import { useTranslations } from "next-intl";
-import { useRouter } from "@/src/i18n/navigation";
-import { GameHeader } from "@/components/game/GameHeader";
-import { BidsTab } from "@/components/game/BidsTab";
-import { TricksTab } from "@/components/game/TricksTab";
-import { ScoresTab } from "@/components/game/ScoresTab";
-import { GameComplete } from "@/components/game/GameComplete";
-import { BonusType } from "@/components/game/BonusControls";
 import { calculateScore } from "@/lib/game-utils";
-import { ArrowRight, Check, Home } from "lucide-react";
+import { useGameStore, type RoundData } from "@/lib/store";
+import { useRouter } from "@/src/i18n/navigation";
+import { ArrowRight, Check } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 export default function GamePage() {
   const router = useRouter();
   const isMobile = useMobile();
-  const { gameMode, players, updatePlayerRound, resetGame } = useGameStore();
+  const {
+    gameMode,
+    players,
+    updatePlayerRound,
+    resetGame,
+    moveToNextStartingPlayer,
+  } = useGameStore();
   const [currentRound, setCurrentRound] = useState(1);
   const [activeTab, setActiveTab] = useState<"bids" | "tricks" | "scores">(
     "bids"
@@ -124,6 +130,7 @@ export default function GamePage() {
         }))
       );
       setBonuses({}); // Reset bonuses for the new round
+      moveToNextStartingPlayer();
       setActiveTab("bids");
     } else {
       // Game complete
@@ -170,7 +177,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
+    <div className="container max-w-2xl mx-auto px-4 py-8 pt-4 pb-24 md:pb-8 relative">
       <GameHeader
         gameModeName={gameMode?.name || ""}
         currentRound={currentRound}
@@ -182,7 +189,7 @@ export default function GamePage() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as any)}
       >
-        <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsList className="grid w-full grid-cols-3 mb-4">
           <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
