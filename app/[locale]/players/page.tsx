@@ -257,7 +257,10 @@ export default function PlayersPage() {
             variant="outline"
             className="w-full"
             onClick={addPlayer}
-            disabled={playerList.length >= 8}
+            disabled={
+              playerList.length >= 8 ||
+              playerList.some((player) => player.name === "")
+            }
           >
             <UserPlus className="mr-2 h-4 w-4" />
             {t("addPlayer")}
