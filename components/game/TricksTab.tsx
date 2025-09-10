@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -65,42 +66,51 @@ export function TricksTab({
         <CardTitle>{t("enterTricksWon")}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {players.map((player, index) => (
-          <div key={player.name} className="space-y-2">
-            <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
-              <div className="w-full flex flex-row gap-2 items-center justify-between md:flex-col md:items-start md:w-auto">
-                <Label className="text-base font-medium">{player.name}</Label>
-                <p className="text-sm text-muted-foreground">
-                  {t("bid")}: {roundData[index]?.bid}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {t("score")}:{" "}
-                  {calculateScore(
-                    roundData[index]?.bid || 0,
-                    roundData[index]?.tricks || 0,
-                    bonuses[index]
-                  )}
-                </p>
-              </div>
+        {players.map((player, index) => {
+          const score = calculateScore(
+            roundData[index]?.bid || 0,
+            roundData[index]?.tricks || 0,
+            bonuses[index]
+          );
 
-              <div>
-                <BonusControls
-                  playerIndex={index}
-                  bonuses={bonuses}
-                  setBonuses={setBonuses}
-                  getPlayerWithBonus={getPlayerWithBonus}
+          return (
+            <div key={player.name} className="space-y-2">
+              <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
+                <div className="w-full flex flex-row gap-2 items-center justify-between md:flex-col md:items-start md:w-auto">
+                  <Label className="text-base font-medium">
+                    {player.name}
+                  </Label>
+                  <p className="text-sm text-muted-foreground">
+                    {t("bid")}: {roundData[index]?.bid}
+                  </p>
+                  <div className="text-sm text-muted-foreground flex items-center gap-1">
+                    <p>{t("score")}:</p>
+                    <Badge variant={score >= 0 ? "success" : "destructive"}>
+                      {score >= 0 ? "+" : ""}
+                      {score}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div>
+                  <BonusControls
+                    playerIndex={index}
+                    bonuses={bonuses}
+                    setBonuses={setBonuses}
+                    getPlayerWithBonus={getPlayerWithBonus}
+                  />
+                </div>
+              </div>
+              <div className="overflow-x-auto pb-2">
+                <NumberSelector
+                  length={cardsThisRound + 1}
+                  selected={roundData[index]?.tricks}
+                  onSelect={(num: number) => updateTricks(index, num)}
                 />
               </div>
             </div>
-            <div className="overflow-x-auto pb-2">
-              <NumberSelector
-                length={cardsThisRound + 1}
-                selected={roundData[index]?.tricks}
-                onSelect={(num: number) => updateTricks(index, num)}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </CardContent>
       {!isMobile && (
         <CardFooter>
