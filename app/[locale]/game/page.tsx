@@ -2,6 +2,7 @@
 
 import { BidsTab } from "@/components/game/BidsTab";
 import { BonusType } from "@/components/game/BonusControls";
+import { DetailsTab } from "@/components/game/DetailsTab";
 import { GameComplete } from "@/components/game/GameComplete";
 import { GameHeader } from "@/components/game/GameHeader";
 import { ScoresTab } from "@/components/game/ScoresTab";
@@ -27,9 +28,10 @@ export default function GamePage() {
     moveToNextStartingPlayer,
   } = useGameStore();
   const [currentRound, setCurrentRound] = useState(1);
-  const [activeTab, setActiveTab] = useState<"bids" | "tricks" | "scores">(
-    "bids"
-  );
+  const [
+    activeTab,
+    setActiveTab,
+  ] = useState<"bids" | "tricks" | "scores" | "details">("bids");
   const [roundData, setRoundData] = useState<RoundData[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
@@ -189,7 +191,7 @@ export default function GamePage() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as any)}
       >
-        <TabsList className="grid w-full grid-cols-3 mb-4">
+        <TabsList className="grid w-full grid-cols-4 mb-4">
           <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
@@ -198,6 +200,7 @@ export default function GamePage() {
             {t("tabs.tricks")}
           </TabsTrigger>
           <TabsTrigger value="scores">{t("tabs.scores")}</TabsTrigger>
+          <TabsTrigger value="details">{t("tabs.details")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="bids">
@@ -234,6 +237,10 @@ export default function GamePage() {
             onBackToBids={() => setActiveTab("bids")}
           />
         </TabsContent>
+
+        <TabsContent value="details">
+          <DetailsTab />
+        </TabsContent>
       </Tabs>
 
       {/* Mobile Bottom Navigation Bar */}
@@ -260,7 +267,7 @@ export default function GamePage() {
                 {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
               </Button>
             )}
-            {activeTab === "scores" && (
+            {(activeTab === "scores" || activeTab === "details") && (
               <Button
                 className="w-full"
                 onClick={() => setActiveTab("bids")}

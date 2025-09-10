@@ -52,7 +52,16 @@
     "tabs": {
       "bids": "Enchères",
       "tricks": "Plis",
-      "scores": "Scores"
+      "scores": "Scores",
+      "details": "Détails"
+    },
+    "DetailsTab": {
+      "round": "Manche",
+      "player": "Joueur",
+      "bid": "Enchère / Plis & Points",
+      "bonusPoints": "Points de bonus",
+      "noData": "Pas encore de données pour cette manche.",
+      "newScore": "Score & Changement"
     },
     "enterBids": "Saisir les Enchères",
     "enterTricksWon": "Saisir les Plis Gagnés",
