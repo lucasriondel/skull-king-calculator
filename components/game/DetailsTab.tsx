@@ -119,9 +119,9 @@ export function DetailsTab() {
                             {roundData.bid} / {roundData.tricks}
                           </span>
                           <Badge
-                            variant={baseScore > 0 ? "default" : "destructive"}
+                            variant={baseScore >= 0 ? "success" : "destructive"}
                           >
-                            {baseScore > 0 ? "+" : ""}
+                            {baseScore >= 0 ? "+" : ""}
                             {baseScore}
                           </Badge>
                         </div>
@@ -133,9 +133,9 @@ export function DetailsTab() {
                         <div className="flex items-center gap-2">
                           <span>{newScore}</span>
                           <Badge
-                            variant={roundScore > 0 ? "default" : "destructive"}
+                            variant={roundScore >= 0 ? "success" : "destructive"}
                           >
-                            {roundScore > 0 ? "+" : ""}
+                            {roundScore >= 0 ? "+" : ""}
                             {roundScore}
                           </Badge>
                         </div>
