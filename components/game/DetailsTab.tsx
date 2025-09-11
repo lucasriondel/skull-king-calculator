@@ -100,7 +100,10 @@ export function DetailsTab() {
                     roundData.tricks,
                     roundData.cardsThisRound || 0
                   );
-                  const bonusScore = calculateBonusScore(roundData.bonuses);
+                  const bonusScore =
+                    baseScore > 0
+                      ? calculateBonusScore(roundData.bonuses)
+                      : 0;
                   const roundScore = baseScore + bonusScore;
 
                   const previousRounds = player.rounds.slice(0, roundNumber - 1);

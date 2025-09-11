@@ -36,9 +36,9 @@ export function calculateScore(
     });
   }
 
-  // If no bonuses, return base score
-  if (!playerBonuses) {
-    console.log("No bonuses, returning base score:", baseScore);
+  // If no bonuses or if the bid was not successful, return base score
+  if (!playerBonuses || baseScore < 0) {
+    console.log("No bonuses or failed bid, returning base score:", baseScore);
     return baseScore;
   }
 
