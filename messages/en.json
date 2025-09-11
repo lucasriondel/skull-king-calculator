@@ -52,7 +52,16 @@
     "tabs": {
       "bids": "Bids",
       "tricks": "Tricks",
-      "scores": "Scores"
+      "scores": "Scores",
+      "details": "Details"
+    },
+    "DetailsTab": {
+      "round": "Round",
+      "player": "Player",
+      "bid": "Bid / Tricks & Points",
+      "bonusPoints": "Bonus Points",
+      "noData": "No data for this round yet.",
+      "newScore": "Score & Change"
     },
     "enterBids": "Enter Bids",
     "enterTricksWon": "Enter Tricks Won",
