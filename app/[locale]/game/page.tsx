@@ -28,14 +28,15 @@ export default function GamePage() {
     moveToNextStartingPlayer,
   } = useGameStore();
   const [currentRound, setCurrentRound] = useState(1);
-  const [
-    activeTab,
-    setActiveTab,
-  ] = useState<"bids" | "tricks" | "scores" | "details">("bids");
+  const [activeTab, setActiveTab] = useState<
+    "bids" | "tricks" | "scores" | "details"
+  >("bids");
   const [roundData, setRoundData] = useState<RoundData[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
   const t = useTranslations("GamePage");
+
+  console.log(roundData);
 
   useEffect(() => {
     if (!gameMode || !players.length) {
