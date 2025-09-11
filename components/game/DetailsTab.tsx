@@ -1,6 +1,11 @@
 "use client";
 
-import { useGameStore, type Player, type RoundData } from "@/lib/store";
+import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Table,
   TableBody,
@@ -9,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { useGameStore, type RoundData } from "@/lib/store";
 import { useTranslations } from "next-intl";
 
 function calculateBaseScore(
@@ -61,9 +66,7 @@ export function DetailsTab() {
         });
 
         if (
-          !roundDataForThisRound.some(
-            (data) => data.roundData !== undefined
-          )
+          !roundDataForThisRound.some((data) => data.roundData !== undefined)
         ) {
           return null;
         }
@@ -101,12 +104,13 @@ export function DetailsTab() {
                     roundData.cardsThisRound || 0
                   );
                   const bonusScore =
-                    baseScore > 0
-                      ? calculateBonusScore(roundData.bonuses)
-                      : 0;
+                    baseScore > 0 ? calculateBonusScore(roundData.bonuses) : 0;
                   const roundScore = baseScore + bonusScore;
 
-                  const previousRounds = player.rounds.slice(0, roundNumber - 1);
+                  const previousRounds = player.rounds.slice(
+                    0,
+                    roundNumber - 1
+                  );
                   const scoreBeforeThisRound = previousRounds.reduce(
                     (acc, round) => acc + round.score,
                     0
@@ -130,13 +134,66 @@ export function DetailsTab() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="secondary">{bonusScore}</Badge>
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Badge
+                              variant="secondary"
+                              className="cursor-pointer"
+                            >
+                              {bonusScore}
+                            </Badge>
+                          </PopoverTrigger>
+                          <PopoverContent>
+                            <div className="space-y-2">
+                              <h4 className="font-medium leading-none">
+                                Bonus Details
+                              </h4>
+                              <ul className="text-sm text-muted-foreground">
+                                {roundData.bonuses?.greenBonus && (
+                                  <li>Green Bonus: +10</li>
+                                )}
+                                {roundData.bonuses?.yellowBonus && (
+                                  <li>Yellow Bonus: +10</li>
+                                )}
+                                {roundData.bonuses?.purpleBonus && (
+                                  <li>Purple Bonus: +10</li>
+                                )}
+                                {roundData.bonuses?.darkBonus && (
+                                  <li>Black Bonus: +20</li>
+                                )}
+                                {(roundData.bonuses?.treasure ?? 0 > 0) && (
+                                  <li>
+                                    Treasure: {roundData.bonuses?.treasure} x 20
+                                    = {(roundData.bonuses?.treasure ?? 0) * 20}
+                                  </li>
+                                )}
+                                {(roundData.bonuses?.mermaid ?? 0 > 0) && (
+                                  <li>
+                                    Mermaid: {roundData.bonuses?.mermaid} x 20 ={" "}
+                                    {(roundData.bonuses?.mermaid ?? 0) * 20}
+                                  </li>
+                                )}
+                                {(roundData.bonuses?.pirate ?? 0 > 0) && (
+                                  <li>
+                                    Pirate: {roundData.bonuses?.pirate} x 30 ={" "}
+                                    {(roundData.bonuses?.pirate ?? 0) * 30}
+                                  </li>
+                                )}
+                                {roundData.bonuses?.skullKing && (
+                                  <li>Skull King: +40</li>
+                                )}
+                              </ul>
+                            </div>
+                          </PopoverContent>
+                        </Popover>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span>{newScore}</span>
                           <Badge
-                            variant={roundScore >= 0 ? "success" : "destructive"}
+                            variant={
+                              roundScore >= 0 ? "success" : "destructive"
+                            }
                           >
                             {roundScore >= 0 ? "+" : ""}
                             {roundScore}
