@@ -103,8 +103,10 @@ export function DetailsTab() {
                     roundData.tricks,
                     roundData.cardsThisRound || 0
                   );
-                  const bonusScore =
-                    baseScore > 0 ? calculateBonusScore(roundData.bonuses) : 0;
+                  const potentialBonusScore = calculateBonusScore(
+                    roundData.bonuses
+                  );
+                  const bonusScore = baseScore > 0 ? potentialBonusScore : 0;
                   const roundScore = baseScore + bonusScore;
 
                   const previousRounds = player.rounds.slice(
@@ -137,10 +139,12 @@ export function DetailsTab() {
                         <Popover>
                           <PopoverTrigger asChild>
                             <Badge
-                              variant="secondary"
+                              variant={
+                                baseScore > 0 ? "success" : "destructive"
+                              }
                               className="cursor-pointer"
                             >
-                              {bonusScore}
+                              {potentialBonusScore}
                             </Badge>
                           </PopoverTrigger>
                           <PopoverContent>
