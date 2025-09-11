@@ -76,20 +76,12 @@ export function TricksTab({
           return (
             <div key={player.name} className="space-y-2">
               <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
-                <div className="w-full flex flex-row gap-2 items-center justify-between md:flex-col md:items-start md:w-auto">
-                  <Label className="text-base font-medium">
-                    {player.name}
-                  </Label>
-                  <p className="text-sm text-muted-foreground">
-                    {t("bid")}: {roundData[index]?.bid}
-                  </p>
-                  <div className="text-sm text-muted-foreground flex items-center gap-1">
-                    <p>{t("score")}:</p>
-                    <Badge variant={score >= 0 ? "success" : "destructive"}>
-                      {score >= 0 ? "+" : ""}
-                      {score}
-                    </Badge>
-                  </div>
+                <div className="w-full flex flex-row gap-2 items-center md:flex-col md:items-start md:w-auto">
+                  <Label className="text-base font-medium">{player.name}</Label>
+                  <Badge variant={score >= 0 ? "success" : "destructive"}>
+                    {score >= 0 ? "+" : ""}
+                    {score}
+                  </Badge>
                 </div>
 
                 <div>
@@ -106,6 +98,7 @@ export function TricksTab({
                   length={cardsThisRound + 1}
                   selected={roundData[index]?.tricks}
                   onSelect={(num: number) => updateTricks(index, num)}
+                  highlightNumber={roundData[index]?.bid}
                 />
               </div>
             </div>
