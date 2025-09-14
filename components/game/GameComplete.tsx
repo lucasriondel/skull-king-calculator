@@ -10,6 +10,7 @@ import { Trophy, Home } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useMobile } from "@/hooks/use-mobile";
 import LanguageSwitcher from "@/components/language-switcher";
+import { DetailsTab } from "@/components/game/DetailsTab";
 
 interface Player {
   name: string;
@@ -73,6 +74,10 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
           </CardFooter>
         )}
       </Card>
+
+      <div className="mt-8">
+        <DetailsTab />
+      </div>
 
       {/* Mobile Bottom Navigation Bar for Game Complete */}
       {isMobile && (
