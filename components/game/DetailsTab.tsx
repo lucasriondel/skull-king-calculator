@@ -16,6 +16,17 @@ import {
 } from "@/components/ui/table";
 import { useGameStore, type RoundData } from "@/lib/store";
 import { useTranslations } from "next-intl";
+import { Fragment, ReactNode } from "react";
+
+function numberToEmoji(number: number, emoji: string): ReactNode {
+  return (
+    <>
+      {Array.from({ length: number }, (_, i) => (
+        <Fragment key={i}>{emoji}</Fragment>
+      ))}
+    </>
+  );
+}
 
 function calculateBaseScore(
   bid: number,
@@ -119,6 +130,15 @@ export function DetailsTab() {
                   );
                   const newScore = scoreBeforeThisRound + roundScore;
 
+                  const bonusPointsBadge = (
+                    <Badge
+                      variant={baseScore > 0 ? "success" : "destructive"}
+                      className="cursor-pointer"
+                    >
+                      {potentialBonusScore}
+                    </Badge>
+                  );
+
                   return (
                     <TableRow key={player.name}>
                       <TableCell>{player.name}</TableCell>
@@ -136,60 +156,72 @@ export function DetailsTab() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <Badge
-                              variant={
-                                baseScore > 0 ? "success" : "destructive"
-                              }
-                              className="cursor-pointer"
+                        {potentialBonusScore > 0 ? (
+                          <Popover>
+                            <PopoverTrigger
+                              asChild
+                              disabled={potentialBonusScore <= 0}
                             >
-                              {potentialBonusScore}
-                            </Badge>
-                          </PopoverTrigger>
-                          <PopoverContent>
-                            <div className="space-y-2">
-                              <h4 className="font-medium leading-none">
-                                Bonus Details
-                              </h4>
-                              <ul className="text-sm text-muted-foreground">
-                                {roundData.bonuses?.greenBonus && (
-                                  <li>Green Bonus: +10</li>
-                                )}
-                                {roundData.bonuses?.yellowBonus && (
-                                  <li>Yellow Bonus: +10</li>
-                                )}
-                                {roundData.bonuses?.purpleBonus && (
-                                  <li>Purple Bonus: +10</li>
-                                )}
-                                {roundData.bonuses?.darkBonus && (
-                                  <li>Black Bonus: +20</li>
-                                )}
-                                {(roundData.bonuses?.treasure ?? 0 > 0) && (
-                                  <li>
-                                    Treasure: {roundData.bonuses?.treasure} x 20
-                                    = {(roundData.bonuses?.treasure ?? 0) * 20}
-                                  </li>
-                                )}
-                                {(roundData.bonuses?.mermaid ?? 0 > 0) && (
-                                  <li>
-                                    Mermaid: {roundData.bonuses?.mermaid} x 20 ={" "}
-                                    {(roundData.bonuses?.mermaid ?? 0) * 20}
-                                  </li>
-                                )}
-                                {(roundData.bonuses?.pirate ?? 0 > 0) && (
-                                  <li>
-                                    Pirate: {roundData.bonuses?.pirate} x 30 ={" "}
-                                    {(roundData.bonuses?.pirate ?? 0) * 30}
-                                  </li>
-                                )}
-                                {roundData.bonuses?.skullKing && (
-                                  <li>Skull King: +40</li>
-                                )}
-                              </ul>
-                            </div>
-                          </PopoverContent>
-                        </Popover>
+                              {bonusPointsBadge}
+                            </PopoverTrigger>
+                            <PopoverContent>
+                              <div className="space-y-2">
+                                <h4 className="font-medium leading-none">
+                                  Bonus Details
+                                </h4>
+                                <ul className="text-sm text-muted-foreground">
+                                  {roundData.bonuses?.greenBonus ? (
+                                    <li className="text-green-500">+10</li>
+                                  ) : null}
+                                  {roundData.bonuses?.yellowBonus ? (
+                                    <li className="text-yellow-500">+10</li>
+                                  ) : null}
+                                  {roundData.bonuses?.purpleBonus ? (
+                                    <li className="text-purple-500">+10</li>
+                                  ) : null}
+                                  {roundData.bonuses?.darkBonus ? (
+                                    <li className="text-black">+20</li>
+                                  ) : null}
+                                  {(roundData.bonuses?.treasure ?? 0 > 0) ? (
+                                    <li>
+                                      {numberToEmoji(
+                                        roundData.bonuses?.treasure ?? 0,
+                                        "💰"
+                                      )}{" "}
+                                      x 20 ={" "}
+                                      {(roundData.bonuses?.treasure ?? 0) * 20}
+                                    </li>
+                                  ) : null}
+                                  {(roundData.bonuses?.mermaid ?? 0) > 0 ? (
+                                    <li>
+                                      {numberToEmoji(
+                                        roundData.bonuses?.mermaid ?? 0,
+                                        "🧜‍♀️"
+                                      )}{" "}
+                                      x 20 ={" "}
+                                      {(roundData.bonuses?.mermaid ?? 0) * 20}
+                                    </li>
+                                  ) : null}
+                                  {(roundData.bonuses?.pirate ?? 0 > 0) ? (
+                                    <li>
+                                      {numberToEmoji(
+                                        roundData.bonuses?.pirate ?? 0,
+                                        "🏴‍☠️"
+                                      )}{" "}
+                                      x 30 ={" "}
+                                      {(roundData.bonuses?.pirate ?? 0) * 30}
+                                    </li>
+                                  ) : null}
+                                  {roundData.bonuses?.skullKing ? (
+                                    <li>💀👑 +40</li>
+                                  ) : null}
+                                </ul>
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        ) : (
+                          bonusPointsBadge
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">

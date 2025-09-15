@@ -1,6 +1,6 @@
-import { Plus, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Minus, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export type BonusType = {
@@ -171,7 +171,7 @@ export function BonusControls({
           <ToggleGroupItem value="dark">+20</ToggleGroupItem>
         </ToggleGroup>
       </div>
-      <div className="flex">
+      <div className="flex flex-row">
         <ToggleGroup
           type="multiple"
           className="flex flex-wrap"
@@ -240,7 +240,7 @@ export function BonusControls({
         >
           <div className="flex items-center gap-1">
             <ToggleGroupItem value="treasure">
-              🏆 {bonuses[playerIndex]?.treasure || 0}
+              💰 {bonuses[playerIndex]?.treasure || 0}
             </ToggleGroupItem>
             {bonuses[playerIndex]?.treasure > 0 && (
               <div className="flex flex-col gap-0.5">
