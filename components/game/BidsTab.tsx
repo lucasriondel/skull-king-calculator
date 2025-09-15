@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useMobile } from "@/hooks/use-mobile";
 import { useGameStore } from "@/lib/store";
@@ -48,11 +42,8 @@ export function BidsTab({
   const { startingPlayerIndex } = useGameStore();
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("enterBids")}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <>
+      <div className="space-y-2">
         {players.map((player, index) => (
           <div key={player.name} className="space-y-2">
             <div className="flex justify-between items-center">
@@ -71,7 +62,7 @@ export function BidsTab({
             </div>
           </div>
         ))}
-      </CardContent>
+      </div>
       {!isMobile && (
         <CardFooter>
           <Button
@@ -90,6 +81,6 @@ export function BidsTab({
           </Button>
         </CardFooter>
       )}
-    </Card>
+    </>
   );
 }

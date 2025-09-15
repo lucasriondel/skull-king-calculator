@@ -171,7 +171,7 @@ export function BonusControls({
           <ToggleGroupItem value="dark">+20</ToggleGroupItem>
         </ToggleGroup>
       </div>
-      <div className="flex">
+      <div className="flex flex-row">
         <ToggleGroup
           type="multiple"
           className="flex flex-wrap"

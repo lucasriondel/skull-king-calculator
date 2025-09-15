@@ -1,12 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardFooter } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useMobile } from "@/hooks/use-mobile";
 import { useGameStore } from "@/lib/store";
@@ -64,11 +58,8 @@ export function TricksTab({
   const { startingPlayerIndex } = useGameStore();
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{t("enterTricksWon")}</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <div className="space-y-4">
+      <div className="space-y-4">
         {players.map((player, index) => {
           const score = calculateScore(
             roundData[index]?.bid || 0,
@@ -79,7 +70,7 @@ export function TricksTab({
           return (
             <div key={player.name} className="space-y-2">
               <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
-                <div className="w-full flex flex-row gap-2 justify-between">
+                <div className="w-full md:w-min flex flex-row gap-2 justify-between">
                   <div className="flex flex-row gap-2 items-center md:flex-col md:items-start md:w-auto">
                     <Label className="text-base font-medium">
                       {player.name}
@@ -88,9 +79,14 @@ export function TricksTab({
                       {score >= 0 ? "+" : ""}
                       {score}
                     </Badge>
+                    {index === startingPlayerIndex && !isMobile && (
+                      <Badge>
+                        {t("startingPlayer", { default: "Starts" })}
+                      </Badge>
+                    )}
                   </div>
 
-                  {index === startingPlayerIndex && (
+                  {index === startingPlayerIndex && isMobile && (
                     <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
                   )}
                 </div>
@@ -115,7 +111,7 @@ export function TricksTab({
             </div>
           );
         })}
-      </CardContent>
+      </div>
       {!isMobile && (
         <CardFooter>
           <Button
@@ -134,6 +130,6 @@ export function TricksTab({
           </Button>
         </CardFooter>
       )}
-    </Card>
+    </div>
   );
 }
