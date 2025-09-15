@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useMobile } from "@/hooks/use-mobile";
+import { useGameStore } from "@/lib/store";
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BonusControls, BonusType } from "./BonusControls";
@@ -60,6 +61,8 @@ export function TricksTab({
   const t = useTranslations("GamePage");
   const isMobile = useMobile();
 
+  const { startingPlayerIndex } = useGameStore();
+
   return (
     <Card>
       <CardHeader>
@@ -76,12 +79,20 @@ export function TricksTab({
           return (
             <div key={player.name} className="space-y-2">
               <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
-                <div className="w-full flex flex-row gap-2 items-center md:flex-col md:items-start md:w-auto">
-                  <Label className="text-base font-medium">{player.name}</Label>
-                  <Badge variant={score >= 0 ? "success" : "destructive"}>
-                    {score >= 0 ? "+" : ""}
-                    {score}
-                  </Badge>
+                <div className="w-full flex flex-row gap-2 justify-between">
+                  <div className="flex flex-row gap-2 items-center md:flex-col md:items-start md:w-auto">
+                    <Label className="text-base font-medium">
+                      {player.name}
+                    </Label>
+                    <Badge variant={score >= 0 ? "success" : "destructive"}>
+                      {score >= 0 ? "+" : ""}
+                      {score}
+                    </Badge>
+                  </div>
+
+                  {index === startingPlayerIndex && (
+                    <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+                  )}
                 </div>
 
                 <div>
