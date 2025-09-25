@@ -94,6 +94,7 @@ export function TricksTab({
                 <div>
                   <BonusControls
                     playerIndex={index}
+                    players={players}
                     bonuses={bonuses}
                     setBonuses={setBonuses}
                     getPlayerWithBonus={getPlayerWithBonus}
