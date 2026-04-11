@@ -1,7 +1,6 @@
 "use client";
 
 import { BonusType } from "@/components/game/BonusControls";
-import { calculateScore } from "@/lib/game-utils";
 import { create } from "zustand";
 
 export type GameMode = {
@@ -58,16 +57,6 @@ export const useGameStore = create<GameStore>((set) => ({
     set((state) => {
       const newPlayers = [...state.players];
       const player = newPlayers[playerIndex];
-
-      // If we have bonuses and cardsThisRound, recalculate the score
-      if (data.bonuses && data.cardsThisRound) {
-        data.score = calculateScore(
-          data.bid,
-          data.tricks,
-          data.cardsThisRound,
-          data.bonuses
-        );
-      }
 
       // Simply push the new round data to the rounds array
       player.rounds.push(data);

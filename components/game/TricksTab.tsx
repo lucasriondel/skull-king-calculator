@@ -35,7 +35,8 @@ interface TricksTabProps {
   calculateScore: (
     bid: number,
     tricks: number,
-    playerBonuses?: BonusType
+    playerBonuses?: BonusType,
+    playerIndex?: number
   ) => number;
   onComplete: () => void;
 }
@@ -64,7 +65,8 @@ export function TricksTab({
           const score = calculateScore(
             roundData[index]?.bid || 0,
             roundData[index]?.tricks || 0,
-            bonuses[index]
+            bonuses[index],
+            index
           );
 
           return (
