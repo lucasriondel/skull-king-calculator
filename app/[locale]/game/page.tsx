@@ -49,7 +49,7 @@ export default function GamePage() {
       players.map((player) => ({
         playerId: player.name,
         bid: 0,
-        tricks: 0,
+        tricks: undefined,
         score: 0,
       }))
     );
@@ -94,12 +94,12 @@ export default function GamePage() {
     // Calculate scores
     const allBidTricks = roundData.map((d) => ({
       bid: d.bid,
-      tricks: d.tricks,
+      tricks: d.tricks ?? 0,
     }));
     const newRoundData = roundData.map((data, idx) => {
       const score = calculateScore(
         data.bid,
-        data.tricks,
+        data.tricks ?? 0,
         cardsThisRound,
         bonuses[idx],
         idx,
@@ -134,7 +134,7 @@ export default function GamePage() {
         players.map((player) => ({
           playerId: player.name,
           bid: 0,
-          tricks: 0,
+          tricks: undefined,
           score: 0,
         }))
       );
@@ -147,11 +147,21 @@ export default function GamePage() {
     }
   };
 
+  const goToTricks = () => {
+    setRoundData((prev) =>
+      prev.map((data) => ({ ...data, tricks: undefined }))
+    );
+    setActiveTab("tricks");
+  };
+
   const canCompleteBids = roundData.every(
     (data) => data.bid >= 0 && data.bid <= cardsThisRound
   );
   const canCompleteTricks = roundData.every(
-    (data) => data.tricks >= 0 && data.tricks <= cardsThisRound
+    (data) =>
+      data.tricks !== undefined &&
+      data.tricks >= 0 &&
+      data.tricks <= cardsThisRound
   );
 
   const getPlayerWithBonus = (
@@ -217,7 +227,7 @@ export default function GamePage() {
             updateBid={updateBid}
             cardsThisRound={cardsThisRound}
             canCompleteBids={canCompleteBids}
-            onContinue={() => setActiveTab("tricks")}
+            onContinue={goToTricks}
           />
         </TabsContent>
 
@@ -238,7 +248,7 @@ export default function GamePage() {
                 cardsThisRound,
                 playerBonuses,
                 playerIndex,
-                roundData.map((d) => ({ bid: d.bid, tricks: d.tricks }))
+                roundData.map((d) => ({ bid: d.bid, tricks: d.tricks ?? 0 }))
               )
             }
             onComplete={completeRound}
@@ -265,7 +275,7 @@ export default function GamePage() {
               <Button
                 className="w-full"
                 disabled={!canCompleteBids}
-                onClick={() => setActiveTab("tricks")}
+                onClick={goToTricks}
                 size="lg"
               >
                 {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />

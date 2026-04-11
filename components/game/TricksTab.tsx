@@ -17,7 +17,7 @@ interface Player {
 interface RoundData {
   playerId: string;
   bid: number;
-  tricks: number;
+  tricks: number | undefined;
   score: number;
 }
 

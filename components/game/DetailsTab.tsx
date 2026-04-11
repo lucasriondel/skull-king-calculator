@@ -135,7 +135,7 @@ export function DetailsTab() {
 
                   const baseScore = calculateBaseScore(
                     roundData.bid,
-                    roundData.tricks,
+                    roundData.tricks ?? 0,
                     roundData.cardsThisRound || 0
                   );
                   const effectiveTreasureCount = getEffectiveTreasureCount(

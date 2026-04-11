@@ -14,7 +14,7 @@ export type GameMode = {
 export type RoundData = {
   playerId: string;
   bid: number;
-  tricks: number;
+  tricks: number | undefined;
   score: number;
   bonuses?: BonusType;
   cardsThisRound?: number;
