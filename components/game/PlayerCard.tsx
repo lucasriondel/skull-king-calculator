@@ -69,23 +69,21 @@ export function PlayerCard(props: PlayerCardProps) {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <div className="overflow-x-auto pb-2 mx-auto">
-          {mode === "bids" ? (
-            <NumberSelector
-              length={cardsThisRound + 1}
-              selected={props.bid}
-              onSelect={props.onSelectBid}
-            />
-          ) : (
-            <NumberSelector
-              length={cardsThisRound + 1}
-              selected={props.tricks}
-              onSelect={props.onSelectTricks}
-              highlightNumber={props.bid}
-            />
-          )}
-        </div>
+      <CardContent className="p-0">
+        {mode === "bids" ? (
+          <NumberSelector
+            length={cardsThisRound + 1}
+            selected={props.bid}
+            onSelect={props.onSelectBid}
+          />
+        ) : (
+          <NumberSelector
+            length={cardsThisRound + 1}
+            selected={props.tricks}
+            onSelect={props.onSelectTricks}
+            highlightNumber={props.bid}
+          />
+        )}
       </CardContent>
       {mode === "tricks" && (
         <div className="border-t overflow-hidden rounded-b-lg">
