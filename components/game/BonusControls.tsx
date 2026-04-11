@@ -149,6 +149,19 @@ export function BonusControls({
 }: BonusControlsProps) {
   const t = useTranslations("GamePage");
 
+  const greenOwner = getPlayerWithBonus("green");
+  const yellowOwner = getPlayerWithBonus("yellow");
+  const purpleOwner = getPlayerWithBonus("purple");
+  const darkOwner = getPlayerWithBonus("dark");
+  const skullKingOwner = getPlayerWithBonus("skullKing");
+
+  const showGreen = greenOwner === null || greenOwner === playerIndex;
+  const showYellow = yellowOwner === null || yellowOwner === playerIndex;
+  const showPurple = purpleOwner === null || purpleOwner === playerIndex;
+  const showDark = darkOwner === null || darkOwner === playerIndex;
+  const showSkullKing =
+    skullKingOwner === null || skullKingOwner === playerIndex;
+
   const adjustSpecialCard = (
     cardType: "mermaid" | "pirate" | "treasure",
     delta: number
@@ -270,23 +283,34 @@ export function BonusControls({
         >
           <ToggleGroupItem
             value="green"
-            className="text-green-500 hover:text-green-600 data-[state=on]:text-green-600 active:bg-transparent focus:bg-transparent focus:text-green-500"
+            className={`text-green-500 hover:text-green-600 data-[state=on]:text-green-600 active:bg-transparent focus:bg-transparent focus:text-green-500 ${
+              showGreen ? "" : "invisible pointer-events-none"
+            }`}
           >
             +10
           </ToggleGroupItem>
           <ToggleGroupItem
             value="yellow"
-            className="text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 active:bg-transparent focus:bg-transparent focus:text-yellow-500"
+            className={`text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 active:bg-transparent focus:bg-transparent focus:text-yellow-500 ${
+              showYellow ? "" : "invisible pointer-events-none"
+            }`}
           >
             +10
           </ToggleGroupItem>
           <ToggleGroupItem
             value="purple"
-            className="text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 active:bg-transparent focus:bg-transparent focus:text-purple-500"
+            className={`text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 active:bg-transparent focus:bg-transparent focus:text-purple-500 ${
+              showPurple ? "" : "invisible pointer-events-none"
+            }`}
           >
             +10
           </ToggleGroupItem>
-          <ToggleGroupItem value="dark">+20</ToggleGroupItem>
+          <ToggleGroupItem
+            value="dark"
+            className={showDark ? "" : "invisible pointer-events-none"}
+          >
+            +20
+          </ToggleGroupItem>
         </ToggleGroup>
       </div>
       <div className="flex flex-row">
@@ -410,7 +434,12 @@ export function BonusControls({
               </Button>
             </div>
           )}
-          <ToggleGroupItem value="skullKing">💀👑</ToggleGroupItem>
+          <ToggleGroupItem
+            value="skullKing"
+            className={showSkullKing ? "" : "invisible pointer-events-none"}
+          >
+            💀👑
+          </ToggleGroupItem>
         </ToggleGroup>
       </div>
     </div>
