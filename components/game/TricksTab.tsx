@@ -62,9 +62,10 @@ export function TricksTab({
     <div className="space-y-4">
       <div className="space-y-4">
         {players.map((player, index) => {
+          const tricks = roundData[index]?.tricks;
           const score = calculateScore(
             roundData[index]?.bid || 0,
-            roundData[index]?.tricks || 0,
+            tricks ?? 0,
             bonuses[index],
             index
           );
@@ -77,10 +78,12 @@ export function TricksTab({
                     <Label className="text-base font-medium">
                       {player.name}
                     </Label>
-                    <Badge variant={score >= 0 ? "success" : "destructive"}>
-                      {score >= 0 ? "+" : ""}
-                      {score}
-                    </Badge>
+                    {tricks !== undefined && (
+                      <Badge variant={score >= 0 ? "success" : "destructive"}>
+                        {score >= 0 ? "+" : ""}
+                        {score}
+                      </Badge>
+                    )}
                     {index === startingPlayerIndex && !isMobile && (
                       <Badge>
                         {t("startingPlayer", { default: "Starts" })}
