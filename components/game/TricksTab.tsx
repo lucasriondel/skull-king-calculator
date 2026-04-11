@@ -1,13 +1,10 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { useMobile } from "@/hooks/use-mobile";
-import { useGameStore } from "@/lib/store";
 import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { BonusControls, BonusType } from "./BonusControls";
-import { NumberSelector } from "./NumberSelector";
+import { BonusType } from "./BonusControls";
+import { PlayerCard } from "./PlayerCard";
 
 interface Player {
   name: string;
@@ -56,11 +53,9 @@ export function TricksTab({
   const t = useTranslations("GamePage");
   const isMobile = useMobile();
 
-  const { startingPlayerIndex } = useGameStore();
-
   return (
     <div className="space-y-4">
-      <div className="space-y-4">
+      <div className="space-y-3">
         {players.map((player, index) => {
           const tricks = roundData[index]?.tricks;
           const score = calculateScore(
@@ -71,50 +66,21 @@ export function TricksTab({
           );
 
           return (
-            <div key={player.name} className="space-y-2">
-              <div className="flex justify-between items-center flex-col gap-2 md:flex-row">
-                <div className="w-full md:w-min flex flex-row gap-2 justify-between">
-                  <div className="flex flex-row gap-2 items-center md:flex-col md:items-start md:w-auto">
-                    <Label className="text-base font-medium">
-                      {player.name}
-                    </Label>
-                    {tricks !== undefined && (
-                      <Badge variant={score >= 0 ? "success" : "destructive"}>
-                        {score >= 0 ? "+" : ""}
-                        {score}
-                      </Badge>
-                    )}
-                    {index === startingPlayerIndex && !isMobile && (
-                      <Badge>
-                        {t("startingPlayer", { default: "Starts" })}
-                      </Badge>
-                    )}
-                  </div>
-
-                  {index === startingPlayerIndex && isMobile && (
-                    <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-                  )}
-                </div>
-
-                <div>
-                  <BonusControls
-                    playerIndex={index}
-                    players={players}
-                    bonuses={bonuses}
-                    setBonuses={setBonuses}
-                    getPlayerWithBonus={getPlayerWithBonus}
-                  />
-                </div>
-              </div>
-              <div className="overflow-x-auto pb-2">
-                <NumberSelector
-                  length={cardsThisRound + 1}
-                  selected={roundData[index]?.tricks}
-                  onSelect={(num: number) => updateTricks(index, num)}
-                  highlightNumber={roundData[index]?.bid}
-                />
-              </div>
-            </div>
+            <PlayerCard
+              key={player.name}
+              mode="tricks"
+              player={player}
+              playerIndex={index}
+              cardsThisRound={cardsThisRound}
+              bid={roundData[index]?.bid}
+              tricks={tricks}
+              onSelectTricks={(num) => updateTricks(index, num)}
+              score={score}
+              players={players}
+              bonuses={bonuses}
+              setBonuses={setBonuses}
+              getPlayerWithBonus={getPlayerWithBonus}
+            />
           );
         })}
       </div>
