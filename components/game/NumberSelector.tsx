@@ -36,6 +36,8 @@ export function NumberSelector({
 }: NumberSelectorProps) {
   const numbers = Array.from({ length }, (_, i) => i);
   const columns = Math.min(length, 6);
+  const rows = Math.ceil(length / columns);
+  const padding = rows * columns - length;
 
   return (
     <div
@@ -61,6 +63,9 @@ export function NumberSelector({
         >
           {num}
         </div>
+      ))}
+      {Array.from({ length: padding }, (_, i) => (
+        <div key={`pad-${i}`} className="h-10 border-l border-t" />
       ))}
     </div>
   );
