@@ -92,12 +92,18 @@ export default function GamePage() {
     });
 
     // Calculate scores
+    const allBidTricks = roundData.map((d) => ({
+      bid: d.bid,
+      tricks: d.tricks,
+    }));
     const newRoundData = roundData.map((data, idx) => {
       const score = calculateScore(
         data.bid,
         data.tricks,
         cardsThisRound,
-        bonuses[idx]
+        bonuses[idx],
+        idx,
+        allBidTricks
       );
       console.log(`Player ${idx} score calculation:`, {
         playerName: players[idx]?.name,
@@ -225,8 +231,15 @@ export default function GamePage() {
             bonuses={bonuses}
             setBonuses={setBonuses}
             getPlayerWithBonus={getPlayerWithBonus}
-            calculateScore={(bid, tricks, playerBonuses) =>
-              calculateScore(bid, tricks, cardsThisRound, playerBonuses)
+            calculateScore={(bid, tricks, playerBonuses, playerIndex) =>
+              calculateScore(
+                bid,
+                tricks,
+                cardsThisRound,
+                playerBonuses,
+                playerIndex,
+                roundData.map((d) => ({ bid: d.bid, tricks: d.tricks }))
+              )
             }
             onComplete={completeRound}
           />

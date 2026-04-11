@@ -40,7 +40,10 @@ function calculateBaseScore(
   }
 }
 
-function calculateBonusScore(bonuses: RoundData["bonuses"]): number {
+function calculateBonusScore(
+  bonuses: RoundData["bonuses"],
+  effectiveTreasureCount: number
+): number {
   if (!bonuses) {
     return 0;
   }
@@ -50,12 +53,30 @@ function calculateBonusScore(bonuses: RoundData["bonuses"]): number {
   if (bonuses.yellowBonus) bonusScore += 10;
   if (bonuses.purpleBonus) bonusScore += 10;
   if (bonuses.darkBonus) bonusScore += 20;
-  if (bonuses.treasure) bonusScore += bonuses.treasure * 20;
+  bonusScore += effectiveTreasureCount * 20;
   if (bonuses.mermaid) bonusScore += bonuses.mermaid * 20;
   if (bonuses.pirate) bonusScore += bonuses.pirate * 30;
   if (bonuses.skullKing) bonusScore += 40;
 
   return bonusScore;
+}
+
+function getEffectiveTreasureCount(
+  bonuses: RoundData["bonuses"],
+  allRoundData: (RoundData | undefined)[]
+): number {
+  if (!bonuses?.treasureGroups?.length) {
+    return bonuses?.treasure ?? 0;
+  }
+  let count = 0;
+  for (const group of bonuses.treasureGroups) {
+    const everyoneMet = group.playerIndexes.every((i) => {
+      const data = allRoundData[i];
+      return data !== undefined && data.bid === data.tricks;
+    });
+    if (everyoneMet) count += group.treasureCount;
+  }
+  return count;
 }
 
 export function DetailsTab() {
@@ -71,10 +92,13 @@ export function DetailsTab() {
   return (
     <div className="space-y-4">
       {rounds.map((roundNumber) => {
-        const roundDataForThisRound = players.map((player) => {
+        const roundDataForThisRound = players.map((player, playerIndex) => {
           const roundData = player.rounds[roundNumber - 1];
-          return { player, roundData };
+          return { player, playerIndex, roundData };
         });
+        const allRoundDataForThisRound = roundDataForThisRound.map(
+          (d) => d.roundData
+        );
 
         if (
           !roundDataForThisRound.some((data) => data.roundData !== undefined)
@@ -97,7 +121,7 @@ export function DetailsTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {roundDataForThisRound.map(({ player, roundData }) => {
+                {roundDataForThisRound.map(({ player, playerIndex, roundData }) => {
                   if (!roundData) {
                     return (
                       <TableRow key={player.name}>
@@ -114,8 +138,13 @@ export function DetailsTab() {
                     roundData.tricks,
                     roundData.cardsThisRound || 0
                   );
+                  const effectiveTreasureCount = getEffectiveTreasureCount(
+                    roundData.bonuses,
+                    allRoundDataForThisRound
+                  );
                   const potentialBonusScore = calculateBonusScore(
-                    roundData.bonuses
+                    roundData.bonuses,
+                    effectiveTreasureCount
                   );
                   const bonusScore = baseScore > 0 ? potentialBonusScore : 0;
                   const roundScore = baseScore + bonusScore;
@@ -182,16 +211,61 @@ export function DetailsTab() {
                                   {roundData.bonuses?.darkBonus ? (
                                     <li className="text-black">+20</li>
                                   ) : null}
-                                  {(roundData.bonuses?.treasure ?? 0 > 0) ? (
-                                    <li>
-                                      {numberToEmoji(
-                                        roundData.bonuses?.treasure ?? 0,
-                                        "💰"
-                                      )}{" "}
-                                      x 20 ={" "}
-                                      {(roundData.bonuses?.treasure ?? 0) * 20}
-                                    </li>
-                                  ) : null}
+                                  {roundData.bonuses?.treasureGroups?.length
+                                    ? roundData.bonuses.treasureGroups.map(
+                                        (group) => {
+                                          const partners = group.playerIndexes
+                                            .filter((i) => i !== playerIndex)
+                                            .map((i) => players[i]?.name)
+                                            .filter(Boolean)
+                                            .join(", ");
+                                          const allianceMet =
+                                            group.playerIndexes.every((i) => {
+                                              const data =
+                                                allRoundDataForThisRound[i];
+                                              return (
+                                                data !== undefined &&
+                                                data.bid === data.tricks
+                                              );
+                                            });
+                                          const points =
+                                            group.treasureCount * 20;
+                                          return (
+                                            <li
+                                              key={group.id}
+                                              className={
+                                                allianceMet
+                                                  ? ""
+                                                  : "line-through opacity-60"
+                                              }
+                                            >
+                                              {numberToEmoji(
+                                                group.treasureCount,
+                                                "💰"
+                                              )}{" "}
+                                              {partners
+                                                ? `👥 ${partners}`
+                                                : ""}{" "}
+                                              {allianceMet
+                                                ? `+${points}`
+                                                : `+0`}
+                                            </li>
+                                          );
+                                        }
+                                      )
+                                    : (roundData.bonuses?.treasure ?? 0) > 0
+                                      ? (
+                                          <li>
+                                            {numberToEmoji(
+                                              roundData.bonuses?.treasure ?? 0,
+                                              "💰"
+                                            )}{" "}
+                                            x 20 ={" "}
+                                            {(roundData.bonuses?.treasure ?? 0) *
+                                              20}
+                                          </li>
+                                        )
+                                      : null}
                                   {(roundData.bonuses?.mermaid ?? 0) > 0 ? (
                                     <li>
                                       {numberToEmoji(
