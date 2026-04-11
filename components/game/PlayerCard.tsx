@@ -56,29 +56,16 @@ export function PlayerCard(props: PlayerCardProps) {
   return (
     <Card>
       <CardHeader className="p-4 pb-2">
-        <CardTitle className="flex items-center justify-between gap-2 text-base font-medium">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span>{player.name}</span>
-            {isStartingPlayer && (
-              <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-            )}
-            {showScore && (
-              <Badge
-                variant={props.score >= 0 ? "success" : "destructive"}
-              >
-                {props.score >= 0 ? "+" : ""}
-                {props.score}
-              </Badge>
-            )}
-          </div>
-          {mode === "tricks" && (
-            <BonusControls
-              playerIndex={playerIndex}
-              players={props.players}
-              bonuses={props.bonuses}
-              setBonuses={props.setBonuses}
-              getPlayerWithBonus={props.getPlayerWithBonus}
-            />
+        <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
+          <span>{player.name}</span>
+          {isStartingPlayer && (
+            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+          )}
+          {showScore && (
+            <Badge variant={props.score >= 0 ? "success" : "destructive"}>
+              {props.score >= 0 ? "+" : ""}
+              {props.score}
+            </Badge>
           )}
         </CardTitle>
       </CardHeader>
@@ -100,6 +87,17 @@ export function PlayerCard(props: PlayerCardProps) {
           )}
         </div>
       </CardContent>
+      {mode === "tricks" && (
+        <div className="border-t overflow-hidden rounded-b-lg">
+          <BonusControls
+            playerIndex={playerIndex}
+            players={props.players}
+            bonuses={props.bonuses}
+            setBonuses={props.setBonuses}
+            getPlayerWithBonus={props.getPlayerWithBonus}
+          />
+        </div>
+      )}
     </Card>
   );
 }

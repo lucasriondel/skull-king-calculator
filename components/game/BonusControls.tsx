@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 import { Minus, Plus } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { TreasureControl } from "./TreasureControl";
 
 export type TreasureGroup = {
@@ -147,8 +147,6 @@ export function BonusControls({
   setBonuses,
   getPlayerWithBonus,
 }: BonusControlsProps) {
-  const t = useTranslations("GamePage");
-
   const greenOwner = getPlayerWithBonus("green");
   const yellowOwner = getPlayerWithBonus("yellow");
   const purpleOwner = getPlayerWithBonus("purple");
@@ -193,255 +191,264 @@ export function BonusControls({
     });
   };
 
+  const cellClass =
+    "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
+  const row2CellClass = cn(cellClass, "border-t");
+
+  const handleColorChange = (values: string[]) => {
+    setBonuses((prev) => {
+      const playerBonuses = prev[playerIndex] || {
+        greenBonus: false,
+        yellowBonus: false,
+        purpleBonus: false,
+        darkBonus: false,
+        mermaid: 0,
+        pirate: 0,
+        skullKing: false,
+      };
+
+      if (
+        values.length <
+        Object.values(prev[playerIndex] || {}).filter(Boolean).length
+      ) {
+        return {
+          ...prev,
+          [playerIndex]: {
+            ...playerBonuses,
+            greenBonus: values.includes("green"),
+            yellowBonus: values.includes("yellow"),
+            purpleBonus: values.includes("purple"),
+            darkBonus: values.includes("dark"),
+          },
+        };
+      }
+
+      const newValue = values[values.length - 1] as
+        | "green"
+        | "yellow"
+        | "purple"
+        | "dark";
+      if (!newValue) return prev;
+
+      const otherPlayerIndex = getPlayerWithBonus(newValue);
+      const result = { ...prev };
+
+      if (otherPlayerIndex !== null) {
+        result[otherPlayerIndex] = {
+          ...result[otherPlayerIndex],
+          greenBonus:
+            newValue === "green"
+              ? false
+              : result[otherPlayerIndex].greenBonus,
+          yellowBonus:
+            newValue === "yellow"
+              ? false
+              : result[otherPlayerIndex].yellowBonus,
+          purpleBonus:
+            newValue === "purple"
+              ? false
+              : result[otherPlayerIndex].purpleBonus,
+          darkBonus:
+            newValue === "dark"
+              ? false
+              : result[otherPlayerIndex].darkBonus,
+        };
+      }
+
+      result[playerIndex] = {
+        ...playerBonuses,
+        greenBonus: values.includes("green"),
+        yellowBonus: values.includes("yellow"),
+        purpleBonus: values.includes("purple"),
+        darkBonus: values.includes("dark"),
+      };
+
+      return result;
+    });
+  };
+
+  const handleSpecialChange = (values: string[]) => {
+    setBonuses((prev) => {
+      const playerBonuses = prev[playerIndex] || {
+        greenBonus: false,
+        yellowBonus: false,
+        purpleBonus: false,
+        darkBonus: false,
+        treasure: 0,
+        mermaid: 0,
+        pirate: 0,
+        skullKing: false,
+      };
+
+      const result = { ...prev };
+      result[playerIndex] = {
+        ...playerBonuses,
+        treasure: values.includes("treasure")
+          ? playerBonuses.treasure || 1
+          : 0,
+        mermaid: values.includes("mermaid") ? playerBonuses.mermaid || 1 : 0,
+        pirate: values.includes("pirate") ? playerBonuses.pirate || 1 : 0,
+        skullKing: values.includes("skullKing"),
+      };
+
+      if (values.includes("skullKing")) {
+        const otherPlayerIndex = getPlayerWithBonus("skullKing");
+        if (otherPlayerIndex !== null && otherPlayerIndex !== playerIndex) {
+          result[otherPlayerIndex] = {
+            ...result[otherPlayerIndex],
+            skullKing: false,
+          };
+        }
+      }
+
+      return result;
+    });
+  };
+
   return (
-    <div>
-      <div className="mb-2">
-        <ToggleGroup
-          type="multiple"
-          value={[
-            bonuses[playerIndex]?.greenBonus ? "green" : "",
-            bonuses[playerIndex]?.yellowBonus ? "yellow" : "",
-            bonuses[playerIndex]?.purpleBonus ? "purple" : "",
-            bonuses[playerIndex]?.darkBonus ? "dark" : "",
-          ].filter(Boolean)}
-          onValueChange={(values) => {
-            setBonuses((prev) => {
-              const playerBonuses = prev[playerIndex] || {
-                greenBonus: false,
-                yellowBonus: false,
-                purpleBonus: false,
-                darkBonus: false,
-                mermaid: 0,
-                pirate: 0,
-                skullKing: false,
-              };
-
-              // Handle turning off bonuses
-              if (
-                values.length <
-                Object.values(prev[playerIndex] || {}).filter(Boolean).length
-              ) {
-                return {
-                  ...prev,
-                  [playerIndex]: {
-                    ...playerBonuses,
-                    greenBonus: values.includes("green"),
-                    yellowBonus: values.includes("yellow"),
-                    purpleBonus: values.includes("purple"),
-                    darkBonus: values.includes("dark"),
-                  },
-                };
-              }
-
-              // Handle turning on bonuses
-              const newValue = values[values.length - 1] as
-                | "green"
-                | "yellow"
-                | "purple"
-                | "dark";
-              if (!newValue) return prev;
-
-              // Find if another player has this bonus
-              const otherPlayerIndex = getPlayerWithBonus(newValue);
-              const result = { ...prev };
-
-              // If another player has the bonus, remove it from them
-              if (otherPlayerIndex !== null) {
-                result[otherPlayerIndex] = {
-                  ...result[otherPlayerIndex],
-                  greenBonus:
-                    newValue === "green"
-                      ? false
-                      : result[otherPlayerIndex].greenBonus,
-                  yellowBonus:
-                    newValue === "yellow"
-                      ? false
-                      : result[otherPlayerIndex].yellowBonus,
-                  purpleBonus:
-                    newValue === "purple"
-                      ? false
-                      : result[otherPlayerIndex].purpleBonus,
-                  darkBonus:
-                    newValue === "dark"
-                      ? false
-                      : result[otherPlayerIndex].darkBonus,
-                };
-              }
-
-              // Add the bonus to the current player
-              result[playerIndex] = {
-                ...playerBonuses,
-                greenBonus: values.includes("green"),
-                yellowBonus: values.includes("yellow"),
-                purpleBonus: values.includes("purple"),
-                darkBonus: values.includes("dark"),
-              };
-
-              return result;
-            });
-          }}
+    <div className="grid grid-cols-4 w-full">
+      <ToggleGroup
+        type="multiple"
+        className="contents"
+        value={[
+          bonuses[playerIndex]?.greenBonus ? "green" : "",
+          bonuses[playerIndex]?.yellowBonus ? "yellow" : "",
+          bonuses[playerIndex]?.purpleBonus ? "purple" : "",
+          bonuses[playerIndex]?.darkBonus ? "dark" : "",
+        ].filter(Boolean)}
+        onValueChange={handleColorChange}
+      >
+        <ToggleGroupItem
+          value="green"
+          className={cn(
+            cellClass,
+            "text-green-500 hover:text-green-600 data-[state=on]:text-green-600 focus:text-green-500",
+            !showGreen && "invisible pointer-events-none"
+          )}
         >
-          <ToggleGroupItem
-            value="green"
-            className={`text-green-500 hover:text-green-600 data-[state=on]:text-green-600 active:bg-transparent focus:bg-transparent focus:text-green-500 ${
-              showGreen ? "" : "invisible pointer-events-none"
-            }`}
-          >
-            +10
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="yellow"
-            className={`text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 active:bg-transparent focus:bg-transparent focus:text-yellow-500 ${
-              showYellow ? "" : "invisible pointer-events-none"
-            }`}
-          >
-            +10
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="purple"
-            className={`text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 active:bg-transparent focus:bg-transparent focus:text-purple-500 ${
-              showPurple ? "" : "invisible pointer-events-none"
-            }`}
-          >
-            +10
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="dark"
-            className={showDark ? "" : "invisible pointer-events-none"}
-          >
-            +20
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-      <div className="flex flex-row">
-        <ToggleGroup
-          type="multiple"
-          className="flex flex-wrap"
-          value={[
-            bonuses[playerIndex]?.treasure > 0 ? "treasure" : "",
-            bonuses[playerIndex]?.mermaid > 0 ? "mermaid" : "",
-            bonuses[playerIndex]?.pirate > 0 ? "pirate" : "",
-            bonuses[playerIndex]?.skullKing ? "skullKing" : "",
-          ].filter(Boolean)}
-          onValueChange={(values) => {
-            setBonuses((prev) => {
-              const playerBonuses = prev[playerIndex] || {
-                greenBonus: false,
-                yellowBonus: false,
-                purpleBonus: false,
-                darkBonus: false,
-                treasure: 0,
-                mermaid: 0,
-                pirate: 0,
-                skullKing: false,
-              };
-
-              // Handle turning off bonuses
-              const result = { ...prev };
-              result[playerIndex] = {
-                ...playerBonuses,
-                treasure: values.includes("treasure")
-                  ? playerBonuses.treasure || 1
-                  : 0,
-                mermaid: values.includes("mermaid")
-                  ? playerBonuses.mermaid || 1
-                  : 0,
-                pirate: values.includes("pirate")
-                  ? playerBonuses.pirate || 1
-                  : 0,
-                skullKing: values.includes("skullKing"),
-              };
-
-              // Special handling for Skull King
-              if (values.includes("skullKing")) {
-                const otherPlayerIndex = getPlayerWithBonus("skullKing");
-                console.log("🔍 Debug - Skull King Check:", {
-                  otherPlayerIndex,
-                  currentPlayer: playerIndex,
-                });
-
-                if (
-                  otherPlayerIndex !== null &&
-                  otherPlayerIndex !== playerIndex
-                ) {
-                  result[otherPlayerIndex] = {
-                    ...result[otherPlayerIndex],
-                    skullKing: false,
-                  };
-                }
-              }
-
-              console.log("🔍 Debug - New State:", {
-                result,
-                updatedPlayerBonuses: result[playerIndex],
-              });
-
-              return result;
-            });
-          }}
+          +10
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="yellow"
+          className={cn(
+            cellClass,
+            "text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 focus:text-yellow-500",
+            !showYellow && "invisible pointer-events-none"
+          )}
         >
+          +10
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="purple"
+          className={cn(
+            cellClass,
+            "text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 focus:text-purple-500",
+            !showPurple && "invisible pointer-events-none"
+          )}
+        >
+          +10
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          value="dark"
+          className={cn(
+            cellClass,
+            !showDark && "invisible pointer-events-none"
+          )}
+        >
+          +20
+        </ToggleGroupItem>
+      </ToggleGroup>
+      <ToggleGroup
+        type="multiple"
+        className="contents"
+        value={[
+          bonuses[playerIndex]?.treasure > 0 ? "treasure" : "",
+          bonuses[playerIndex]?.mermaid > 0 ? "mermaid" : "",
+          bonuses[playerIndex]?.pirate > 0 ? "pirate" : "",
+          bonuses[playerIndex]?.skullKing ? "skullKing" : "",
+        ].filter(Boolean)}
+        onValueChange={handleSpecialChange}
+      >
+        <div className="border-t">
           <TreasureControl
             playerIndex={playerIndex}
             players={players}
             bonuses={bonuses}
             setBonuses={setBonuses}
           />
-          <div className="flex items-center gap-1">
-            <ToggleGroupItem value="mermaid">
-              🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
-            </ToggleGroupItem>
-            {bonuses[playerIndex]?.mermaid > 0 && (
-              <div className="flex flex-col gap-0.5">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-5 w-5"
-                  onClick={() => adjustSpecialCard("mermaid", 1)}
-                >
-                  <Plus className="h-3 w-3" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  className="h-5 w-5"
-                  onClick={() => adjustSpecialCard("mermaid", -1)}
-                >
-                  <Minus className="h-3 w-3" />
-                </Button>
-              </div>
-            )}
-          </div>
-          <ToggleGroupItem value="pirate">
-            🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
+        </div>
+        <div className="relative flex items-center justify-center border-t">
+          <ToggleGroupItem value="mermaid" className={cellClass}>
+            🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
           </ToggleGroupItem>
-          {bonuses[playerIndex]?.pirate > 0 && (
-            <div className="flex flex-col gap-0.5">
+          {bonuses[playerIndex]?.mermaid > 0 && (
+            <div className="absolute right-1 flex flex-col gap-0.5">
               <Button
                 size="icon"
                 variant="outline"
-                className="h-5 w-5"
-                onClick={() => adjustSpecialCard("pirate", 1)}
+                className="h-4 w-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  adjustSpecialCard("mermaid", 1);
+                }}
               >
                 <Plus className="h-3 w-3" />
               </Button>
               <Button
                 size="icon"
                 variant="outline"
-                className="h-5 w-5"
-                onClick={() => adjustSpecialCard("pirate", -1)}
+                className="h-4 w-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  adjustSpecialCard("mermaid", -1);
+                }}
               >
                 <Minus className="h-3 w-3" />
               </Button>
             </div>
           )}
-          <ToggleGroupItem
-            value="skullKing"
-            className={showSkullKing ? "" : "invisible pointer-events-none"}
-          >
-            💀👑
+        </div>
+        <div className="relative flex items-center justify-center border-t">
+          <ToggleGroupItem value="pirate" className={cellClass}>
+            🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
           </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
+          {bonuses[playerIndex]?.pirate > 0 && (
+            <div className="absolute right-1 flex flex-col gap-0.5">
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-4 w-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  adjustSpecialCard("pirate", 1);
+                }}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                className="h-4 w-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  adjustSpecialCard("pirate", -1);
+                }}
+              >
+                <Minus className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
+        </div>
+        <ToggleGroupItem
+          value="skullKing"
+          className={cn(
+            row2CellClass,
+            !showSkullKing && "invisible pointer-events-none"
+          )}
+        >
+          💀👑
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   );
 }
