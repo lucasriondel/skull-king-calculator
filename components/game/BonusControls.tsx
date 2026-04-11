@@ -4,6 +4,115 @@ import { Minus, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { TreasureControl } from "./TreasureControl";
 
+export type TreasureGroup = {
+  id: string; // unique identifier for the group
+  playerIndexes: number[]; // array of player indexes sharing treasure
+  treasureCount: number; // number of shared treasures (1 or 2)
+};
+
+// Utility functions for managing treasure groups
+export const generateTreasureGroupId = () =>
+  `treasure-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+export const findPlayerTreasureGroups = (
+  playerIndex: number,
+  bonuses: Record<number, BonusType>
+): TreasureGroup[] => {
+  const playerBonuses = bonuses[playerIndex];
+  if (!playerBonuses?.treasureGroups) return [];
+
+  return playerBonuses.treasureGroups.filter((group) =>
+    group.playerIndexes.includes(playerIndex)
+  );
+};
+
+export const findTreasurePartners = (
+  playerIndex: number,
+  bonuses: Record<number, BonusType>
+): number[] => {
+  const groups = findPlayerTreasureGroups(playerIndex, bonuses);
+  const partners = new Set<number>();
+
+  groups.forEach((group) => {
+    group.playerIndexes.forEach((index) => {
+      if (index !== playerIndex) {
+        partners.add(index);
+      }
+    });
+  });
+
+  return Array.from(partners);
+};
+
+export const addTreasureGroup = (
+  bonuses: Record<number, BonusType>,
+  playerIndexes: number[],
+  treasureCount: number = 1
+): Record<number, BonusType> => {
+  const groupId = generateTreasureGroupId();
+  const newGroup: TreasureGroup = {
+    id: groupId,
+    playerIndexes,
+    treasureCount,
+  };
+
+  const result = { ...bonuses };
+
+  // Add the group to all involved players
+  playerIndexes.forEach((playerIndex) => {
+    const playerBonuses = result[playerIndex] || {
+      greenBonus: false,
+      yellowBonus: false,
+      purpleBonus: false,
+      darkBonus: false,
+      treasure: 0,
+      mermaid: 0,
+      pirate: 0,
+      skullKing: false,
+    };
+
+    result[playerIndex] = {
+      ...playerBonuses,
+      treasure: Math.min(2, (playerBonuses.treasure || 0) + treasureCount),
+      treasureGroups: [...(playerBonuses.treasureGroups || []), newGroup],
+    };
+  });
+
+  return result;
+};
+
+export const removeTreasureGroup = (
+  bonuses: Record<number, BonusType>,
+  groupId: string
+): Record<number, BonusType> => {
+  const result = { ...bonuses };
+
+  Object.keys(result).forEach((playerIndexStr) => {
+    const playerIndex = parseInt(playerIndexStr);
+    const playerBonuses = result[playerIndex];
+
+    if (playerBonuses?.treasureGroups) {
+      const groupToRemove = playerBonuses.treasureGroups.find(
+        (g) => g.id === groupId
+      );
+      const updatedGroups = playerBonuses.treasureGroups.filter(
+        (g) => g.id !== groupId
+      );
+
+      result[playerIndex] = {
+        ...playerBonuses,
+        treasure: Math.max(
+          0,
+          (playerBonuses.treasure || 0) - (groupToRemove?.treasureCount || 0)
+        ),
+        treasureGroups: updatedGroups,
+      };
+    }
+  });
+
+  return result;
+};
+
 export type BonusType = {
   greenBonus: boolean;
   yellowBonus: boolean;
@@ -13,6 +122,7 @@ export type BonusType = {
   mermaid: number;
   pirate: number;
   skullKing: boolean;
+  treasureGroups?: TreasureGroup[];
 };
 
 interface Player {
@@ -251,29 +361,6 @@ export function BonusControls({
             players={players}
             bonuses={bonuses}
             setBonuses={setBonuses}
-            isActive={bonuses[playerIndex]?.treasure > 0}
-            onToggle={(active) => {
-              setBonuses((prev) => {
-                const playerBonuses = prev[playerIndex] || {
-                  greenBonus: false,
-                  yellowBonus: false,
-                  purpleBonus: false,
-                  darkBonus: false,
-                  treasure: 0,
-                  mermaid: 0,
-                  pirate: 0,
-                  skullKing: false,
-                };
-
-                return {
-                  ...prev,
-                  [playerIndex]: {
-                    ...playerBonuses,
-                    treasure: active ? playerBonuses.treasure || 1 : 0,
-                  },
-                };
-              });
-            }}
           />
           <div className="flex items-center gap-1">
             <ToggleGroupItem value="mermaid">

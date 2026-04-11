@@ -6,8 +6,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ToggleGroupItem } from "@/components/ui/toggle-group";
-import { Minus, Plus } from "lucide-react";
-import { BonusType } from "./BonusControls";
+import { X } from "lucide-react";
+import {
+  BonusType,
+  addTreasureGroup,
+  findPlayerTreasureGroups,
+  findTreasurePartners,
+  removeTreasureGroup,
+} from "./BonusControls";
 
 interface Player {
   name: string;
@@ -19,8 +25,6 @@ interface TreasureControlProps {
   players: Player[];
   bonuses: Record<number, BonusType>;
   setBonuses: React.Dispatch<React.SetStateAction<Record<number, BonusType>>>;
-  isActive: boolean;
-  onToggle: (active: boolean) => void;
 }
 
 export function TreasureControl({
@@ -28,129 +32,97 @@ export function TreasureControl({
   players,
   bonuses,
   setBonuses,
-  isActive,
-  onToggle,
 }: TreasureControlProps) {
-  const adjustTreasure = (delta: number) => {
+  const createTreasureGroup = (targetPlayerIndex: number) => {
     setBonuses((prev) => {
-      const playerBonuses = prev[playerIndex] || {
-        greenBonus: false,
-        yellowBonus: false,
-        purpleBonus: false,
-        darkBonus: false,
-        treasure: 0,
-        mermaid: 0,
-        pirate: 0,
-        skullKing: false,
-      };
-
-      const currentValue = playerBonuses.treasure || 0;
-      const newValue = Math.min(2, Math.max(0, currentValue + delta));
-
-      return {
-        ...prev,
-        [playerIndex]: {
-          ...playerBonuses,
-          treasure: newValue,
-        },
-      };
+      return addTreasureGroup(prev, [playerIndex, targetPlayerIndex], 1);
     });
   };
 
-  const incrementTreasureForBothPlayers = (targetPlayerIndex: number) => {
-    setBonuses((prev) => {
-      const result = { ...prev };
-
-      // Increment treasure for current player
-      const currentPlayerBonuses = prev[playerIndex] || {
-        greenBonus: false,
-        yellowBonus: false,
-        purpleBonus: false,
-        darkBonus: false,
-        treasure: 0,
-        mermaid: 0,
-        pirate: 0,
-        skullKing: false,
-      };
-
-      result[playerIndex] = {
-        ...currentPlayerBonuses,
-        treasure: Math.min(2, (currentPlayerBonuses.treasure || 0) + 1),
-      };
-
-      // Increment treasure for target player
-      const targetPlayerBonuses = prev[targetPlayerIndex] || {
-        greenBonus: false,
-        yellowBonus: false,
-        purpleBonus: false,
-        darkBonus: false,
-        treasure: 0,
-        mermaid: 0,
-        pirate: 0,
-        skullKing: false,
-      };
-
-      result[targetPlayerIndex] = {
-        ...targetPlayerBonuses,
-        treasure: Math.min(2, (targetPlayerBonuses.treasure || 0) + 1),
-      };
-
-      return result;
-    });
+  const removeGroup = (groupId: string) => {
+    setBonuses((prev) => removeTreasureGroup(prev, groupId));
   };
 
-  // Get other players (excluding current player)
-  const otherPlayers = players.filter((_, index) => index !== playerIndex);
+  const otherPlayers = players
+    .map((player, index) => ({ player, index }))
+    .filter(({ index }) => index !== playerIndex);
+
+  const treasureGroups = findPlayerTreasureGroups(playerIndex, bonuses);
+  const treasurePartners = findTreasurePartners(playerIndex, bonuses);
+  const hasPartners = treasurePartners.length > 0;
+  const treasureCount = bonuses[playerIndex]?.treasure || 0;
+  const atLimit = treasureCount >= 2;
 
   return (
     <div className="flex items-center gap-1">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <ToggleGroupItem value="treasure" onClick={() => onToggle(!isActive)}>
-            💰 {bonuses[playerIndex]?.treasure || 0}
+          <ToggleGroupItem
+            value="treasure"
+            className={hasPartners ? "border-2 border-blue-400" : ""}
+          >
+            💰 {treasureCount}
+            {hasPartners && <span className="ml-1 text-xs">👥</span>}
           </ToggleGroupItem>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          {otherPlayers.map((player, index) => {
-            const actualPlayerIndex = players.findIndex(
-              (p) => p.name === player.name
-            );
-            return (
-              <DropdownMenuItem
-                key={player.name}
-                onClick={() =>
-                  incrementTreasureForBothPlayers(actualPlayerIndex)
-                }
-              >
-                Share with {player.name}
-              </DropdownMenuItem>
-            );
-          })}
+          {treasureGroups.length > 0 && (
+            <>
+              <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+                Currently sharing with:
+              </div>
+              {treasureGroups.map((group) => {
+                const partnerIndexes = group.playerIndexes.filter(
+                  (i) => i !== playerIndex
+                );
+                const label =
+                  partnerIndexes.length === 0
+                    ? "Self only"
+                    : partnerIndexes
+                        .map((i) => players[i]?.name)
+                        .filter(Boolean)
+                        .join(", ");
+                return (
+                  <div
+                    key={group.id}
+                    className="flex items-center justify-between gap-2 px-2 py-1.5 text-sm text-blue-600"
+                  >
+                    <span>
+                      {partnerIndexes.length > 0 ? "👥 " : ""}
+                      {label}
+                    </span>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-5 w-5"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeGroup(group.id);
+                      }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                );
+              })}
+              <div className="my-1 h-px bg-border" />
+            </>
+          )}
+          <div className="px-2 py-1.5 text-xs font-semibold text-muted-foreground">
+            Share with:
+          </div>
+          {otherPlayers.map(({ player, index: actualPlayerIndex }) => (
+            <DropdownMenuItem
+              key={actualPlayerIndex}
+              onClick={() => createTreasureGroup(actualPlayerIndex)}
+              disabled={atLimit}
+            >
+              {player.name}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {isActive && (
-        <div className="flex flex-col gap-0.5">
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-5 w-5"
-            onClick={() => adjustTreasure(1)}
-            disabled={bonuses[playerIndex]?.treasure >= 2}
-          >
-            <Plus className="h-3 w-3" />
-          </Button>
-
-          <Button
-            size="icon"
-            variant="outline"
-            className="h-5 w-5"
-            onClick={() => adjustTreasure(-1)}
-          >
-            <Minus className="h-3 w-3" />
-          </Button>
-        </div>
-      )}
     </div>
   );
 }
