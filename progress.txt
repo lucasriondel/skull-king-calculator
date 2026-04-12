@@ -1,0 +1,13 @@
+## Migration Progress
+
+### Phase 1: Scaffold Vite project — COMPLETE
+- [x] 1.1 Created `vite.config.ts` with React plugin, TanStack Router plugin, and @/ alias
+- [x] 1.2 Created `index.html` with Inter font CDN, root mount point, meta tags
+- [x] 1.3 Updated `tsconfig.json` — jsx: react-jsx, removed Next plugin, updated includes
+- [x] 1.4 Updated `package.json` — Vite scripts, installed vite, @vitejs/plugin-react, @tanstack/react-router, @tanstack/router-devtools, @tanstack/router-plugin, i18next, react-i18next, i18next-browser-languagedetector
+- [x] 1.5 Updated `tailwind.config.ts` — content paths now point to index.html, src/**, components/**
+- [x] 1.6 Copied globals.css to `src/globals.css` (updated font-family to use Inter)
+- [x] Created minimal `src/main.tsx` placeholder entry point
+- [x] Verified: `vite build` succeeds
+
+### Next: Phase 2 — Set up i18n with i18next
