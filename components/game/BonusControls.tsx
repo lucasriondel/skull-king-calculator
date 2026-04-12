@@ -192,8 +192,8 @@ export function BonusControls({
   };
 
   const cellClass =
-    "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
-  const row2CellClass = cn(cellClass, "border-t");
+    "rounded-none h-10 w-full min-w-0 px-0 border-t data-[state=on]:bg-accent/60";
+  const row2CellClass = cellClass;
 
   const handleColorChange = (values: string[]) => {
     setBonuses((prev) => {
@@ -369,15 +369,13 @@ export function BonusControls({
         ].filter(Boolean)}
         onValueChange={handleSpecialChange}
       >
-        <div className="border-t">
-          <TreasureControl
-            playerIndex={playerIndex}
-            players={players}
-            bonuses={bonuses}
-            setBonuses={setBonuses}
-          />
-        </div>
-        <div className="relative flex items-center justify-center border-t">
+        <TreasureControl
+          playerIndex={playerIndex}
+          players={players}
+          bonuses={bonuses}
+          setBonuses={setBonuses}
+        />
+        <div className="relative flex items-center justify-center">
           <ToggleGroupItem value="mermaid" className={cellClass}>
             🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
           </ToggleGroupItem>
@@ -408,7 +406,7 @@ export function BonusControls({
             </div>
           )}
         </div>
-        <div className="relative flex items-center justify-center border-t">
+        <div className="relative flex items-center justify-center">
           <ToggleGroupItem value="pirate" className={cellClass}>
             🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
           </ToggleGroupItem>

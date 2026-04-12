@@ -54,8 +54,8 @@ export function PlayerCard(props: PlayerCardProps) {
   const showScore = mode === "tricks" && props.tricks !== undefined;
 
   return (
-    <Card>
-      <CardHeader className="p-4 pb-2">
+    <Card className="border-0 overflow-hidden ring-1 ring-border">
+      <CardHeader className="p-4 pb-3">
         <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
           <span>{player.name}</span>
           {isStartingPlayer && (
@@ -86,15 +86,13 @@ export function PlayerCard(props: PlayerCardProps) {
         )}
       </CardContent>
       {mode === "tricks" && (
-        <div className="border-t overflow-hidden rounded-b-lg">
-          <BonusControls
-            playerIndex={playerIndex}
-            players={props.players}
-            bonuses={props.bonuses}
-            setBonuses={props.setBonuses}
-            getPlayerWithBonus={props.getPlayerWithBonus}
-          />
-        </div>
+        <BonusControls
+          playerIndex={playerIndex}
+          players={props.players}
+          bonuses={props.bonuses}
+          setBonuses={props.setBonuses}
+          getPlayerWithBonus={props.getPlayerWithBonus}
+        />
       )}
     </Card>
   );

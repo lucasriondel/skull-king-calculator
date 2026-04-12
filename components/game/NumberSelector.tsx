@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const numberSelectorVariants = cva(
-  "flex items-center justify-center h-10 cursor-pointer border-l border-t transition-colors",
+  "flex items-center justify-center h-10 cursor-pointer border-t transition-colors",
   {
     variants: {
       state: {
@@ -58,14 +58,15 @@ export function NumberSelector({
                   : num === highlightNumber
                   ? "highlighted"
                   : "default",
-            })
+            }),
+            num % columns !== 0 && "border-l"
           )}
         >
           {num}
         </div>
       ))}
       {Array.from({ length: padding }, (_, i) => (
-        <div key={`pad-${i}`} className="h-10 border-l border-t" />
+        <div key={`pad-${i}`} className="h-10 border-t border-l" />
       ))}
     </div>
   );
