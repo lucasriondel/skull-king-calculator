@@ -45,4 +45,16 @@
 - [x] Updated `components.json`: `rsc: false`, css path to `src/globals.css`
 - [x] Clean install and verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
 
-### Next: Phase 6 — Install deps and verify (manual testing)
+### Phase 6: Verify — COMPLETE
+- [x] Fixed pre-existing sidebar build error: `useIsMobile` import renamed to match `useMobile` export in `hooks/use-mobile.ts`
+- [x] `tsc -b && vite build` succeeds with zero errors
+- [x] Tested `/` root — correctly redirects to `/en/game-modes` via browser locale detection
+- [x] Tested `/en/game-modes` — all 6 game modes render correctly with descriptions
+- [x] Tested `/fr/game-modes` — French translations display correctly
+- [x] Tested theme toggle — switches between light and dark mode, persists correctly
+- [x] Tested language switcher — EN/FR buttons work
+- [x] Tested invalid locale redirect — `/de/game-modes` redirects to `/en/game-modes`
+- [x] Tested full game flow: select Classic mode → player setup (2 players) → game page (Round 1/10, bids/tricks/scores/details tabs)
+- [x] All routes work: `/`, `/en/game-modes`, `/en/players`, `/en/game`, `/fr/game-modes`
+
+### Migration Complete
