@@ -1,14 +1,11 @@
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Trophy } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useMobile } from "@/hooks/use-mobile";
 
 interface Player {
   name: string;
@@ -71,9 +68,8 @@ function Podium({ players }: { players: Player[] }) {
   );
 }
 
-export function ScoresTab({ players, onBackToBids }: ScoresTabProps) {
+export function ScoresTab({ players }: ScoresTabProps) {
   const t = useTranslations("GamePage");
-  const isMobile = useMobile();
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
   const showPodium = sortedPlayers.length >= 3;
   const remainingPlayers = showPodium ? sortedPlayers.slice(3) : sortedPlayers;
@@ -104,17 +100,6 @@ export function ScoresTab({ players, onBackToBids }: ScoresTabProps) {
           </div>
         )}
       </CardContent>
-      {!isMobile && (
-        <CardFooter>
-          <Button
-            className="w-full"
-            onClick={onBackToBids}
-            size={isMobile ? "lg" : "default"}
-          >
-            {t("buttons.backToBids")}
-          </Button>
-        </CardFooter>
-      )}
     </Card>
   );
 }

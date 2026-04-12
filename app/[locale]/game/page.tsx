@@ -255,7 +255,8 @@ export default function GamePage() {
           </TabsContent>
         </div>
 
-        <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg">
+        {(activeTab === "bids" || activeTab === "tricks") && (
+          <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg">
             {activeTab === "bids" && (
               <Button
                 className="w-full"
@@ -276,18 +277,10 @@ export default function GamePage() {
                 {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
               </Button>
             )}
-            {(activeTab === "scores" || activeTab === "details") && (
-              <Button
-                className="w-full"
-                onClick={() => setActiveTab("bids")}
-                size="lg"
-              >
-                {t("buttons.backToBids")}
-              </Button>
-            )}
-        </div>
+          </div>
+        )}
 
-        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x">
+        <TabsList className={`shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x ${activeTab !== "bids" && activeTab !== "tricks" ? "border-t border-border min-[673px]:rounded-t-lg" : ""}`}>
           <TabsTrigger value="bids" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
