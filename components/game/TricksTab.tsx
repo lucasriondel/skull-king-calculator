@@ -31,6 +31,8 @@ interface TricksTabProps {
     playerIndex?: number
   ) => number;
   onComplete: () => void;
+  rascalBet: { playerIndex: number; amount: 10 | 20 } | null;
+  setRascalBet: React.Dispatch<React.SetStateAction<{ playerIndex: number; amount: 10 | 20 } | null>>;
 }
 
 export function TricksTab({
@@ -42,6 +44,8 @@ export function TricksTab({
   setBonuses,
   getPlayerWithBonus,
   calculateScore,
+  rascalBet,
+  setRascalBet,
 }: TricksTabProps) {
   return (
     <div className="space-y-4">
@@ -70,6 +74,8 @@ export function TricksTab({
               bonuses={bonuses}
               setBonuses={setBonuses}
               getPlayerWithBonus={getPlayerWithBonus}
+              rascalBet={rascalBet}
+              setRascalBet={setRascalBet}
             />
           );
         })}

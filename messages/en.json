@@ -41,7 +41,8 @@
     "addPlayer": "Add Player",
     "startGame": "Start Game",
     "defaultPlayerName": "Player {number}",
-    "randomizeStarter": "Randomize who starts first"
+    "randomizeStarter": "Randomize who starts first",
+    "piratePowers": "Playing with Pirate powers"
   },
   "GamePage": {
     "gameMode": "Game Mode",
@@ -80,6 +81,7 @@
       "title": "Game Complete!",
       "finalStandings": "Final Standings",
       "newGame": "New Game"
-    }
+    },
+    "rascalBet": "Rascal's bet"
   }
 }

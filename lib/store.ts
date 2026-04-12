@@ -30,9 +30,11 @@ type GameStore = {
   gameMode: GameMode | null;
   players: Player[];
   startingPlayerIndex: number;
+  piratePowers: boolean;
   setGameMode: (mode: GameMode) => void;
   setPlayers: (players: Player[]) => void;
   setStartingPlayerIndex: (index: number) => void;
+  setPiratePowers: (enabled: boolean) => void;
   updatePlayerRound: (
     playerIndex: number,
     roundNumber: number,
@@ -46,8 +48,11 @@ export const useGameStore = create<GameStore>((set) => ({
   gameMode: null,
   players: [],
   startingPlayerIndex: 0,
+  piratePowers: false,
 
   setGameMode: (mode) => set({ gameMode: mode }),
+
+  setPiratePowers: (enabled) => set({ piratePowers: enabled }),
 
   setPlayers: (players) => set({ players }),
 
@@ -77,5 +82,5 @@ export const useGameStore = create<GameStore>((set) => ({
       return { startingPlayerIndex: nextIndex };
     }),
 
-  resetGame: () => set({ gameMode: null, players: [], startingPlayerIndex: 0 }),
+  resetGame: () => set({ gameMode: null, players: [], startingPlayerIndex: 0, piratePowers: false }),
 }));

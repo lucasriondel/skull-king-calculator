@@ -1,6 +1,10 @@
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardButtonGrid } from "@/components/ui/card-button-grid";
 import { useGameStore } from "@/lib/store";
+import { cn } from "@/lib/utils";
+import { X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { BonusControls, BonusType } from "./BonusControls";
 import { NumberSelector } from "./NumberSelector";
@@ -36,13 +40,80 @@ interface TricksModeProps extends PlayerCardBaseProps {
   getPlayerWithBonus: (
     color: "green" | "yellow" | "purple" | "dark" | "skullKing"
   ) => number | null;
+  rascalBet: { playerIndex: number; amount: 10 | 20 } | null;
+  setRascalBet: React.Dispatch<React.SetStateAction<{ playerIndex: number; amount: 10 | 20 } | null>>;
 }
 
 type PlayerCardProps = BidsModeProps | TricksModeProps;
 
+function RascalBetRow({
+  playerIndex,
+  rascalBet,
+  setRascalBet,
+  t,
+}: {
+  playerIndex: number;
+  rascalBet: { playerIndex: number; amount: 10 | 20 } | null;
+  setRascalBet: React.Dispatch<React.SetStateAction<{ playerIndex: number; amount: 10 | 20 } | null>>;
+  t: (key: string, params?: any) => string;
+}) {
+  const isSelected = rascalBet?.playerIndex === playerIndex;
+  const selectedAmount = isSelected ? rascalBet.amount : null;
+
+  const buttonClass =
+    "rounded-none h-10 w-full min-w-0 px-0 border-0";
+
+  return (
+    <CardButtonGrid.Row columns={3} isLastRow>
+      <CardButtonGrid.Cell colIndex={0}>
+        <div className="flex items-center w-full h-10">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={cn(
+              "h-10 w-10 shrink-0 rounded-none border-0 text-muted-foreground hover:text-destructive",
+              !isSelected && "invisible"
+            )}
+            onClick={() => setRascalBet(null)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+          <span className="text-xs font-medium text-muted-foreground truncate flex-1 text-center pr-10">
+            {t("rascalBet")}
+          </span>
+        </div>
+      </CardButtonGrid.Cell>
+      <CardButtonGrid.Cell colIndex={1}>
+        <Button
+          variant="ghost"
+          className={cn(
+            buttonClass,
+            selectedAmount === 10 && "bg-accent/60"
+          )}
+          onClick={() => setRascalBet({ playerIndex, amount: 10 })}
+        >
+          10
+        </Button>
+      </CardButtonGrid.Cell>
+      <CardButtonGrid.Cell colIndex={2}>
+        <Button
+          variant="ghost"
+          className={cn(
+            buttonClass,
+            selectedAmount === 20 && "bg-accent/60"
+          )}
+          onClick={() => setRascalBet({ playerIndex, amount: 20 })}
+        >
+          20
+        </Button>
+      </CardButtonGrid.Cell>
+    </CardButtonGrid.Row>
+  );
+}
+
 export function PlayerCard(props: PlayerCardProps) {
   const t = useTranslations("GamePage");
-  const { startingPlayerIndex } = useGameStore();
+  const { startingPlayerIndex, piratePowers } = useGameStore();
   const { player, playerIndex, cardsThisRound, mode } = props;
 
   const isStartingPlayer = playerIndex === startingPlayerIndex;
@@ -92,7 +163,16 @@ export function PlayerCard(props: PlayerCardProps) {
             bonuses={props.bonuses}
             setBonuses={props.setBonuses}
             getPlayerWithBonus={props.getPlayerWithBonus}
+            isLastSection={!piratePowers || (props.rascalBet !== null && props.rascalBet.playerIndex !== playerIndex)}
           />
+          {piratePowers && (props.rascalBet === null || props.rascalBet.playerIndex === playerIndex) && (
+            <RascalBetRow
+              playerIndex={playerIndex}
+              rascalBet={props.rascalBet}
+              setRascalBet={props.setRascalBet}
+              t={t}
+            />
+          )}
         </>
       )}
     </Card>

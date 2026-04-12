@@ -32,6 +32,7 @@ export default function GamePage() {
   const [roundData, setRoundData] = useState<RoundData[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
+  const [rascalBet, setRascalBet] = useState<{ playerIndex: number; amount: 10 | 20 } | null>(null);
   const t = useTranslations("GamePage");
 
   console.log(roundData);
@@ -137,6 +138,7 @@ export default function GamePage() {
         }))
       );
       setBonuses({}); // Reset bonuses for the new round
+      setRascalBet(null);
       moveToNextStartingPlayer();
       setActiveTab("bids");
     } else {
@@ -240,6 +242,8 @@ export default function GamePage() {
                 )
               }
               onComplete={completeRound}
+              rascalBet={rascalBet}
+              setRascalBet={setRascalBet}
             />
           </TabsContent>
 

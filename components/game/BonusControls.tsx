@@ -139,6 +139,7 @@ interface BonusControlsProps {
   getPlayerWithBonus: (
     color: "green" | "yellow" | "purple" | "dark" | "skullKing"
   ) => number | null;
+  isLastSection?: boolean;
 }
 
 export function BonusControls({
@@ -147,6 +148,7 @@ export function BonusControls({
   bonuses,
   setBonuses,
   getPlayerWithBonus,
+  isLastSection = true,
 }: BonusControlsProps) {
   const greenOwner = getPlayerWithBonus("green");
   const yellowOwner = getPlayerWithBonus("yellow");
@@ -368,7 +370,7 @@ export function BonusControls({
           </CardButtonGrid.Cell>
         </ToggleGroup>
       </CardButtonGrid.Row>
-      <CardButtonGrid.Row columns={4} isLastRow>
+      <CardButtonGrid.Row columns={4} isLastRow={isLastSection}>
         <ToggleGroup
           type="multiple"
           className="contents"

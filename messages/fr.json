@@ -41,7 +41,8 @@
     "addPlayer": "Ajouter un Joueur",
     "startGame": "Commencer la Partie",
     "defaultPlayerName": "Joueur {number}",
-    "randomizeStarter": "Joueur de départ aléatoire"
+    "randomizeStarter": "Joueur de départ aléatoire",
+    "piratePowers": "Jouer avec les pouvoirs des Pirates"
   },
   "GamePage": {
     "gameMode": "Mode de Jeu",
@@ -80,6 +81,7 @@
       "title": "Partie Terminée !",
       "finalStandings": "Classement Final",
       "newGame": "Nouvelle Partie"
-    }
+    },
+    "rascalBet": "Pari du Gredin"
   }
 }
