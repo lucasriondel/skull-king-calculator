@@ -63,7 +63,8 @@
       "bonusPoints": "Bonus Points",
       "noData": "No data for this round yet.",
       "newScore": "Score & Change",
-      "emptyState": "No round details yet. Complete a round to see the breakdown."
+      "emptyState": "No round details yet. Complete a round to see the breakdown.",
+      "rascalBet": "Rascal's bet"
     },
     "enterBids": "Enter Bids",
     "enterTricksWon": "Enter Tricks Won",

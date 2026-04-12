@@ -102,7 +102,8 @@ export default function GamePage() {
         cardsThisRound,
         bonuses[idx],
         idx,
-        allBidTricks
+        allBidTricks,
+        rascalBet
       );
       console.log(`Player ${idx} score calculation:`, {
         playerName: players[idx]?.name,
@@ -117,6 +118,7 @@ export default function GamePage() {
         score,
         bonuses: bonuses[idx],
         cardsThisRound,
+        rascalBet,
       };
     });
 
@@ -238,7 +240,8 @@ export default function GamePage() {
                   cardsThisRound,
                   playerBonuses,
                   playerIndex,
-                  roundData.map((d) => ({ bid: d.bid, tricks: d.tricks ?? 0 }))
+                  roundData.map((d) => ({ bid: d.bid, tricks: d.tricks ?? 0 })),
+                  rascalBet
                 )
               }
               onComplete={completeRound}

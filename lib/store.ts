@@ -18,6 +18,7 @@ export type RoundData = {
   score: number;
   bonuses?: BonusType;
   cardsThisRound?: number;
+  rascalBet?: { playerIndex: number; amount: 10 | 20 } | null;
 };
 
 export type Player = {

@@ -43,7 +43,10 @@ function calculateBaseScore(
 
 function calculateBonusScore(
   bonuses: RoundData["bonuses"],
-  effectiveTreasureCount: number
+  effectiveTreasureCount: number,
+  rascalBet?: RoundData["rascalBet"],
+  playerIndex?: number,
+  bidMet?: boolean
 ): number {
   if (!bonuses) {
     return 0;
@@ -58,6 +61,10 @@ function calculateBonusScore(
   if (bonuses.mermaid) bonusScore += bonuses.mermaid * 20;
   if (bonuses.pirate) bonusScore += bonuses.pirate * 30;
   if (bonuses.skullKing) bonusScore += 40;
+
+  if (rascalBet && rascalBet.playerIndex === playerIndex) {
+    bonusScore += bidMet ? rascalBet.amount : -rascalBet.amount;
+  }
 
   return bonusScore;
 }
@@ -156,9 +163,13 @@ export function DetailsTab() {
                     roundData.bonuses,
                     allRoundDataForThisRound
                   );
+                  const bidMet = roundData.bid === (roundData.tricks ?? 0);
                   const potentialBonusScore = calculateBonusScore(
                     roundData.bonuses,
-                    effectiveTreasureCount
+                    effectiveTreasureCount,
+                    roundData.rascalBet,
+                    playerIndex,
+                    bidMet
                   );
                   const bonusScore = baseScore > 0 ? potentialBonusScore : 0;
                   const roundScore = baseScore + bonusScore;
@@ -302,6 +313,16 @@ export function DetailsTab() {
                                   ) : null}
                                   {roundData.bonuses?.skullKing ? (
                                     <li>💀👑 +40</li>
+                                  ) : null}
+                                  {roundData.rascalBet &&
+                                  roundData.rascalBet.playerIndex ===
+                                    playerIndex ? (
+                                    <li>
+                                      🎲 {t("rascalBet")}{" "}
+                                      {roundData.bid === (roundData.tricks ?? 0)
+                                        ? `+${roundData.rascalBet.amount}`
+                                        : `-${roundData.rascalBet.amount}`}
+                                    </li>
                                   ) : null}
                                 </ul>
                               </div>

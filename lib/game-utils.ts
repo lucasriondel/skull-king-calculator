@@ -12,7 +12,8 @@ export function calculateScore(
   cardsThisRound: number,
   playerBonuses?: BonusType,
   playerIndex?: number,
-  allRoundData?: PlayerBidTricks[]
+  allRoundData?: PlayerBidTricks[],
+  rascalBet?: { playerIndex: number; amount: 10 | 20 } | null
 ): number {
   let baseScore = 0;
 
@@ -70,6 +71,15 @@ export function calculateScore(
   bonusScore += mermaidBonus;
   bonusScore += pirateBonus;
   bonusScore += skullKingBonus;
+
+  // Rascal's bet: if this player placed the bet, add or subtract the amount
+  if (rascalBet && rascalBet.playerIndex === playerIndex) {
+    if (bid === tricks) {
+      bonusScore += rascalBet.amount;
+    } else {
+      bonusScore -= rascalBet.amount;
+    }
+  }
 
   return baseScore + bonusScore;
 }
