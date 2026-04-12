@@ -291,17 +291,17 @@ export default function GamePage() {
           </div>
         )}
 
-        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none border-t border-border">
-          <TabsTrigger value="bids" className="py-3">{t("tabs.bids")}</TabsTrigger>
+        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)]">
+          <TabsTrigger value="bids" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
-            className="py-3"
+            className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
             disabled={activeTab === "bids" && !canCompleteBids}
           >
             {t("tabs.tricks")}
           </TabsTrigger>
-          <TabsTrigger value="scores" className="py-3">{t("tabs.scores")}</TabsTrigger>
-          <TabsTrigger value="details" className="py-3">{t("tabs.details")}</TabsTrigger>
+          <TabsTrigger value="scores" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.scores")}</TabsTrigger>
+          <TabsTrigger value="details" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.details")}</TabsTrigger>
         </TabsList>
       </Tabs>
     </div>
