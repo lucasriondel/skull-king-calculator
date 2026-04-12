@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl";
 import { useMobile } from "@/hooks/use-mobile";
 import LanguageSwitcher from "@/components/language-switcher";
 import { DetailsTab } from "@/components/game/DetailsTab";
+import { Podium } from "@/components/game/Podium";
 
 interface Player {
   name: string;
@@ -41,32 +42,25 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
           <h2 className="text-xl font-semibold mb-4">
             {t("gameComplete.finalStandings")}
           </h2>
-          <div className="space-y-4">
-            {sortedPlayers.map((player, index) => (
-              <div
-                key={player.name}
-                className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
-                      index === 0
-                        ? "bg-yellow-500 text-black"
-                        : index === 1
-                        ? "bg-gray-300 text-black"
-                        : index === 2
-                        ? "bg-amber-700 text-white"
-                        : "bg-muted text-muted-foreground"
-                    }`}
-                  >
-                    {index + 1}
+          <Podium players={sortedPlayers} />
+          {sortedPlayers.length > 3 && (
+            <div className="space-y-2">
+              {sortedPlayers.slice(3).map((player, idx) => (
+                <div
+                  key={player.name}
+                  className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-muted-foreground font-bold w-6 text-center">
+                      {idx + 4}
+                    </span>
+                    <span className="font-medium">{player.name}</span>
                   </div>
-                  <span className="font-medium">{player.name}</span>
+                  <span className="font-bold">{player.score}</span>
                 </div>
-                <span className="text-xl font-bold">{player.score}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </CardContent>
         {!isMobile && (
           <CardFooter className="flex justify-center">
