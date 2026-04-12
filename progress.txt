@@ -10,4 +10,10 @@
 - [x] Created minimal `src/main.tsx` placeholder entry point
 - [x] Verified: `vite build` succeeds
 
-### Next: Phase 2 — Set up i18n with i18next
+### Phase 2: Set up i18n with i18next — COMPLETE
+- [x] 2.1 Created `src/i18n/locales.ts` with supportedLocales, defaultLocale, and SupportedLocale type
+- [x] 2.2 Created `src/i18n/index.ts` — i18next init with react-i18next, browser language detector, en/fr translations
+- [x] 2.3 Updated translation files — replaced `{var}` with `{{var}}` in both `messages/en.json` and `messages/fr.json` (modeInfo, playersHeader, defaultPlayerName keys)
+- [x] Verified: `vite build` succeeds
+
+### Next: Phase 3 — Create TanStack Router routes
