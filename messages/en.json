@@ -61,7 +61,8 @@
       "bid": "Bid / Tricks & Points",
       "bonusPoints": "Bonus Points",
       "noData": "No data for this round yet.",
-      "newScore": "Score & Change"
+      "newScore": "Score & Change",
+      "emptyState": "No round details yet. Complete a round to see the breakdown."
     },
     "enterBids": "Enter Bids",
     "enterTricksWon": "Enter Tricks Won",

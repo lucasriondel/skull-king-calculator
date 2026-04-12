@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGameStore, type RoundData } from "@/lib/store";
+import { ClipboardList } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Fragment, ReactNode } from "react";
 
@@ -88,6 +89,19 @@ export function DetailsTab() {
   }
 
   const rounds = Array.from({ length: gameMode.rounds }, (_, i) => i + 1);
+
+  const hasAnyData = players.some((player) =>
+    player.rounds.some((r) => r !== undefined)
+  );
+
+  if (!hasAnyData) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-muted-foreground">
+        <ClipboardList className="h-12 w-12 mb-4 opacity-40" />
+        <p className="text-sm">{t("emptyState")}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
