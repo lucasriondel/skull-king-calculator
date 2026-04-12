@@ -16,4 +16,15 @@
 - [x] 2.3 Updated translation files — replaced `{var}` with `{{var}}` in both `messages/en.json` and `messages/fr.json` (modeInfo, playersHeader, defaultPlayerName keys)
 - [x] Verified: `vite build` succeeds
 
-### Next: Phase 3 — Create TanStack Router routes
+### Phase 3: Create TanStack Router routes — COMPLETE
+- [x] 3.1 Updated `src/main.tsx` — imports i18n, creates router from generated route tree, renders RouterProvider with type-safe Register
+- [x] 3.2 Created `src/routes/__root.tsx` — wraps Outlet in ThemeProvider
+- [x] 3.3 Created `src/routes/index.tsx` — detects browser locale, redirects to /$locale/game-modes
+- [x] 3.4 Created `src/routes/$locale/route.tsx` — validates locale param, redirects invalid locales, syncs i18n language
+- [x] 3.5 Created `src/routes/$locale/index.tsx` — redirects to /$locale/game-modes
+- [x] 3.6 Migrated game-modes page to `src/routes/$locale/game-modes.tsx` — useTranslation, useNavigate, <img> instead of Image
+- [x] 3.7 Migrated players page to `src/routes/$locale/players.tsx` — same pattern, removed "use client"
+- [x] 3.8 Migrated game page to `src/routes/$locale/game.tsx` — same pattern, removed "use client"
+- [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Next: Phase 4 — Update imports across all components
