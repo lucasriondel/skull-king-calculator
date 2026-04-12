@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const numberSelectorVariants = cva(
-  "h-10 w-full cursor-pointer transition-colors",
+  "h-14 w-full cursor-pointer transition-colors",
   {
     variants: {
       state: {
@@ -84,7 +84,7 @@ export function NumberSelector({
                 key={`pad-${i}`}
                 colIndex={chunk.length + i}
                 placeholder
-                className="h-10"
+                className="h-14"
               />
             ))}
           </CardButtonGrid.Row>
