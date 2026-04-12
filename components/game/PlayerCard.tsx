@@ -52,17 +52,24 @@ export function PlayerCard(props: PlayerCardProps) {
     <Card className="border-0 overflow-hidden ring-1 ring-border">
       <CardHeader className="p-4 pb-3">
         <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
+          <div className="flex flex-1 justify-between items-center gap-2">
+
+<div className="flex items-center gap-2">
           <span>{player.name}</span>
-          {isStartingPlayer && (
-            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-          )}
           {showScore && (
             <Badge variant={props.score >= 0 ? "success" : "destructive"}>
               {props.score >= 0 ? "+" : ""}
               {props.score}
             </Badge>
           )}
+</div>
+
+          {isStartingPlayer && (
+            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+          )}
+          </div>
         </CardTitle>
+        
       </CardHeader>
       {mode === "bids" ? (
         <NumberSelector
