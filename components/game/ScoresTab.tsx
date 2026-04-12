@@ -5,7 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Podium } from "@/components/game/Podium";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 
 interface Player {
   name: string;
@@ -18,7 +18,7 @@ interface ScoresTabProps {
 }
 
 export function ScoresTab({ players }: ScoresTabProps) {
-  const t = useTranslations("GamePage");
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
   const remainingPlayers = sortedPlayers.slice(Math.min(3, sortedPlayers.length));
 

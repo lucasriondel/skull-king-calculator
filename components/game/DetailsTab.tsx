@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "@/components/ui/badge";
 import {
   Popover,
@@ -16,7 +14,7 @@ import {
 } from "@/components/ui/table";
 import { useGameStore, type RoundData } from "@/lib/store";
 import { ClipboardList } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 import { Fragment, ReactNode } from "react";
 
 function numberToEmoji(number: number, emoji: string): ReactNode {
@@ -89,7 +87,7 @@ function getEffectiveTreasureCount(
 
 export function DetailsTab() {
   const { players, gameMode } = useGameStore();
-  const t = useTranslations("GamePage.DetailsTab");
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage.DetailsTab" });
 
   if (!gameMode) {
     return null;

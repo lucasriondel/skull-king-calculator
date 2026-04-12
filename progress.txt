@@ -27,4 +27,11 @@
 - [x] 3.8 Migrated game page to `src/routes/$locale/game.tsx` — same pattern, removed "use client"
 - [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
 
-### Next: Phase 4 — Update imports across all components
+### Phase 4: Update imports across all components — COMPLETE
+- [x] 4.1 Replaced `useTranslations` (next-intl) with `useTranslation` (react-i18next) in GameHeader, GameComplete, ScoresTab, DetailsTab, PlayerCard
+- [x] 4.2 Route files (game-modes, players, game) already migrated in Phase 3
+- [x] 4.3 Rewrote `components/language-switcher.tsx` — uses `useTranslation()` for i18n.language, `useNavigate()`/`useParams()`/`useRouterState()` from TanStack Router
+- [x] 4.4 Removed `"use client"` directives from: DetailsTab, theme-provider, lib/store, hooks/use-mobile, hooks/use-toast, components/ui/card-button-grid (shadcn UI files left as-is since they are auto-generated)
+- [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Next: Phase 5 — Clean up Next.js artifacts

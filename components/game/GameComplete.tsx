@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, Home } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 import { useMobile } from "@/hooks/use-mobile";
 import LanguageSwitcher from "@/components/language-switcher";
 import { DetailsTab } from "@/components/game/DetailsTab";
@@ -24,7 +24,7 @@ interface GameCompleteProps {
 }
 
 export function GameComplete({ players, onNewGame }: GameCompleteProps) {
-  const t = useTranslations("GamePage");
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
   const isMobile = useMobile();
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
 

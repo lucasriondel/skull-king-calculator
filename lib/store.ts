@@ -1,5 +1,3 @@
-"use client";
-
 import { BonusType } from "@/components/game/BonusControls";
 import { create } from "zustand";
 
