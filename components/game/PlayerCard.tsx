@@ -1,10 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGameStore } from "@/lib/store";
 import { useTranslations } from "next-intl";
 import { BonusControls, BonusType } from "./BonusControls";
@@ -54,52 +49,45 @@ export function PlayerCard(props: PlayerCardProps) {
   const showScore = mode === "tricks" && props.tricks !== undefined;
 
   return (
-    <Card>
-      <CardHeader className="p-4 pb-2">
-        <CardTitle className="flex items-center justify-between gap-2 text-base font-medium">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span>{player.name}</span>
-            {isStartingPlayer && (
-              <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-            )}
-            {showScore && (
-              <Badge
-                variant={props.score >= 0 ? "success" : "destructive"}
-              >
-                {props.score >= 0 ? "+" : ""}
-                {props.score}
-              </Badge>
-            )}
-          </div>
-          {mode === "tricks" && (
-            <BonusControls
-              playerIndex={playerIndex}
-              players={props.players}
-              bonuses={props.bonuses}
-              setBonuses={props.setBonuses}
-              getPlayerWithBonus={props.getPlayerWithBonus}
-            />
+    <Card className="border-0 overflow-hidden ring-1 ring-border">
+      <CardHeader className="p-4 pb-3">
+        <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
+          <span>{player.name}</span>
+          {isStartingPlayer && (
+            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+          )}
+          {showScore && (
+            <Badge variant={props.score >= 0 ? "success" : "destructive"}>
+              {props.score >= 0 ? "+" : ""}
+              {props.score}
+            </Badge>
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-4 pt-2">
-        <div className="overflow-x-auto pb-2 mx-auto">
-          {mode === "bids" ? (
-            <NumberSelector
-              length={cardsThisRound + 1}
-              selected={props.bid}
-              onSelect={props.onSelectBid}
-            />
-          ) : (
-            <NumberSelector
-              length={cardsThisRound + 1}
-              selected={props.tricks}
-              onSelect={props.onSelectTricks}
-              highlightNumber={props.bid}
-            />
-          )}
-        </div>
-      </CardContent>
+      {mode === "bids" ? (
+        <NumberSelector
+          length={cardsThisRound + 1}
+          selected={props.bid}
+          onSelect={props.onSelectBid}
+          isLastSection
+        />
+      ) : (
+        <>
+          <NumberSelector
+            length={cardsThisRound + 1}
+            selected={props.tricks}
+            onSelect={props.onSelectTricks}
+            highlightNumber={props.bid}
+          />
+          <BonusControls
+            playerIndex={playerIndex}
+            players={props.players}
+            bonuses={props.bonuses}
+            setBonuses={props.setBonuses}
+            getPlayerWithBonus={props.getPlayerWithBonus}
+          />
+        </>
+      )}
     </Card>
   );
 }
