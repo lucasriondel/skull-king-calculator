@@ -1,10 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { useGameStore } from "@/lib/store";
 import { useTranslations } from "next-intl";
 import { BonusControls, BonusType } from "./BonusControls";
@@ -69,30 +64,29 @@ export function PlayerCard(props: PlayerCardProps) {
           )}
         </CardTitle>
       </CardHeader>
-      <CardContent className="p-0">
-        {mode === "bids" ? (
-          <NumberSelector
-            length={cardsThisRound + 1}
-            selected={props.bid}
-            onSelect={props.onSelectBid}
-          />
-        ) : (
+      {mode === "bids" ? (
+        <NumberSelector
+          length={cardsThisRound + 1}
+          selected={props.bid}
+          onSelect={props.onSelectBid}
+          isLastSection
+        />
+      ) : (
+        <>
           <NumberSelector
             length={cardsThisRound + 1}
             selected={props.tricks}
             onSelect={props.onSelectTricks}
             highlightNumber={props.bid}
           />
-        )}
-      </CardContent>
-      {mode === "tricks" && (
-        <BonusControls
-          playerIndex={playerIndex}
-          players={props.players}
-          bonuses={props.bonuses}
-          setBonuses={props.setBonuses}
-          getPlayerWithBonus={props.getPlayerWithBonus}
-        />
+          <BonusControls
+            playerIndex={playerIndex}
+            players={props.players}
+            bonuses={props.bonuses}
+            setBonuses={props.setBonuses}
+            getPlayerWithBonus={props.getPlayerWithBonus}
+          />
+        </>
       )}
     </Card>
   );

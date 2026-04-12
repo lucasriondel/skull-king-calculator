@@ -1,8 +1,9 @@
+import { CardButtonGrid } from "@/components/ui/card-button-grid";
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const numberSelectorVariants = cva(
-  "flex items-center justify-center h-10 cursor-pointer border-t transition-colors",
+  "h-10 w-full cursor-pointer transition-colors",
   {
     variants: {
       state: {
@@ -26,6 +27,7 @@ interface NumberSelectorProps
   selected: number | undefined;
   onSelect: (num: number) => void;
   highlightNumber?: number;
+  isLastSection?: boolean;
 }
 
 export function NumberSelector({
@@ -33,41 +35,61 @@ export function NumberSelector({
   selected,
   onSelect,
   highlightNumber,
+  isLastSection = false,
 }: NumberSelectorProps) {
   const numbers = Array.from({ length }, (_, i) => i);
   const columns = Math.min(length, 6);
-  const rows = Math.ceil(length / columns);
-  const padding = rows * columns - length;
+  const totalRows = Math.ceil(length / columns);
+
+  const rowChunks: number[][] = [];
+  for (let r = 0; r < totalRows; r++) {
+    rowChunks.push(numbers.slice(r * columns, (r + 1) * columns));
+  }
 
   return (
-    <div
-      className="grid w-full"
-      style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-    >
-      {numbers.map((num) => (
-        <div
-          key={num}
-          onClick={() => onSelect(num)}
-          className={cn(
-            numberSelectorVariants({
-              state:
-                selected === num && num === highlightNumber
-                  ? "selectedHighlighted"
-                  : selected === num
-                  ? "selected"
-                  : num === highlightNumber
-                  ? "highlighted"
-                  : "default",
-            }),
-            num % columns !== 0 && "border-l"
-          )}
-        >
-          {num}
-        </div>
-      ))}
-      {Array.from({ length: padding }, (_, i) => (
-        <div key={`pad-${i}`} className="h-10 border-t border-l" />
-      ))}
-    </div>
+    <>
+      {rowChunks.map((chunk, rowIndex) => {
+        const isLast = isLastSection && rowIndex === rowChunks.length - 1;
+        const padding = columns - chunk.length;
+
+        return (
+          <CardButtonGrid.Row
+            key={rowIndex}
+            columns={columns}
+            isLastRow={isLast}
+          >
+            {chunk.map((num) => (
+              <CardButtonGrid.Cell
+                key={num}
+                colIndex={num % columns}
+                onClick={() => onSelect(num)}
+                className={cn(
+                  numberSelectorVariants({
+                    state:
+                      selected === num && num === highlightNumber
+                        ? "selectedHighlighted"
+                        : selected === num
+                        ? "selected"
+                        : num === highlightNumber
+                        ? "highlighted"
+                        : "default",
+                  })
+                )}
+              >
+                {num}
+              </CardButtonGrid.Cell>
+            ))}
+            {Array.from({ length: padding }, (_, i) => (
+              <CardButtonGrid.Cell
+                key={`pad-${i}`}
+                colIndex={chunk.length + i}
+                placeholder
+                className="h-10"
+              />
+            ))}
+          </CardButtonGrid.Row>
+        );
+      })}
+    </>
   );
 }

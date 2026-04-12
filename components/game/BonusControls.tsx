@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { CardButtonGrid } from "@/components/ui/card-button-grid";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { Minus, Plus } from "lucide-react";
@@ -191,9 +192,8 @@ export function BonusControls({
     });
   };
 
-  const cellClass =
-    "rounded-none h-10 w-full min-w-0 px-0 border-t data-[state=on]:bg-accent/60";
-  const row2CellClass = cellClass;
+  const toggleClass =
+    "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
 
   const handleColorChange = (values: string[]) => {
     setBonuses((prev) => {
@@ -306,147 +306,163 @@ export function BonusControls({
   };
 
   return (
-    <div className="grid grid-cols-4 w-full">
-      <ToggleGroup
-        type="multiple"
-        className="contents"
-        value={[
-          bonuses[playerIndex]?.greenBonus ? "green" : "",
-          bonuses[playerIndex]?.yellowBonus ? "yellow" : "",
-          bonuses[playerIndex]?.purpleBonus ? "purple" : "",
-          bonuses[playerIndex]?.darkBonus ? "dark" : "",
-        ].filter(Boolean)}
-        onValueChange={handleColorChange}
-      >
-        <ToggleGroupItem
-          value="green"
-          className={cn(
-            cellClass,
-            "text-green-500 hover:text-green-600 data-[state=on]:text-green-600 focus:text-green-500",
-            !showGreen && "invisible pointer-events-none"
-          )}
+    <>
+      <CardButtonGrid.Row columns={4}>
+        <ToggleGroup
+          type="multiple"
+          className="contents"
+          value={[
+            bonuses[playerIndex]?.greenBonus ? "green" : "",
+            bonuses[playerIndex]?.yellowBonus ? "yellow" : "",
+            bonuses[playerIndex]?.purpleBonus ? "purple" : "",
+            bonuses[playerIndex]?.darkBonus ? "dark" : "",
+          ].filter(Boolean)}
+          onValueChange={handleColorChange}
         >
-          +10
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="yellow"
-          className={cn(
-            cellClass,
-            "text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 focus:text-yellow-500",
-            !showYellow && "invisible pointer-events-none"
-          )}
+          <CardButtonGrid.Cell colIndex={0}>
+            <ToggleGroupItem
+              value="green"
+              className={cn(
+                toggleClass,
+                "text-green-500 hover:text-green-600 data-[state=on]:text-green-600 focus:text-green-500",
+                !showGreen && "invisible pointer-events-none"
+              )}
+            >
+              +10
+            </ToggleGroupItem>
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={1}>
+            <ToggleGroupItem
+              value="yellow"
+              className={cn(
+                toggleClass,
+                "text-yellow-500 hover:text-yellow-600 data-[state=on]:text-yellow-600 focus:text-yellow-500",
+                !showYellow && "invisible pointer-events-none"
+              )}
+            >
+              +10
+            </ToggleGroupItem>
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={2}>
+            <ToggleGroupItem
+              value="purple"
+              className={cn(
+                toggleClass,
+                "text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 focus:text-purple-500",
+                !showPurple && "invisible pointer-events-none"
+              )}
+            >
+              +10
+            </ToggleGroupItem>
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={3}>
+            <ToggleGroupItem
+              value="dark"
+              className={cn(
+                toggleClass,
+                !showDark && "invisible pointer-events-none"
+              )}
+            >
+              +20
+            </ToggleGroupItem>
+          </CardButtonGrid.Cell>
+        </ToggleGroup>
+      </CardButtonGrid.Row>
+      <CardButtonGrid.Row columns={4} isLastRow>
+        <ToggleGroup
+          type="multiple"
+          className="contents"
+          value={[
+            bonuses[playerIndex]?.treasure > 0 ? "treasure" : "",
+            bonuses[playerIndex]?.mermaid > 0 ? "mermaid" : "",
+            bonuses[playerIndex]?.pirate > 0 ? "pirate" : "",
+            bonuses[playerIndex]?.skullKing ? "skullKing" : "",
+          ].filter(Boolean)}
+          onValueChange={handleSpecialChange}
         >
-          +10
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="purple"
-          className={cn(
-            cellClass,
-            "text-purple-500 hover:text-purple-600 data-[state=on]:text-purple-600 focus:text-purple-500",
-            !showPurple && "invisible pointer-events-none"
-          )}
-        >
-          +10
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="dark"
-          className={cn(
-            cellClass,
-            !showDark && "invisible pointer-events-none"
-          )}
-        >
-          +20
-        </ToggleGroupItem>
-      </ToggleGroup>
-      <ToggleGroup
-        type="multiple"
-        className="contents"
-        value={[
-          bonuses[playerIndex]?.treasure > 0 ? "treasure" : "",
-          bonuses[playerIndex]?.mermaid > 0 ? "mermaid" : "",
-          bonuses[playerIndex]?.pirate > 0 ? "pirate" : "",
-          bonuses[playerIndex]?.skullKing ? "skullKing" : "",
-        ].filter(Boolean)}
-        onValueChange={handleSpecialChange}
-      >
-        <TreasureControl
-          playerIndex={playerIndex}
-          players={players}
-          bonuses={bonuses}
-          setBonuses={setBonuses}
-        />
-        <div className="relative flex items-center justify-center">
-          <ToggleGroupItem value="mermaid" className={cellClass}>
-            🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
-          </ToggleGroupItem>
-          {bonuses[playerIndex]?.mermaid > 0 && (
-            <div className="absolute right-1 flex flex-col gap-0.5">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-4 w-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  adjustSpecialCard("mermaid", 1);
-                }}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-4 w-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  adjustSpecialCard("mermaid", -1);
-                }}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-        </div>
-        <div className="relative flex items-center justify-center">
-          <ToggleGroupItem value="pirate" className={cellClass}>
-            🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
-          </ToggleGroupItem>
-          {bonuses[playerIndex]?.pirate > 0 && (
-            <div className="absolute right-1 flex flex-col gap-0.5">
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-4 w-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  adjustSpecialCard("pirate", 1);
-                }}
-              >
-                <Plus className="h-3 w-3" />
-              </Button>
-              <Button
-                size="icon"
-                variant="outline"
-                className="h-4 w-4"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  adjustSpecialCard("pirate", -1);
-                }}
-              >
-                <Minus className="h-3 w-3" />
-              </Button>
-            </div>
-          )}
-        </div>
-        <ToggleGroupItem
-          value="skullKing"
-          className={cn(
-            row2CellClass,
-            !showSkullKing && "invisible pointer-events-none"
-          )}
-        >
-          💀👑
-        </ToggleGroupItem>
-      </ToggleGroup>
-    </div>
+          <CardButtonGrid.Cell colIndex={0}>
+            <TreasureControl
+              playerIndex={playerIndex}
+              players={players}
+              bonuses={bonuses}
+              setBonuses={setBonuses}
+            />
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={1} className="relative">
+            <ToggleGroupItem value="mermaid" className={toggleClass}>
+              🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
+            </ToggleGroupItem>
+            {bonuses[playerIndex]?.mermaid > 0 && (
+              <div className="absolute right-1 flex flex-col gap-0.5">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-4 w-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    adjustSpecialCard("mermaid", 1);
+                  }}
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-4 w-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    adjustSpecialCard("mermaid", -1);
+                  }}
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={2} className="relative">
+            <ToggleGroupItem value="pirate" className={toggleClass}>
+              🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
+            </ToggleGroupItem>
+            {bonuses[playerIndex]?.pirate > 0 && (
+              <div className="absolute right-1 flex flex-col gap-0.5">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-4 w-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    adjustSpecialCard("pirate", 1);
+                  }}
+                >
+                  <Plus className="h-3 w-3" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  className="h-4 w-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    adjustSpecialCard("pirate", -1);
+                  }}
+                >
+                  <Minus className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </CardButtonGrid.Cell>
+          <CardButtonGrid.Cell colIndex={3}>
+            <ToggleGroupItem
+              value="skullKing"
+              className={cn(
+                toggleClass,
+                !showSkullKing && "invisible pointer-events-none"
+              )}
+            >
+              💀👑
+            </ToggleGroupItem>
+          </CardButtonGrid.Cell>
+        </ToggleGroup>
+      </CardButtonGrid.Row>
+    </>
   );
 }
