@@ -1,8 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
-import { useMobile } from "@/hooks/use-mobile";
-import { Check } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { BonusType } from "./BonusControls";
 import { PlayerCard } from "./PlayerCard";
 
@@ -43,16 +38,11 @@ export function TricksTab({
   roundData,
   updateTricks,
   cardsThisRound,
-  canCompleteTricks,
   bonuses,
   setBonuses,
   getPlayerWithBonus,
   calculateScore,
-  onComplete,
 }: TricksTabProps) {
-  const t = useTranslations("GamePage");
-  const isMobile = useMobile();
-
   return (
     <div className="space-y-4">
       <div className="space-y-3">
@@ -84,24 +74,6 @@ export function TricksTab({
           );
         })}
       </div>
-      {!isMobile && (
-        <CardFooter>
-          <Button
-            className="w-full"
-            disabled={!canCompleteTricks}
-            onClick={onComplete}
-            size={isMobile ? "lg" : "default"}
-          >
-            {isMobile ? (
-              <>
-                {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
-              </>
-            ) : (
-              t("buttons.completeRound")
-            )}
-          </Button>
-        </CardFooter>
-      )}
     </div>
   );
 }

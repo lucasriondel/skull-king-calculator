@@ -1,8 +1,3 @@
-import { Button } from "@/components/ui/button";
-import { CardFooter } from "@/components/ui/card";
-import { useMobile } from "@/hooks/use-mobile";
-import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { PlayerCard } from "./PlayerCard";
 
 interface Player {
@@ -31,12 +26,7 @@ export function BidsTab({
   roundData,
   updateBid,
   cardsThisRound,
-  canCompleteBids,
-  onContinue,
 }: BidsTabProps) {
-  const t = useTranslations("GamePage");
-  const isMobile = useMobile();
-
   return (
     <>
       <div className="space-y-3">
@@ -52,24 +42,6 @@ export function BidsTab({
           />
         ))}
       </div>
-      {!isMobile && (
-        <CardFooter>
-          <Button
-            className="w-full"
-            disabled={!canCompleteBids}
-            onClick={onContinue}
-            size={isMobile ? "lg" : "default"}
-          >
-            {isMobile ? (
-              <>
-                {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
-              </>
-            ) : (
-              t("buttons.continueToTricks")
-            )}
-          </Button>
-        </CardFooter>
-      )}
     </>
   );
 }

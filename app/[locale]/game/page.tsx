@@ -9,7 +9,6 @@ import { ScoresTab } from "@/components/game/ScoresTab";
 import { TricksTab } from "@/components/game/TricksTab";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useMobile } from "@/hooks/use-mobile";
 import { calculateScore } from "@/lib/game-utils";
 import { useGameStore, type RoundData } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
@@ -19,7 +18,6 @@ import { useEffect, useState } from "react";
 
 export default function GamePage() {
   const router = useRouter();
-  const isMobile = useMobile();
   const {
     gameMode,
     players,
@@ -257,8 +255,7 @@ export default function GamePage() {
           </TabsContent>
         </div>
 
-        {isMobile && (
-          <div className="shrink-0 bg-background border-t border-border p-4">
+        <div className="shrink-0 bg-background border-t border-border p-4 md:border-x md:rounded-t-lg">
             {activeTab === "bids" && (
               <Button
                 className="w-full"
@@ -288,10 +285,9 @@ export default function GamePage() {
                 {t("buttons.backToBids")}
               </Button>
             )}
-          </div>
-        )}
+        </div>
 
-        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)]">
+        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] md:border-x">
           <TabsTrigger value="bids" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.bids")}</TabsTrigger>
           <TabsTrigger
             value="tricks"
