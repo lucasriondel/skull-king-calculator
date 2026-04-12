@@ -19,7 +19,7 @@ export function GameHeader({
   const isMobile = useMobile();
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-700/50 md:border-x md:rounded-b-lg">
+    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-700/50 border-x min-[673px]:rounded-b-lg">
       <div className="flex items-center gap-2">
         <CircleDot className="h-4 w-4 text-emerald-400" />
         <span className="text-xs uppercase tracking-wider text-slate-400">
