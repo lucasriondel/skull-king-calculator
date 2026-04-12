@@ -34,4 +34,15 @@
 - [x] 4.4 Removed `"use client"` directives from: DetailsTab, theme-provider, lib/store, hooks/use-mobile, hooks/use-toast, components/ui/card-button-grid (shadcn UI files left as-is since they are auto-generated)
 - [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
 
-### Next: Phase 5 — Clean up Next.js artifacts
+### Phase 5: Clean up Next.js artifacts — COMPLETE
+- [x] Deleted `app/` directory (entire directory including layout, pages, globals.css, icons)
+- [x] Deleted `src/middleware.ts`
+- [x] Deleted `src/i18n/routing.ts`, `src/i18n/navigation.ts`, `src/i18n/request.ts`
+- [x] Deleted `next.config.mjs`
+- [x] Deleted `next-env.d.ts`
+- [x] Deleted `styles/globals.css` and empty `styles/` directory
+- [x] Removed `next`, `next-intl`, `@vercel/analytics` from package.json dependencies
+- [x] Updated `components.json`: `rsc: false`, css path to `src/globals.css`
+- [x] Clean install and verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Next: Phase 6 — Install deps and verify (manual testing)
