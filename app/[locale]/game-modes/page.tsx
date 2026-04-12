@@ -137,7 +137,7 @@ export default function GameModesPage() {
       {/* Top Bar */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
         <div className="flex items-center gap-2">
-          <Image src="/icon.png" alt="Skull King" width={32} height={32} className="rounded" />
+          <Image src="/logo.png" alt="Skull King" width={32} height={32} className="rounded" />
           <h1 className="text-lg font-bold">{t("title")}</h1>
         </div>
         <div className="flex items-center gap-2">
