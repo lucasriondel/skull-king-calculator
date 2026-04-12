@@ -204,23 +204,12 @@ export default function GamePage() {
         cardsThisRound={cardsThisRound}
       />
 
-      <div className="flex-1 overflow-y-auto px-4 py-4">
-        <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as any)}
-        >
-          <TabsList className="grid w-full grid-cols-4 mb-4">
-            <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
-            <TabsTrigger
-              value="tricks"
-              disabled={activeTab === "bids" && !canCompleteBids}
-            >
-              {t("tabs.tricks")}
-            </TabsTrigger>
-            <TabsTrigger value="scores">{t("tabs.scores")}</TabsTrigger>
-            <TabsTrigger value="details">{t("tabs.details")}</TabsTrigger>
-          </TabsList>
-
+      <Tabs
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as any)}
+        className="flex flex-col flex-1 min-h-0"
+      >
+        <div className="flex-1 overflow-y-auto px-4 py-4">
           <TabsContent value="bids">
             <BidsTab
               players={players}
@@ -266,42 +255,55 @@ export default function GamePage() {
           <TabsContent value="details">
             <DetailsTab />
           </TabsContent>
-        </Tabs>
-      </div>
-
-      {isMobile && (
-        <div className="shrink-0 bg-background border-t border-border p-4">
-          {activeTab === "bids" && (
-            <Button
-              className="w-full"
-              disabled={!canCompleteBids}
-              onClick={goToTricks}
-              size="lg"
-            >
-              {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          )}
-          {activeTab === "tricks" && (
-            <Button
-              className="w-full"
-              disabled={!canCompleteTricks}
-              onClick={completeRound}
-              size="lg"
-            >
-              {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
-            </Button>
-          )}
-          {(activeTab === "scores" || activeTab === "details") && (
-            <Button
-              className="w-full"
-              onClick={() => setActiveTab("bids")}
-              size="lg"
-            >
-              {t("buttons.backToBids")}
-            </Button>
-          )}
         </div>
-      )}
+
+        {isMobile && (
+          <div className="shrink-0 bg-background border-t border-border p-4">
+            {activeTab === "bids" && (
+              <Button
+                className="w-full"
+                disabled={!canCompleteBids}
+                onClick={goToTricks}
+                size="lg"
+              >
+                {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+            {activeTab === "tricks" && (
+              <Button
+                className="w-full"
+                disabled={!canCompleteTricks}
+                onClick={completeRound}
+                size="lg"
+              >
+                {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
+              </Button>
+            )}
+            {(activeTab === "scores" || activeTab === "details") && (
+              <Button
+                className="w-full"
+                onClick={() => setActiveTab("bids")}
+                size="lg"
+              >
+                {t("buttons.backToBids")}
+              </Button>
+            )}
+          </div>
+        )}
+
+        <TabsList className="shrink-0 grid w-full grid-cols-4 h-14 rounded-none border-t border-border">
+          <TabsTrigger value="bids" className="py-3">{t("tabs.bids")}</TabsTrigger>
+          <TabsTrigger
+            value="tricks"
+            className="py-3"
+            disabled={activeTab === "bids" && !canCompleteBids}
+          >
+            {t("tabs.tricks")}
+          </TabsTrigger>
+          <TabsTrigger value="scores" className="py-3">{t("tabs.scores")}</TabsTrigger>
+          <TabsTrigger value="details" className="py-3">{t("tabs.details")}</TabsTrigger>
+        </TabsList>
+      </Tabs>
     </div>
   );
 }
