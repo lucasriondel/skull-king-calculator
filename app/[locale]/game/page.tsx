@@ -196,7 +196,7 @@ export default function GamePage() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-8 pt-4 pb-24 md:pb-8 relative">
+    <div className="flex flex-col h-dvh max-w-2xl mx-auto">
       <GameHeader
         gameModeName={gameMode?.name || ""}
         currentRound={currentRound}
@@ -204,103 +204,102 @@ export default function GamePage() {
         cardsThisRound={cardsThisRound}
       />
 
-      <Tabs
-        value={activeTab}
-        onValueChange={(value) => setActiveTab(value as any)}
-      >
-        <TabsList className="grid w-full grid-cols-4 mb-4">
-          <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
-          <TabsTrigger
-            value="tricks"
-            disabled={activeTab === "bids" && !canCompleteBids}
-          >
-            {t("tabs.tricks")}
-          </TabsTrigger>
-          <TabsTrigger value="scores">{t("tabs.scores")}</TabsTrigger>
-          <TabsTrigger value="details">{t("tabs.details")}</TabsTrigger>
-        </TabsList>
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <Tabs
+          value={activeTab}
+          onValueChange={(value) => setActiveTab(value as any)}
+        >
+          <TabsList className="grid w-full grid-cols-4 mb-4">
+            <TabsTrigger value="bids">{t("tabs.bids")}</TabsTrigger>
+            <TabsTrigger
+              value="tricks"
+              disabled={activeTab === "bids" && !canCompleteBids}
+            >
+              {t("tabs.tricks")}
+            </TabsTrigger>
+            <TabsTrigger value="scores">{t("tabs.scores")}</TabsTrigger>
+            <TabsTrigger value="details">{t("tabs.details")}</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="bids">
-          <BidsTab
-            players={players}
-            roundData={roundData}
-            updateBid={updateBid}
-            cardsThisRound={cardsThisRound}
-            canCompleteBids={canCompleteBids}
-            onContinue={goToTricks}
-          />
-        </TabsContent>
+          <TabsContent value="bids">
+            <BidsTab
+              players={players}
+              roundData={roundData}
+              updateBid={updateBid}
+              cardsThisRound={cardsThisRound}
+              canCompleteBids={canCompleteBids}
+              onContinue={goToTricks}
+            />
+          </TabsContent>
 
-        <TabsContent value="tricks">
-          <TricksTab
-            players={players}
-            roundData={roundData}
-            updateTricks={updateTricks}
-            cardsThisRound={cardsThisRound}
-            canCompleteTricks={canCompleteTricks}
-            bonuses={bonuses}
-            setBonuses={setBonuses}
-            getPlayerWithBonus={getPlayerWithBonus}
-            calculateScore={(bid, tricks, playerBonuses, playerIndex) =>
-              calculateScore(
-                bid,
-                tricks,
-                cardsThisRound,
-                playerBonuses,
-                playerIndex,
-                roundData.map((d) => ({ bid: d.bid, tricks: d.tricks ?? 0 }))
-              )
-            }
-            onComplete={completeRound}
-          />
-        </TabsContent>
+          <TabsContent value="tricks">
+            <TricksTab
+              players={players}
+              roundData={roundData}
+              updateTricks={updateTricks}
+              cardsThisRound={cardsThisRound}
+              canCompleteTricks={canCompleteTricks}
+              bonuses={bonuses}
+              setBonuses={setBonuses}
+              getPlayerWithBonus={getPlayerWithBonus}
+              calculateScore={(bid, tricks, playerBonuses, playerIndex) =>
+                calculateScore(
+                  bid,
+                  tricks,
+                  cardsThisRound,
+                  playerBonuses,
+                  playerIndex,
+                  roundData.map((d) => ({ bid: d.bid, tricks: d.tricks ?? 0 }))
+                )
+              }
+              onComplete={completeRound}
+            />
+          </TabsContent>
 
-        <TabsContent value="scores">
-          <ScoresTab
-            players={players}
-            onBackToBids={() => setActiveTab("bids")}
-          />
-        </TabsContent>
+          <TabsContent value="scores">
+            <ScoresTab
+              players={players}
+              onBackToBids={() => setActiveTab("bids")}
+            />
+          </TabsContent>
 
-        <TabsContent value="details">
-          <DetailsTab />
-        </TabsContent>
-      </Tabs>
+          <TabsContent value="details">
+            <DetailsTab />
+          </TabsContent>
+        </Tabs>
+      </div>
 
-      {/* Mobile Bottom Navigation Bar */}
       {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-          <div className="container max-w-2xl mx-auto">
-            {activeTab === "bids" && (
-              <Button
-                className="w-full"
-                disabled={!canCompleteBids}
-                onClick={goToTricks}
-                size="lg"
-              >
-                {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
-              </Button>
-            )}
-            {activeTab === "tricks" && (
-              <Button
-                className="w-full"
-                disabled={!canCompleteTricks}
-                onClick={completeRound}
-                size="lg"
-              >
-                {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
-              </Button>
-            )}
-            {(activeTab === "scores" || activeTab === "details") && (
-              <Button
-                className="w-full"
-                onClick={() => setActiveTab("bids")}
-                size="lg"
-              >
-                {t("buttons.backToBids")}
-              </Button>
-            )}
-          </div>
+        <div className="shrink-0 bg-background border-t border-border p-4">
+          {activeTab === "bids" && (
+            <Button
+              className="w-full"
+              disabled={!canCompleteBids}
+              onClick={goToTricks}
+              size="lg"
+            >
+              {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+          )}
+          {activeTab === "tricks" && (
+            <Button
+              className="w-full"
+              disabled={!canCompleteTricks}
+              onClick={completeRound}
+              size="lg"
+            >
+              {t("buttons.complete")} <Check className="ml-2 h-5 w-5" />
+            </Button>
+          )}
+          {(activeTab === "scores" || activeTab === "details") && (
+            <Button
+              className="w-full"
+              onClick={() => setActiveTab("bids")}
+              size="lg"
+            >
+              {t("buttons.backToBids")}
+            </Button>
+          )}
         </div>
       )}
     </div>
