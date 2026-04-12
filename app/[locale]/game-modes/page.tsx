@@ -10,7 +10,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
-import { useMobile } from "@/hooks/use-mobile";
 import { type GameMode, useGameStore } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
 import { ArrowRight } from "lucide-react";
@@ -90,7 +89,6 @@ const gameModes: GameMode[] = [
 
 export default function GameModesPage() {
   const router = useRouter();
-  const isMobile = useMobile();
   const { setGameMode } = useGameStore();
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
   const t = useTranslations("GameModesPage");
@@ -134,58 +132,54 @@ export default function GameModesPage() {
   }
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <LanguageSwitcher />
-      <ThemeToggleButton />
-
-      <h1 className="text-3xl font-bold text-center mb-8">{t("title")}</h1>
-      <h2 className="text-xl font-semibold mb-4">{t("subtitle")}</h2>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-        {gameModes.map((mode) => (
-          <Card
-            key={mode.id}
-            className={`cursor-pointer transition-all ${
-              selectedMode === mode.id
-                ? "ring-2 ring-primary"
-                : "hover:bg-accent/50"
-            }`}
-            onClick={() => setSelectedMode(mode.id)}
-          >
-            <CardHeader>
-              <CardTitle>{getModeTranslation(mode.id, "name")}</CardTitle>
-              <CardDescription>{mode.rounds} rounds</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p>{getModeTranslation(mode.id, "description")}</p>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="flex flex-col h-dvh max-w-2xl mx-auto">
+      {/* Top Bar */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
+        <h1 className="text-lg font-bold">{t("title")}</h1>
+        <div className="flex items-center gap-2">
+          <ThemeToggleButton />
+          <LanguageSwitcher />
+        </div>
       </div>
 
-      {!isMobile && (
-        <div className="flex justify-center">
-          <Button size="lg" onClick={handleContinue} disabled={!selectedMode}>
-            {t("continueButton")}
-          </Button>
-        </div>
-      )}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <h2 className="text-xl font-semibold mb-4">{t("subtitle")}</h2>
 
-      {/* Mobile Bottom Navigation Bar */}
-      {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-          <div className="container max-w-4xl mx-auto">
-            <Button
-              className="w-full"
-              size="lg"
-              onClick={handleContinue}
-              disabled={!selectedMode}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {gameModes.map((mode) => (
+            <Card
+              key={mode.id}
+              className={`cursor-pointer transition-all ${
+                selectedMode === mode.id
+                  ? "ring-2 ring-primary"
+                  : "hover:bg-accent/50"
+              }`}
+              onClick={() => setSelectedMode(mode.id)}
             >
-              {t("continueButton")} <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </div>
+              <CardHeader>
+                <CardTitle>{getModeTranslation(mode.id, "name")}</CardTitle>
+                <CardDescription>{mode.rounds} rounds</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p>{getModeTranslation(mode.id, "description")}</p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
-      )}
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <Button
+          className="w-full"
+          size="lg"
+          onClick={handleContinue}
+          disabled={!selectedMode}
+        >
+          {t("continueButton")} <ArrowRight className="ml-2 h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }

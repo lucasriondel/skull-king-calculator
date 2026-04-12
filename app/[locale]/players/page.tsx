@@ -243,8 +243,10 @@ export default function PlayersPage() {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <LanguageSwitcher />
-      <ThemeToggleButton />
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <ThemeToggleButton />
+        <LanguageSwitcher />
+      </div>
       <h1 className="text-3xl font-bold text-center mb-2">{t("title")}</h1>
       <p className="text-center text-muted-foreground mb-8">
         {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
