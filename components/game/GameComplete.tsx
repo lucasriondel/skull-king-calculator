@@ -29,7 +29,9 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <LanguageSwitcher />
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <Card>
         <CardHeader className="text-center">
           <Trophy className="w-16 h-16 mx-auto text-yellow-500 mb-2" />

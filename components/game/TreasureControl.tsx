@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ToggleGroupItem } from "@/components/ui/toggle-group";
+import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import {
   BonusType,
@@ -54,17 +55,19 @@ export function TreasureControl({
   const atLimit = treasureCount >= 2;
 
   return (
-    <div className="flex items-center gap-1">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <ToggleGroupItem
-            value="treasure"
-            className={hasPartners ? "border-2 border-blue-400" : ""}
-          >
-            💰 {treasureCount}
-            {hasPartners && <span className="ml-1 text-xs">👥</span>}
-          </ToggleGroupItem>
-        </DropdownMenuTrigger>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <ToggleGroupItem
+          value="treasure"
+          className={cn(
+            "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60",
+            hasPartners && "ring-2 ring-inset ring-blue-400"
+          )}
+        >
+          💰 {treasureCount}
+          {hasPartners && <span className="ml-1 text-xs">👥</span>}
+        </ToggleGroupItem>
+      </DropdownMenuTrigger>
         <DropdownMenuContent>
           {treasureGroups.length > 0 && (
             <>
@@ -121,8 +124,7 @@ export function TreasureControl({
               {player.name}
             </DropdownMenuItem>
           ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

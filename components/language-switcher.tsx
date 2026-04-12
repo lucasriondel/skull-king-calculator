@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center space-x-2 absolute top-4 right-4">
+    <div className="flex items-center space-x-2">
       <Button
         variant={locale === "en" ? "default" : "outline"}
         size="sm"

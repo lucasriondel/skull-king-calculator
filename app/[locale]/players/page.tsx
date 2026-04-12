@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
-import { useMobile } from "@/hooks/use-mobile";
 import { useGameStore } from "@/lib/store";
 import { useRouter } from "@/src/i18n/navigation";
 import {
@@ -99,7 +98,6 @@ const SortablePlayerItem = forwardRef<
 
 export default function PlayersPage() {
   const router = useRouter();
-  const isMobile = useMobile();
   const {
     setPlayers: setGamePlayers,
     setStartingPlayerIndex,
@@ -242,84 +240,79 @@ export default function PlayersPage() {
   }
 
   return (
-    <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <LanguageSwitcher />
-      <ThemeToggleButton />
-      <h1 className="text-3xl font-bold text-center mb-2">{t("title")}</h1>
-      <p className="text-center text-muted-foreground mb-8">
-        {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
-      </p>
+    <div className="flex flex-col h-dvh max-w-2xl mx-auto">
+      {/* Top Bar */}
+      <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
+        <div>
+          <h1 className="text-lg font-bold">{t("title")}</h1>
+          <p className="text-xs text-muted-foreground">
+            {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ThemeToggleButton />
+          <LanguageSwitcher />
+        </div>
+      </div>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>
-            {t("playersHeader", { count: playerList.length })}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={playerList.map((player) => player.id)}
-              strategy={verticalListSortingStrategy}
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              {t("playersHeader", { count: playerList.length })}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              {playerList.map((player, idx) => (
-                <SortablePlayerItem
-                  key={player.id}
-                  id={player.id}
-                  player={player}
-                  updatePlayerName={updatePlayerName}
-                  removePlayer={removePlayer}
-                  disableDelete={playerList.length <= 2}
-                  t={t}
-                  ref={(el) => {
-                    inputRefs.current[idx] = el;
-                  }}
-                />
-              ))}
-            </SortableContext>
-          </DndContext>
+              <SortableContext
+                items={playerList.map((player) => player.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                {playerList.map((player, idx) => (
+                  <SortablePlayerItem
+                    key={player.id}
+                    id={player.id}
+                    player={player}
+                    updatePlayerName={updatePlayerName}
+                    removePlayer={removePlayer}
+                    disableDelete={playerList.length <= 2}
+                    t={t}
+                    ref={(el) => {
+                      inputRefs.current[idx] = el;
+                    }}
+                  />
+                ))}
+              </SortableContext>
+            </DndContext>
 
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={addPlayer}
-            disabled={
-              playerList.length >= 8 ||
-              playerList.some((player) => player.name === "")
-            }
-          >
-            <UserPlus className="mr-2 h-4 w-4" />
-            {t("addPlayer")}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {!isMobile && (
-        <div className="flex justify-center flex-col items-center">
-          <RandomizeStarterCheckbox />
-
-          <Button size="lg" onClick={handleStartGame}>
-            {t("startGame")} <Play className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-      )}
-
-      {/* Mobile Bottom Navigation Bar */}
-      {isMobile && (
-        <div className="fixed bottom-0 left-0 right-0 bg-background border-t border-border p-4 z-50">
-          <RandomizeStarterCheckbox />
-
-          <div className="container max-w-2xl mx-auto">
-            <Button className="w-full" size="lg" onClick={handleStartGame}>
-              {t("startGame")} <Play className="ml-2 h-5 w-5" />
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={addPlayer}
+              disabled={
+                playerList.length >= 8 ||
+                playerList.some((player) => player.name === "")
+              }
+            >
+              <UserPlus className="mr-2 h-4 w-4" />
+              {t("addPlayer")}
             </Button>
-          </div>
-        </div>
-      )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Bottom Bar */}
+      <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <RandomizeStarterCheckbox />
+        <Button className="w-full" size="lg" onClick={handleStartGame}>
+          {t("startGame")} <Play className="ml-2 h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }

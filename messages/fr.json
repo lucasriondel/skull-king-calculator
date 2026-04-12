@@ -61,7 +61,8 @@
       "bid": "Enchère / Plis & Points",
       "bonusPoints": "Points de bonus",
       "noData": "Pas encore de données pour cette manche.",
-      "newScore": "Score & Changement"
+      "newScore": "Score & Changement",
+      "emptyState": "Aucun détail pour le moment. Terminez une manche pour voir le résumé."
     },
     "enterBids": "Saisir les Enchères",
     "enterTricksWon": "Saisir les Plis Gagnés",
