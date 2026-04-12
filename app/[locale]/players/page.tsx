@@ -27,6 +27,7 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, Trash2, UserPlus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import Image from "next/image";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
 // Define SortablePlayerItem component
@@ -101,6 +102,7 @@ export default function PlayersPage() {
   const {
     setPlayers: setGamePlayers,
     setStartingPlayerIndex,
+    setPiratePowers,
     gameMode,
   } = useGameStore();
   const t = useTranslations("PlayersPage");
@@ -203,6 +205,7 @@ export default function PlayersPage() {
   };
 
   const [randomizeStarter, setRandomizeStarter] = useState(false);
+  const [playingWithPiratePowers, setPlayingWithPiratePowers] = useState(false);
 
   const handleStartGame = () => {
     if (randomizeStarter) {
@@ -210,6 +213,7 @@ export default function PlayersPage() {
     } else {
       setStartingPlayerIndex(0);
     }
+    setPiratePowers(playingWithPiratePowers);
     setGamePlayers(
       playerList.map((player) => ({ name: player.name, score: 0, rounds: [] }))
     );
@@ -243,11 +247,14 @@ export default function PlayersPage() {
     <div className="flex flex-col h-dvh max-w-2xl mx-auto">
       {/* Top Bar */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
-        <div>
-          <h1 className="text-lg font-bold">{t("title")}</h1>
-          <p className="text-xs text-muted-foreground">
-            {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
-          </p>
+        <div className="flex items-center gap-2">
+          <Image src="/icon.png" alt="Skull King" width={32} height={32} className="rounded" />
+          <div>
+            <h1 className="text-lg font-bold">{t("title")}</h1>
+            <p className="text-xs text-muted-foreground">
+              {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggleButton />
@@ -309,6 +316,19 @@ export default function PlayersPage() {
       {/* Bottom Bar */}
       <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg pb-[max(1rem,env(safe-area-inset-bottom))]">
         <RandomizeStarterCheckbox />
+        <div className="flex items-center mb-4 gap-2">
+          <Checkbox
+            id="pirate-powers"
+            checked={playingWithPiratePowers}
+            onCheckedChange={(checked) => setPlayingWithPiratePowers(!!checked)}
+          />
+          <label
+            htmlFor="pirate-powers"
+            className="select-none cursor-pointer"
+          >
+            {t("piratePowers")}
+          </label>
+        </div>
         <Button className="w-full" size="lg" onClick={handleStartGame}>
           {t("startGame")} <Play className="ml-2 h-5 w-5" />
         </Button>
