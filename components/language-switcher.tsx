@@ -1,29 +1,31 @@
-"use client";
-
-import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "@/src/i18n/navigation";
+import { useTranslation } from "react-i18next";
+import { useNavigate, useParams, useRouterState } from "@tanstack/react-router";
 import { Button } from "@/components/ui/button";
 
 export default function LanguageSwitcher() {
-  const locale = useLocale();
-  const pathname = usePathname();
-  const router = useRouter();
+  const { i18n } = useTranslation();
+  const navigate = useNavigate();
+  const { locale } = useParams({ from: "/$locale" });
+  const routerState = useRouterState();
 
   const handleChangeLocale = (newLocale: string) => {
-    router.replace(pathname, { locale: newLocale });
+    i18n.changeLanguage(newLocale);
+    const currentPath = routerState.location.pathname;
+    const newPath = currentPath.replace(`/${locale}`, `/${newLocale}`);
+    navigate({ to: newPath });
   };
 
   return (
     <div className="flex items-center space-x-2">
       <Button
-        variant={locale === "en" ? "default" : "outline"}
+        variant={i18n.language === "en" ? "default" : "outline"}
         size="sm"
         onClick={() => handleChangeLocale("en")}
       >
         EN
       </Button>
       <Button
-        variant={locale === "fr" ? "default" : "outline"}
+        variant={i18n.language === "fr" ? "default" : "outline"}
         size="sm"
         onClick={() => handleChangeLocale("fr")}
       >

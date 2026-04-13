@@ -1,5 +1,5 @@
-"use client";
-
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { BidsTab } from "@/components/game/BidsTab";
 import { BonusType } from "@/components/game/BonusControls";
 import { DetailsTab } from "@/components/game/DetailsTab";
@@ -11,13 +11,12 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { calculateScore } from "@/lib/game-utils";
 import { useGameStore, type RoundData } from "@/lib/store";
-import { useRouter } from "@/src/i18n/navigation";
 import { ArrowRight, Check } from "lucide-react";
-import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-export default function GamePage() {
-  const router = useRouter();
+function GamePage() {
+  const navigate = useNavigate();
+  const { locale } = useParams({ from: "/$locale" });
   const {
     gameMode,
     players,
@@ -32,18 +31,20 @@ export default function GamePage() {
   const [roundData, setRoundData] = useState<RoundData[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
-  const [rascalBet, setRascalBet] = useState<{ playerIndex: number; amount: 10 | 20 } | null>(null);
-  const t = useTranslations("GamePage");
+  const [rascalBet, setRascalBet] = useState<{
+    playerIndex: number;
+    amount: 10 | 20;
+  } | null>(null);
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
 
   console.log(roundData);
 
   useEffect(() => {
     if (!gameMode || !players.length) {
-      router.push("/game-modes");
+      navigate({ to: "/$locale/game-modes", params: { locale } });
       return;
     }
 
-    // Initialize round data
     setRoundData(
       players.map((player) => ({
         playerId: player.name,
@@ -52,7 +53,7 @@ export default function GamePage() {
         score: 0,
       }))
     );
-  }, [gameMode, players, router]);
+  }, [gameMode, players, navigate, locale]);
 
   const cardsThisRound = gameMode ? gameMode.cardsPerRound(currentRound) : 0;
 
@@ -90,7 +91,6 @@ export default function GamePage() {
       players,
     });
 
-    // Calculate scores
     const allBidTricks = roundData.map((d) => ({
       bid: d.bid,
       tricks: d.tricks ?? 0,
@@ -122,14 +122,12 @@ export default function GamePage() {
       };
     });
 
-    // Update player data with the correct round number
     newRoundData.forEach((data, index) => {
       console.log(`Updating player ${index} for round ${currentRound}`);
       updatePlayerRound(index, currentRound, data);
     });
 
     if (currentRound < gameMode!.rounds) {
-      // Move to next round
       setCurrentRound(currentRound + 1);
       setRoundData(
         players.map((player) => ({
@@ -139,12 +137,11 @@ export default function GamePage() {
           score: 0,
         }))
       );
-      setBonuses({}); // Reset bonuses for the new round
+      setBonuses({});
       setRascalBet(null);
       moveToNextStartingPlayer();
       setActiveTab("bids");
     } else {
-      // Game complete
       setGameComplete(true);
     }
   };
@@ -190,7 +187,7 @@ export default function GamePage() {
 
   const handleNewGame = () => {
     resetGame();
-    router.push("/game-modes");
+    navigate({ to: "/$locale/game-modes", params: { locale } });
   };
 
   if (gameComplete) {
@@ -271,7 +268,8 @@ export default function GamePage() {
                 onClick={goToTricks}
                 size="lg"
               >
-                {t("buttons.continue")} <ArrowRight className="ml-2 h-5 w-5" />
+                {t("buttons.continue")}{" "}
+                <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             )}
             {activeTab === "tricks" && (
@@ -287,8 +285,15 @@ export default function GamePage() {
           </div>
         )}
 
-        <TabsList className={`shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x ${activeTab !== "bids" && activeTab !== "tricks" ? "border-t border-border min-[673px]:rounded-t-lg" : ""}`}>
-          <TabsTrigger value="bids" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.bids")}</TabsTrigger>
+        <TabsList
+          className={`shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x ${activeTab !== "bids" && activeTab !== "tricks" ? "border-t border-border min-[673px]:rounded-t-lg" : ""}`}
+        >
+          <TabsTrigger
+            value="bids"
+            className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
+          >
+            {t("tabs.bids")}
+          </TabsTrigger>
           <TabsTrigger
             value="tricks"
             className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
@@ -296,10 +301,24 @@ export default function GamePage() {
           >
             {t("tabs.tricks")}
           </TabsTrigger>
-          <TabsTrigger value="scores" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.scores")}</TabsTrigger>
-          <TabsTrigger value="details" className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary">{t("tabs.details")}</TabsTrigger>
+          <TabsTrigger
+            value="scores"
+            className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
+          >
+            {t("tabs.scores")}
+          </TabsTrigger>
+          <TabsTrigger
+            value="details"
+            className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
+          >
+            {t("tabs.details")}
+          </TabsTrigger>
         </TabsList>
       </Tabs>
     </div>
   );
 }
+
+export const Route = createFileRoute("/$locale/game")({
+  component: GamePage,
+});

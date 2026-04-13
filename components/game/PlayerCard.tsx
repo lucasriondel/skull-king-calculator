@@ -5,7 +5,7 @@ import { CardButtonGrid } from "@/components/ui/card-button-grid";
 import { useGameStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 import { BonusControls, BonusType } from "./BonusControls";
 import { NumberSelector } from "./NumberSelector";
 
@@ -112,7 +112,7 @@ function RascalBetRow({
 }
 
 export function PlayerCard(props: PlayerCardProps) {
-  const t = useTranslations("GamePage");
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
   const { startingPlayerIndex, piratePowers } = useGameStore();
   const { player, playerIndex, cardsThisRound, mode } = props;
 

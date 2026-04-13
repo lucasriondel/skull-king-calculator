@@ -1,0 +1,60 @@
+## Migration Progress
+
+### Phase 1: Scaffold Vite project — COMPLETE
+- [x] 1.1 Created `vite.config.ts` with React plugin, TanStack Router plugin, and @/ alias
+- [x] 1.2 Created `index.html` with Inter font CDN, root mount point, meta tags
+- [x] 1.3 Updated `tsconfig.json` — jsx: react-jsx, removed Next plugin, updated includes
+- [x] 1.4 Updated `package.json` — Vite scripts, installed vite, @vitejs/plugin-react, @tanstack/react-router, @tanstack/router-devtools, @tanstack/router-plugin, i18next, react-i18next, i18next-browser-languagedetector
+- [x] 1.5 Updated `tailwind.config.ts` — content paths now point to index.html, src/**, components/**
+- [x] 1.6 Copied globals.css to `src/globals.css` (updated font-family to use Inter)
+- [x] Created minimal `src/main.tsx` placeholder entry point
+- [x] Verified: `vite build` succeeds
+
+### Phase 2: Set up i18n with i18next — COMPLETE
+- [x] 2.1 Created `src/i18n/locales.ts` with supportedLocales, defaultLocale, and SupportedLocale type
+- [x] 2.2 Created `src/i18n/index.ts` — i18next init with react-i18next, browser language detector, en/fr translations
+- [x] 2.3 Updated translation files — replaced `{var}` with `{{var}}` in both `messages/en.json` and `messages/fr.json` (modeInfo, playersHeader, defaultPlayerName keys)
+- [x] Verified: `vite build` succeeds
+
+### Phase 3: Create TanStack Router routes — COMPLETE
+- [x] 3.1 Updated `src/main.tsx` — imports i18n, creates router from generated route tree, renders RouterProvider with type-safe Register
+- [x] 3.2 Created `src/routes/__root.tsx` — wraps Outlet in ThemeProvider
+- [x] 3.3 Created `src/routes/index.tsx` — detects browser locale, redirects to /$locale/game-modes
+- [x] 3.4 Created `src/routes/$locale/route.tsx` — validates locale param, redirects invalid locales, syncs i18n language
+- [x] 3.5 Created `src/routes/$locale/index.tsx` — redirects to /$locale/game-modes
+- [x] 3.6 Migrated game-modes page to `src/routes/$locale/game-modes.tsx` — useTranslation, useNavigate, <img> instead of Image
+- [x] 3.7 Migrated players page to `src/routes/$locale/players.tsx` — same pattern, removed "use client"
+- [x] 3.8 Migrated game page to `src/routes/$locale/game.tsx` — same pattern, removed "use client"
+- [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Phase 4: Update imports across all components — COMPLETE
+- [x] 4.1 Replaced `useTranslations` (next-intl) with `useTranslation` (react-i18next) in GameHeader, GameComplete, ScoresTab, DetailsTab, PlayerCard
+- [x] 4.2 Route files (game-modes, players, game) already migrated in Phase 3
+- [x] 4.3 Rewrote `components/language-switcher.tsx` — uses `useTranslation()` for i18n.language, `useNavigate()`/`useParams()`/`useRouterState()` from TanStack Router
+- [x] 4.4 Removed `"use client"` directives from: DetailsTab, theme-provider, lib/store, hooks/use-mobile, hooks/use-toast, components/ui/card-button-grid (shadcn UI files left as-is since they are auto-generated)
+- [x] Verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Phase 5: Clean up Next.js artifacts — COMPLETE
+- [x] Deleted `app/` directory (entire directory including layout, pages, globals.css, icons)
+- [x] Deleted `src/middleware.ts`
+- [x] Deleted `src/i18n/routing.ts`, `src/i18n/navigation.ts`, `src/i18n/request.ts`
+- [x] Deleted `next.config.mjs`
+- [x] Deleted `next-env.d.ts`
+- [x] Deleted `styles/globals.css` and empty `styles/` directory
+- [x] Removed `next`, `next-intl`, `@vercel/analytics` from package.json dependencies
+- [x] Updated `components.json`: `rsc: false`, css path to `src/globals.css`
+- [x] Clean install and verified: `vite build` succeeds, `tsc --noEmit` passes (only pre-existing sidebar error)
+
+### Phase 6: Verify — COMPLETE
+- [x] Fixed pre-existing sidebar build error: `useIsMobile` import renamed to match `useMobile` export in `hooks/use-mobile.ts`
+- [x] `tsc -b && vite build` succeeds with zero errors
+- [x] Tested `/` root — correctly redirects to `/en/game-modes` via browser locale detection
+- [x] Tested `/en/game-modes` — all 6 game modes render correctly with descriptions
+- [x] Tested `/fr/game-modes` — French translations display correctly
+- [x] Tested theme toggle — switches between light and dark mode, persists correctly
+- [x] Tested language switcher — EN/FR buttons work
+- [x] Tested invalid locale redirect — `/de/game-modes` redirects to `/en/game-modes`
+- [x] Tested full game flow: select Classic mode → player setup (2 players) → game page (Round 1/10, bids/tricks/scores/details tabs)
+- [x] All routes work: `/`, `/en/game-modes`, `/en/players`, `/en/game`, `/fr/game-modes`
+
+### Migration Complete

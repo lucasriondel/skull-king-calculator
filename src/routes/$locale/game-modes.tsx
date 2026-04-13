@@ -1,5 +1,5 @@
-"use client";
-
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,10 +11,7 @@ import {
 } from "@/components/ui/card";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { type GameMode, useGameStore } from "@/lib/store";
-import { useRouter } from "@/src/i18n/navigation";
 import { ArrowRight } from "lucide-react";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { useState } from "react";
 
 const gameModes: GameMode[] = [
@@ -88,27 +85,26 @@ const gameModes: GameMode[] = [
   },
 ];
 
-export default function GameModesPage() {
-  const router = useRouter();
+function GameModesPage() {
+  const navigate = useNavigate();
+  const { locale } = useParams({ from: "/$locale" });
   const { setGameMode } = useGameStore();
   const [selectedMode, setSelectedMode] = useState<string | null>(null);
-  const t = useTranslations("GameModesPage");
+  const { t } = useTranslation("translation", { keyPrefix: "GameModesPage" });
 
   const handleContinue = () => {
     const mode = gameModes.find((mode) => mode.id === selectedMode);
     if (mode) {
-      // Use the translated values for the selected game mode
       const translatedMode = {
         ...mode,
         name: getModeTranslation(mode.id, "name"),
         description: getModeTranslation(mode.id, "description"),
       };
       setGameMode(translatedMode);
-      router.push("/players");
+      navigate({ to: "/$locale/players", params: { locale } });
     }
   };
 
-  // Helper function to get translations for game mode properties
   function getModeTranslation(
     modeId: string,
     property: "name" | "description"
@@ -123,13 +119,12 @@ export default function GameModesPage() {
       "bed-time": "bedTime",
     };
 
-    try {
-      return t.raw(`gameModes.${idMap[modeId]}.${property}`);
-    } catch (e) {
-      // Find the original mode for fallback
-      const originalMode = gameModes.find((m) => m.id === modeId);
-      return originalMode ? originalMode[property] : "";
-    }
+    const key = `gameModes.${idMap[modeId]}.${property}`;
+    const value = t(key);
+    if (value && value !== key) return value;
+
+    const originalMode = gameModes.find((m) => m.id === modeId);
+    return originalMode ? originalMode[property] : "";
   }
 
   return (
@@ -137,7 +132,13 @@ export default function GameModesPage() {
       {/* Top Bar */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Skull King" width={32} height={32} className="rounded" />
+          <img
+            src="/logo.png"
+            alt="Skull King"
+            width={32}
+            height={32}
+            className="rounded"
+          />
           <h1 className="text-lg font-bold">{t("title")}</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -187,3 +188,7 @@ export default function GameModesPage() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/$locale/game-modes")({
+  component: GameModesPage,
+});

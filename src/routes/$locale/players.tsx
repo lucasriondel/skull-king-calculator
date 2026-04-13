@@ -1,5 +1,5 @@
-"use client";
-
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +7,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
 import { useGameStore } from "@/lib/store";
-import { useRouter } from "@/src/i18n/navigation";
 import {
   closestCenter,
   DndContext,
@@ -26,11 +25,8 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical, Play, Trash2, UserPlus } from "lucide-react";
-import { useTranslations } from "next-intl";
-import Image from "next/image";
 import { forwardRef, useEffect, useRef, useState } from "react";
 
-// Define SortablePlayerItem component
 const SortablePlayerItem = forwardRef<
   HTMLInputElement,
   {
@@ -66,7 +62,6 @@ const SortablePlayerItem = forwardRef<
       style={style}
       className="flex items-center gap-2 p-2 bg-background rounded-md shadow"
     >
-      {/* Drag handle */}
       <span
         className="cursor-grab active:cursor-grabbing touch-none select-none flex items-center pr-2"
         {...attributes}
@@ -97,28 +92,26 @@ const SortablePlayerItem = forwardRef<
   );
 });
 
-export default function PlayersPage() {
-  const router = useRouter();
+function PlayersPage() {
+  const navigate = useNavigate();
+  const { locale } = useParams({ from: "/$locale" });
   const {
     setPlayers: setGamePlayers,
     setStartingPlayerIndex,
     setPiratePowers,
     gameMode,
   } = useGameStore();
-  const t = useTranslations("PlayersPage");
+  const { t } = useTranslation("translation", { keyPrefix: "PlayersPage" });
 
-  // Use objects with stable IDs instead of just strings
   const [playerList, setPlayerList] = useState<{ id: string; name: string }[]>(
     () => {
-      if (typeof window !== "undefined") {
-        const savedPlayers = localStorage.getItem("skullKingPlayers");
-        if (savedPlayers) {
-          const names = JSON.parse(savedPlayers);
-          return names.map((name: string, index: number) => ({
-            id: `player-${index}`,
-            name,
-          }));
-        }
+      const savedPlayers = localStorage.getItem("skullKingPlayers");
+      if (savedPlayers) {
+        const names = JSON.parse(savedPlayers);
+        return names.map((name: string, index: number) => ({
+          id: `player-${index}`,
+          name,
+        }));
       }
       return [
         { id: "player-0", name: t("defaultPlayerName", { number: 1 }) },
@@ -128,17 +121,12 @@ export default function PlayersPage() {
   );
 
   const prevPlayerNamesLengthRef = useRef(playerList.length);
-
-  // Refs for player inputs
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Save player names to localStorage whenever they change
-  // And focus the last input if a player was added
   useEffect(() => {
     const playerNames = playerList.map((player) => player.name);
     localStorage.setItem("skullKingPlayers", JSON.stringify(playerNames));
     if (playerNames.length > prevPlayerNamesLengthRef.current) {
-      // Focus the last input using refs
       const lastInputRef = inputRefs.current[playerNames.length - 1];
       if (lastInputRef) {
         lastInputRef.focus();
@@ -217,7 +205,7 @@ export default function PlayersPage() {
     setGamePlayers(
       playerList.map((player) => ({ name: player.name, score: 0, rounds: [] }))
     );
-    router.push("/game");
+    navigate({ to: "/$locale/game", params: { locale } });
   };
 
   function RandomizeStarterCheckbox() {
@@ -232,14 +220,14 @@ export default function PlayersPage() {
           htmlFor="randomize-starter"
           className="select-none cursor-pointer"
         >
-          {t("randomizeStarter", { default: "Randomize who starts first" })}
+          {t("randomizeStarter", { defaultValue: "Randomize who starts first" })}
         </label>
       </div>
     );
   }
 
   if (!gameMode) {
-    router.push("/game-modes");
+    navigate({ to: "/$locale/game-modes", params: { locale } });
     return null;
   }
 
@@ -248,7 +236,13 @@ export default function PlayersPage() {
       {/* Top Bar */}
       <div className="shrink-0 flex items-center justify-between px-4 py-3 bg-background border-b border-border border-x min-[673px]:rounded-b-lg">
         <div className="flex items-center gap-2">
-          <Image src="/logo.png" alt="Skull King" width={32} height={32} className="rounded" />
+          <img
+            src="/logo.png"
+            alt="Skull King"
+            width={32}
+            height={32}
+            className="rounded"
+          />
           <div>
             <h1 className="text-lg font-bold">{t("title")}</h1>
             <p className="text-xs text-muted-foreground">
@@ -336,3 +330,7 @@ export default function PlayersPage() {
     </div>
   );
 }
+
+export const Route = createFileRoute("/$locale/players")({
+  component: PlayersPage,
+});

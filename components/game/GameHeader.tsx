@@ -1,6 +1,6 @@
 import { useMobile } from "@/hooks/use-mobile";
 import { CircleDot, Layers } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslation } from "react-i18next";
 
 interface GameHeaderProps {
   gameModeName: string;
@@ -15,7 +15,7 @@ export function GameHeader({
   totalRounds,
   cardsThisRound,
 }: GameHeaderProps) {
-  const t = useTranslations("GamePage");
+  const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
   const isMobile = useMobile();
 
   return (

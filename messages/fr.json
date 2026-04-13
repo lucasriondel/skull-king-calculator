@@ -36,11 +36,11 @@
   },
   "PlayersPage": {
     "title": "Configuration des Joueurs",
-    "modeInfo": "Mode {mode} • {rounds} manches",
-    "playersHeader": "Joueurs ({count}/8)",
+    "modeInfo": "Mode {{mode}} • {{rounds}} manches",
+    "playersHeader": "Joueurs ({{count}}/8)",
     "addPlayer": "Ajouter un Joueur",
     "startGame": "Commencer la Partie",
-    "defaultPlayerName": "Joueur {number}",
+    "defaultPlayerName": "Joueur {{number}}",
     "randomizeStarter": "Joueur de départ aléatoire",
     "piratePowers": "Jouer avec les pouvoirs des Pirates"
   },
