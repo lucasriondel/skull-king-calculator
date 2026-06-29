@@ -84,5 +84,11 @@
       "newGame": "Nouvelle Partie"
     },
     "rascalBet": "Pari du Gredin"
+  },
+  "PullToRefresh": {
+    "title": "Rafraîchir la page ?",
+    "description": "Rafraîchir réinitialisera votre partie en cours. Voulez-vous vraiment continuer ?",
+    "confirm": "Rafraîchir",
+    "cancel": "Annuler"
   }
 }

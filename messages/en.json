@@ -84,5 +84,11 @@
       "newGame": "New Game"
     },
     "rascalBet": "Rascal's bet"
+  },
+  "PullToRefresh": {
+    "title": "Refresh the page?",
+    "description": "Refreshing will reset your current game state. Are you sure you want to continue?",
+    "confirm": "Refresh",
+    "cancel": "Cancel"
   }
 }
