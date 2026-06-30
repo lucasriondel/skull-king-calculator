@@ -31,10 +31,16 @@ export function usePullToRefreshConfirm(onTrigger: () => void) {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      if (state.startY === null) return;
       const currentY = e.touches[0].clientY;
+      // Pulling down from the top: suppress the browser's native
+      // pull-to-refresh so our dialog wins the race. Requires a
+      // non-passive listener — passive listeners cannot preventDefault.
+      if (currentY > state.startY && e.cancelable) {
+        e.preventDefault();
+      }
       if (detectPullTrigger(state, currentY)) {
         state.triggered = true;
-        state.startY = null;
         onTrigger();
       }
     };
@@ -45,7 +51,7 @@ export function usePullToRefreshConfirm(onTrigger: () => void) {
     };
 
     window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
     window.addEventListener("touchend", handleTouchEnd, { passive: true });
     window.addEventListener("touchcancel", handleTouchEnd, { passive: true });
 
