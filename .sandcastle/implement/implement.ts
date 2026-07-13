@@ -17,9 +17,9 @@
 // issues are picked up after each round of merges.
 //
 // Usage:
-//   npx tsx .sandcastle/main.mts
-// Or add to package.json:
-//   "scripts": { "sandcastle": "npx tsx .sandcastle/main.mts" }
+//   bun .sandcastle/implement/implement.ts
+// Or via the registered package.json script:
+//   bun run sandcastle:implement
 
 import * as sandcastle from "@ai-hero/sandcastle";
 import { docker } from "@ai-hero/sandcastle/sandboxes/docker";
@@ -44,15 +44,17 @@ const planSchema = z.object({
 const MAX_ITERATIONS = 10;
 
 // Hooks run inside the sandbox before the agent starts each iteration.
-// npm install ensures the sandbox always has fresh dependencies.
+// bun install ensures the sandbox always has fresh dependencies.
 const hooks = {
   sandbox: { onSandboxReady: [{ command: "bun install" }] },
 };
 
 // Copy node_modules from the host into the worktree before each sandbox
-// starts. Avoids a full npm install from scratch; the hook above handles
+// starts. Avoids a full bun install from scratch; the hook above handles
 // platform-specific binaries and any packages added since the last copy.
-const copyToWorktree = ["node_modules", "./packages/api/node_modules", "./packages/cli/node_modules", "./packages/web/node_modules", "./packages/core/node_modules"];
+// In a monorepo, add each package's node_modules too, e.g.
+//   ["node_modules", "./packages/api/node_modules", "./packages/web/node_modules"]
+const copyToWorktree = ["node_modules"];
 
 // ---------------------------------------------------------------------------
 // Main loop
@@ -78,8 +80,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     // not write code. (Structured output requires maxIterations: 1.)
     maxIterations: 1,
     // Opus for planning: dependency analysis benefits from deeper reasoning.
-    agent: sandcastle.claudeCode("claude-opus-4-7"),
-    promptFile: "./.sandcastle/plan-prompt.md",
+    agent: sandcastle.claudeCode("claude-opus-4-8"),
+    promptFile: "./.sandcastle/implement/plan-prompt.md",
     // Extract and validate the <plan> JSON into a typed object. Throws
     // StructuredOutputError if the tag is missing, the JSON is malformed, or
     // validation fails — which aborts the loop.
@@ -125,8 +127,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
         const implement = await sandbox.run({
           name: "implementer",
           maxIterations: 100,
-          agent: sandcastle.claudeCode("claude-opus-4-7"),
-          promptFile: "./.sandcastle/implement-prompt.md",
+          agent: sandcastle.claudeCode("claude-opus-4-8"),
+          promptFile: "./.sandcastle/implement/implement-prompt.md",
           promptArgs: {
             TASK_ID: issue.id,
             ISSUE_TITLE: issue.title,
@@ -139,8 +141,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
           const review = await sandbox.run({
             name: "reviewer",
             maxIterations: 1,
-            agent: sandcastle.claudeCode("claude-opus-4-7"),
-            promptFile: "./.sandcastle/review-prompt.md",
+            agent: sandcastle.claudeCode("claude-opus-4-8"),
+            promptFile: "./.sandcastle/implement/review-prompt.md",
             promptArgs: {
               BRANCH: issue.branch,
             },
@@ -210,8 +212,8 @@ for (let iteration = 1; iteration <= MAX_ITERATIONS; iteration++) {
     sandbox: docker(),
     name: "merger",
     maxIterations: 1,
-    agent: sandcastle.claudeCode("claude-opus-4-7"),
-    promptFile: "./.sandcastle/merge-prompt.md",
+    agent: sandcastle.claudeCode("claude-opus-4-8"),
+    promptFile: "./.sandcastle/implement/merge-prompt.md",
     promptArgs: {
       // A markdown list of branch names, one per line.
       BRANCHES: completedBranches.map((b) => `- ${b}`).join("\n"),
