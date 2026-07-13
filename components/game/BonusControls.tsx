@@ -131,6 +131,9 @@ interface Player {
   score: number;
 }
 
+const toggleClass =
+  "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
+
 // A +/- stepper that sits beside a bonus toggle. Each button is a 40x40 hit
 // target (size-10) laid out as a flex sibling of the toggle, so its hit zone
 // never overlaps the toggle behind it (issue #11).
@@ -165,6 +168,36 @@ function BonusStepper({
       >
         <Minus className="size-4" />
       </Button>
+    </div>
+  );
+}
+
+// A special-card toggle (mermaid/pirate) paired with a stepper that appears
+// once the card is active so its count can be adjusted.
+function SpecialCardToggle({
+  value,
+  label,
+  count,
+  onIncrement,
+  onDecrement,
+}: {
+  value: string;
+  label: string;
+  count: number;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}) {
+  return (
+    <div className="flex w-full min-h-10 items-stretch self-stretch">
+      <ToggleGroupItem
+        value={value}
+        className={cn(toggleClass, "h-auto flex-1 self-stretch")}
+      >
+        {label} {count}
+      </ToggleGroupItem>
+      {count > 0 && (
+        <BonusStepper onIncrement={onIncrement} onDecrement={onDecrement} />
+      )}
     </div>
   );
 }
@@ -231,9 +264,6 @@ export function BonusControls({
       };
     });
   };
-
-  const toggleClass =
-    "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
 
   const handleColorChange = (values: string[]) => {
     setBonuses((prev) => {
@@ -429,36 +459,22 @@ export function BonusControls({
             />
           </CardButtonGrid.Cell>
           <CardButtonGrid.Cell colIndex={1} className="p-0">
-            <div className="flex w-full min-h-10 items-stretch self-stretch">
-              <ToggleGroupItem
-                value="mermaid"
-                className={cn(toggleClass, "h-auto flex-1 self-stretch")}
-              >
-                🧜‍♀️ {bonuses[playerIndex]?.mermaid || 0}
-              </ToggleGroupItem>
-              {bonuses[playerIndex]?.mermaid > 0 && (
-                <BonusStepper
-                  onIncrement={() => adjustSpecialCard("mermaid", 1)}
-                  onDecrement={() => adjustSpecialCard("mermaid", -1)}
-                />
-              )}
-            </div>
+            <SpecialCardToggle
+              value="mermaid"
+              label="🧜‍♀️"
+              count={bonuses[playerIndex]?.mermaid || 0}
+              onIncrement={() => adjustSpecialCard("mermaid", 1)}
+              onDecrement={() => adjustSpecialCard("mermaid", -1)}
+            />
           </CardButtonGrid.Cell>
           <CardButtonGrid.Cell colIndex={2} className="p-0">
-            <div className="flex w-full min-h-10 items-stretch self-stretch">
-              <ToggleGroupItem
-                value="pirate"
-                className={cn(toggleClass, "h-auto flex-1 self-stretch")}
-              >
-                🏴‍☠️ {bonuses[playerIndex]?.pirate || 0}
-              </ToggleGroupItem>
-              {bonuses[playerIndex]?.pirate > 0 && (
-                <BonusStepper
-                  onIncrement={() => adjustSpecialCard("pirate", 1)}
-                  onDecrement={() => adjustSpecialCard("pirate", -1)}
-                />
-              )}
-            </div>
+            <SpecialCardToggle
+              value="pirate"
+              label="🏴‍☠️"
+              count={bonuses[playerIndex]?.pirate || 0}
+              onIncrement={() => adjustSpecialCard("pirate", 1)}
+              onDecrement={() => adjustSpecialCard("pirate", -1)}
+            />
           </CardButtonGrid.Cell>
           <CardButtonGrid.Cell colIndex={3}>
             <ToggleGroupItem
