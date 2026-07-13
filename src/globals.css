@@ -13,6 +13,9 @@ body {
 
 body {
   font-family: "Inter", Arial, Helvetica, sans-serif;
+  /* Crisper text rendering on macOS/WebKit. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @layer utilities {

@@ -25,7 +25,7 @@ export function GameHeader({
         <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {t("round")}
         </span>
-        <span className="text-sm font-semibold text-emerald-500">
+        <span className="text-sm font-semibold text-emerald-500 tabular-nums">
           {currentRound}
           <span className="text-muted-foreground"> / {totalRounds}</span>
         </span>
@@ -40,7 +40,7 @@ export function GameHeader({
         <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {t("cardsThisRound")}
         </span>
-        <span className="text-sm font-semibold text-purple-500">
+        <span className="text-sm font-semibold text-purple-500 tabular-nums">
           {cardsThisRound}
         </span>
       </div>

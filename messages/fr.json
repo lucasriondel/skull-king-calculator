@@ -41,6 +41,8 @@
     "addPlayer": "Ajouter un Joueur",
     "startGame": "Commencer la Partie",
     "defaultPlayerName": "Joueur {{number}}",
+    "playerNamePlaceholder": "Nom du joueur",
+    "dragToReorder": "Glisser pour réordonner",
     "randomizeStarter": "Joueur de départ aléatoire",
     "piratePowers": "Jouer avec les pouvoirs des Pirates"
   },

@@ -137,9 +137,9 @@ function GameModesPage() {
             alt="Skull King"
             width={32}
             height={32}
-            className="rounded"
+            className="rounded ring-1 ring-black/10 dark:ring-white/10"
           />
-          <h1 className="text-lg font-bold">{t("title")}</h1>
+          <h1 className="text-lg font-bold text-balance">{t("title")}</h1>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggleButton />
@@ -149,7 +149,9 @@ function GameModesPage() {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto px-4 py-4">
-        <h2 className="text-xl font-semibold mb-4">{t("subtitle")}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-balance">
+          {t("subtitle")}
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {gameModes.map((mode) => (
@@ -167,7 +169,9 @@ function GameModesPage() {
                 <CardDescription>{mode.rounds} rounds</CardDescription>
               </CardHeader>
               <CardContent>
-                <p>{getModeTranslation(mode.id, "description")}</p>
+                <p className="text-pretty">
+                  {getModeTranslation(mode.id, "description")}
+                </p>
               </CardContent>
             </Card>
           ))}

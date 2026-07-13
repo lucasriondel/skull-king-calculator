@@ -37,8 +37,6 @@ function GamePage() {
   } | null>(null);
   const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
 
-  console.log(roundData);
-
   useEffect(() => {
     if (!gameMode || !players.length) {
       navigate({ to: "/$locale/game-modes", params: { locale } });
@@ -84,13 +82,6 @@ function GamePage() {
   };
 
   const completeRound = () => {
-    console.log("completeRound called with:", {
-      roundData,
-      currentRound,
-      bonuses,
-      players,
-    });
-
     const allBidTricks = roundData.map((d) => ({
       bid: d.bid,
       tricks: d.tricks ?? 0,
@@ -105,13 +96,6 @@ function GamePage() {
         allBidTricks,
         rascalBet
       );
-      console.log(`Player ${idx} score calculation:`, {
-        playerName: players[idx]?.name,
-        bid: data.bid,
-        tricks: data.tricks,
-        bonuses: bonuses[idx],
-        score,
-      });
 
       return {
         ...data,
@@ -123,7 +107,6 @@ function GamePage() {
     });
 
     newRoundData.forEach((data, index) => {
-      console.log(`Updating player ${index} for round ${currentRound}`);
       updatePlayerRound(index, currentRound, data);
     });
 
@@ -215,8 +198,6 @@ function GamePage() {
               roundData={roundData}
               updateBid={updateBid}
               cardsThisRound={cardsThisRound}
-              canCompleteBids={canCompleteBids}
-              onContinue={goToTricks}
             />
           </TabsContent>
 
@@ -226,7 +207,6 @@ function GamePage() {
               roundData={roundData}
               updateTricks={updateTricks}
               cardsThisRound={cardsThisRound}
-              canCompleteTricks={canCompleteTricks}
               bonuses={bonuses}
               setBonuses={setBonuses}
               getPlayerWithBonus={getPlayerWithBonus}
@@ -241,17 +221,13 @@ function GamePage() {
                   rascalBet
                 )
               }
-              onComplete={completeRound}
               rascalBet={rascalBet}
               setRascalBet={setRascalBet}
             />
           </TabsContent>
 
           <TabsContent value="scores">
-            <ScoresTab
-              players={players}
-              onBackToBids={() => setActiveTab("bids")}
-            />
+            <ScoresTab players={players} />
           </TabsContent>
 
           <TabsContent value="details">

@@ -128,7 +128,10 @@ export function PlayerCard(props: PlayerCardProps) {
 <div className="flex items-center gap-2">
           <span>{player.name}</span>
           {showScore && (
-            <Badge variant={props.score >= 0 ? "success" : "destructive"}>
+            <Badge
+              variant={props.score >= 0 ? "success" : "destructive"}
+              className="tabular-nums"
+            >
               {props.score >= 0 ? "+" : ""}
               {props.score}
             </Badge>

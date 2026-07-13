@@ -18,7 +18,6 @@ interface TricksTabProps {
   roundData: RoundData[];
   updateTricks: (playerIndex: number, tricks: number) => void;
   cardsThisRound: number;
-  canCompleteTricks: boolean;
   bonuses: Record<number, BonusType>;
   setBonuses: React.Dispatch<React.SetStateAction<Record<number, BonusType>>>;
   getPlayerWithBonus: (
@@ -30,7 +29,6 @@ interface TricksTabProps {
     playerBonuses?: BonusType,
     playerIndex?: number
   ) => number;
-  onComplete: () => void;
   rascalBet: { playerIndex: number; amount: 10 | 20 } | null;
   setRascalBet: React.Dispatch<React.SetStateAction<{ playerIndex: number; amount: 10 | 20 } | null>>;
 }

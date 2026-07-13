@@ -67,7 +67,7 @@ const SortablePlayerItem = forwardRef<
         {...attributes}
         {...listeners}
         tabIndex={0}
-        aria-label="Drag to reorder"
+        aria-label={t("dragToReorder")}
         style={{ touchAction: "none" }}
       >
         <GripVertical className="w-5 h-5 text-muted-foreground" />
@@ -77,7 +77,7 @@ const SortablePlayerItem = forwardRef<
         id={`player-input-${player.id}`}
         value={player.name}
         onChange={(e) => updatePlayerName(player.id, e.target.value)}
-        placeholder={"Player name"}
+        placeholder={t("playerNamePlaceholder")}
         className="flex-grow"
       />
       <Button
@@ -241,10 +241,10 @@ function PlayersPage() {
             alt="Skull King"
             width={32}
             height={32}
-            className="rounded"
+            className="rounded ring-1 ring-black/10 dark:ring-white/10"
           />
           <div>
-            <h1 className="text-lg font-bold">{t("title")}</h1>
+            <h1 className="text-lg font-bold text-balance">{t("title")}</h1>
             <p className="text-xs text-muted-foreground">
               {t("modeInfo", { mode: gameMode.name, rounds: gameMode.rounds })}
             </p>

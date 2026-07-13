@@ -41,6 +41,8 @@
     "addPlayer": "Add Player",
     "startGame": "Start Game",
     "defaultPlayerName": "Player {{number}}",
+    "playerNamePlaceholder": "Player name",
+    "dragToReorder": "Drag to reorder",
     "randomizeStarter": "Randomize who starts first",
     "piratePowers": "Playing with Pirate powers"
   },

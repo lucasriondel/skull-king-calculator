@@ -17,8 +17,6 @@ interface BidsTabProps {
   roundData: RoundData[];
   updateBid: (playerIndex: number, bid: number) => void;
   cardsThisRound: number;
-  canCompleteBids: boolean;
-  onContinue: () => void;
 }
 
 export function BidsTab({

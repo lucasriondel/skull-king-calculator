@@ -47,7 +47,7 @@ export function Podium({ players }: { players: Player[] }) {
               <span className="text-sm font-semibold truncate max-w-[100px] text-center">
                 {player.name}
               </span>
-              <span className="text-xs text-muted-foreground font-bold">
+              <span className="text-xs text-muted-foreground font-bold tabular-nums">
                 {player.score}
               </span>
             </div>

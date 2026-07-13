@@ -51,12 +51,12 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
                   className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground font-bold w-6 text-center">
+                    <span className="text-sm text-muted-foreground font-bold w-6 text-center tabular-nums">
                       {idx + 4}
                     </span>
                     <span className="font-medium">{player.name}</span>
                   </div>
-                  <span className="font-bold">{player.score}</span>
+                  <span className="font-bold tabular-nums">{player.score}</span>
                 </div>
               ))}
             </div>
