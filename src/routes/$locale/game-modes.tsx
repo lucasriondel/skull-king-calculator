@@ -157,7 +157,7 @@ function GameModesPage() {
           {gameModes.map((mode) => (
             <Card
               key={mode.id}
-              className={`cursor-pointer transition-all ${
+              className={`cursor-pointer transition-[box-shadow,background-color] ${
                 selectedMode === mode.id
                   ? "ring-2 ring-primary"
                   : "hover:bg-accent/50"

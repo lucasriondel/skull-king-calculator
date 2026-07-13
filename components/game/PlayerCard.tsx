@@ -130,7 +130,7 @@ export function PlayerCard(props: PlayerCardProps) {
           {showScore && (
             <Badge
               variant={props.score >= 0 ? "success" : "destructive"}
-              className="tabular-nums"
+              className="tabular-nums motion-safe:animate-score-in motion-reduce:animate-fade-in"
             >
               {props.score >= 0 ? "+" : ""}
               {props.score}

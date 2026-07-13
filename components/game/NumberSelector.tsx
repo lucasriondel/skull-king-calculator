@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
 const numberSelectorVariants = cva(
-  "h-14 w-full cursor-pointer transition-colors tabular-nums",
+  "h-14 w-full cursor-pointer transition-[color,background-color,transform] active:scale-[0.96] motion-reduce:active:scale-100 tabular-nums",
   {
     variants: {
       state: {

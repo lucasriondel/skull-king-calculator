@@ -2,6 +2,11 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
     darkMode: ["class"],
+    // Gate every `hover:` utility behind `@media (hover: hover)` so taps on
+    // touch devices don't leave a sticky hover state (issue #9).
+    future: {
+      hoverOnlyWhenSupported: true,
+    },
     content: [
     "./index.html",
     "./src/**/*.{ts,tsx}",
@@ -86,11 +91,29 @@ const config: Config = {
   				to: {
   					height: '0'
   				}
+  			},
+  			// Soft enter animations (issue #9). Movement variants are only ever
+  			// applied via `motion-safe:`; `fade-in` is the reduced-motion fallback.
+  			'fade-in': {
+  				from: { opacity: '0' },
+  				to: { opacity: '1' }
+  			},
+  			'tab-in': {
+  				from: { opacity: '0', transform: 'translateY(4px)' },
+  				to: { opacity: '1', transform: 'translateY(0)' }
+  			},
+  			'score-in': {
+  				from: { opacity: '0', transform: 'scale(0.95)', filter: 'blur(4px)' },
+  				to: { opacity: '1', transform: 'scale(1)', filter: 'blur(0)' }
   			}
   		},
   		animation: {
   			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out'
+  			'accordion-up': 'accordion-up 0.2s ease-out',
+  			// Custom ease-out, well under a quarter second.
+  			'fade-in': 'fade-in 150ms cubic-bezier(0.22, 1, 0.36, 1)',
+  			'tab-in': 'tab-in 150ms cubic-bezier(0.22, 1, 0.36, 1)',
+  			'score-in': 'score-in 150ms cubic-bezier(0.22, 1, 0.36, 1)'
   		}
   	}
   },
