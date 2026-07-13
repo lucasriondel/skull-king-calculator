@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Disable the browser's native pull-to-refresh gesture on mobile so an
+   accidental pull-down from the top cannot reload the page and wipe the
+   in-memory game state. `none` prevents both scroll chaining and the
+   refresh/overscroll effect. */
 html,
 body {
   overscroll-behavior-y: none;
