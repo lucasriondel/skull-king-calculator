@@ -19,28 +19,28 @@ export function GameHeader({
   const isMobile = useMobile();
 
   return (
-    <div className="flex items-center justify-between px-4 py-2 bg-slate-900/80 border-b border-slate-700/50 border-x min-[673px]:rounded-b-lg">
+    <div className="flex items-center justify-between px-4 py-2 bg-muted/80 border-b border-border border-x min-[673px]:rounded-b-lg">
       <div className="flex items-center gap-2">
-        <CircleDot className="h-4 w-4 text-emerald-400" />
-        <span className="text-xs uppercase tracking-wider text-slate-400">
+        <CircleDot className="h-4 w-4 text-emerald-500" />
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {t("round")}
         </span>
-        <span className="text-sm font-semibold text-emerald-400">
+        <span className="text-sm font-semibold text-emerald-500">
           {currentRound}
-          <span className="text-slate-500"> / {totalRounds}</span>
+          <span className="text-muted-foreground"> / {totalRounds}</span>
         </span>
       </div>
 
       {!isMobile && (
-        <span className="text-xs text-slate-500">{gameModeName}</span>
+        <span className="text-xs text-muted-foreground">{gameModeName}</span>
       )}
 
       <div className="flex items-center gap-2">
-        <Layers className="h-4 w-4 text-purple-400" />
-        <span className="text-xs uppercase tracking-wider text-slate-400">
+        <Layers className="h-4 w-4 text-purple-500" />
+        <span className="text-xs uppercase tracking-wider text-muted-foreground">
           {t("cardsThisRound")}
         </span>
-        <span className="text-sm font-semibold text-purple-400">
+        <span className="text-sm font-semibold text-purple-500">
           {cardsThisRound}
         </span>
       </div>
