@@ -12,6 +12,7 @@ import { useMobile } from "@/hooks/use-mobile";
 import LanguageSwitcher from "@/components/language-switcher";
 import { DetailsTab } from "@/components/game/DetailsTab";
 import { Podium } from "@/components/game/Podium";
+import { Fireworks } from "@/components/game/Fireworks";
 
 interface Player {
   name: string;
@@ -30,10 +31,13 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      <div className="absolute top-4 right-4">
+      {/* Decorative one-shot celebration; fixed, pointer-events-none, z-0 so it
+          paints behind the card and never intercepts clicks (issue #15). */}
+      <Fireworks />
+      <div className="absolute top-4 right-4 z-10">
         <LanguageSwitcher />
       </div>
-      <Card>
+      <Card className="relative z-10">
         <CardHeader className="text-center">
           <Trophy className="w-16 h-16 mx-auto text-yellow-500 mb-2" />
           <CardTitle className="text-3xl">{t("gameComplete.title")}</CardTitle>

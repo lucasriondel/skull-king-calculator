@@ -112,6 +112,17 @@ const config: Config = {
   			'podium-rise': {
   				from: { opacity: '0', transform: 'translateY(40%)' },
   				to: { opacity: '1', transform: 'translateY(0)' }
+  			},
+  			// One-shot fireworks celebration on the game-complete screen
+  			// (issue #15). Particles fly outward (per-particle --fw-x/--fw-y),
+  			// fade to opacity 0 and shrink to scale 0.4 (never 0). transform +
+  			// opacity only; only ever applied via `motion-safe:`.
+  			'firework': {
+  				'0%': { opacity: '1', transform: 'translate(0, 0) scale(1)' },
+  				'100%': {
+  					opacity: '0',
+  					transform: 'translate(var(--fw-x), var(--fw-y)) scale(0.4)'
+  				}
   			}
   		},
   		animation: {
@@ -124,7 +135,14 @@ const config: Config = {
   			// `both` fill-mode so a staggered bar holds at its start offset
   			// during its delay instead of flashing at the final position.
   			'podium-rise':
-  				'podium-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) both'
+  				'podium-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) both',
+  			// ~0.9s is intentionally above the sub-0.3s UI budget: a win
+  			// celebration is exempt (AUDIT §2). `forwards` so a delayed burst
+  			// stays invisible (base opacity-0) until it fires, then holds at
+  			// opacity 0 afterwards — no residual dots. The feel-test duration
+  			// scans exempt `firework-*` accordingly.
+  			'firework':
+  				'firework 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards'
   		}
   	}
   },

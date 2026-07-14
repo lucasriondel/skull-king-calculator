@@ -84,8 +84,14 @@ describe("reduced-motion-aware animations are defined", () => {
     for (const name of ["fade-in", "tab-in", "score-in"]) {
       expect(tailwindConfig).toContain(`'${name}'`);
     }
-    // sub-300ms durations only
-    const durations = [...tailwindConfig.matchAll(/(\d+)ms/g)].map((m) =>
+    // sub-300ms durations only — except the win-celebration fireworks
+    // (issue #15), which are an intentional exemption from the UI budget
+    // (AUDIT §2). Drop any line mentioning `firework` before scanning.
+    const scannable = tailwindConfig
+      .split("\n")
+      .filter((line) => !/firework/i.test(line))
+      .join("\n");
+    const durations = [...scannable.matchAll(/(\d+)ms/g)].map((m) =>
       Number(m[1])
     );
     expect(durations.length).toBeGreaterThan(0);

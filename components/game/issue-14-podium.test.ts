@@ -41,7 +41,13 @@ describe("podium-rise animation is defined", () => {
   });
 
   test("every config animation duration stays under 300ms", () => {
-    const durations = [...tailwindConfig.matchAll(/(\d+)ms/g)].map((m) =>
+    // The win-celebration fireworks (issue #15) are an intentional exemption
+    // from the sub-300ms UI budget (AUDIT §2); drop `firework` lines first.
+    const scannable = tailwindConfig
+      .split("\n")
+      .filter((line) => !/firework/i.test(line))
+      .join("\n");
+    const durations = [...scannable.matchAll(/(\d+)ms/g)].map((m) =>
       Number(m[1])
     );
     expect(durations.length).toBeGreaterThan(0);
