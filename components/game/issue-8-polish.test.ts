@@ -15,7 +15,8 @@ const playersRoute = read("src/routes/$locale/players.tsx");
 const gameModesRoute = read("src/routes/$locale/game-modes.tsx");
 const globalsCss = read("src/globals.css");
 const playerCard = read("components/game/PlayerCard.tsx");
-const podium = read("components/game/Podium.tsx");
+// Podium score markup lives in PodiumColumn since the dramatic reveal split it out.
+const podiumColumn = read("components/game/PodiumColumn.tsx");
 const scoresTab = read("components/game/ScoresTab.tsx");
 const numberSelector = read("components/game/NumberSelector.tsx");
 const en = JSON.parse(read("messages/en.json"));
@@ -32,7 +33,9 @@ describe("tabular numbers on live/updating numbers", () => {
     expect(playerCard).toMatch(/tabular-nums/);
   });
   test("podium scores use tabular-nums", () => {
-    expect(podium).toMatch(/tabular-nums/);
+    // Doubly load-bearing now: these digits count up, so a proportional font
+    // would make the score jitter as it climbs.
+    expect(podiumColumn).toMatch(/tabular-nums/);
   });
   test("scores tab rows use tabular-nums", () => {
     expect(scoresTab).toMatch(/tabular-nums/);

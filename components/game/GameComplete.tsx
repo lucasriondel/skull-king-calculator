@@ -12,7 +12,10 @@ import { useMobile } from "@/hooks/use-mobile";
 import LanguageSwitcher from "@/components/language-switcher";
 import { DetailsTab } from "@/components/game/DetailsTab";
 import { Podium } from "@/components/game/Podium";
+import { RunnerUpRow } from "@/components/game/RunnerUpRow";
 import { Fireworks } from "@/components/game/Fireworks";
+import { useRevealSequence } from "@/hooks/use-reveal-sequence";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 interface Player {
   name: string;
@@ -24,16 +27,50 @@ interface GameCompleteProps {
   onNewGame: () => void;
 }
 
+// The whole reveal is budgeted, not the per-player gap: a fixed gap makes an
+// 8-player table run ~14s, which is well past the point of tension. Aim for the
+// winner landing around this mark, with a floor so the podium keeps its beat.
+const TARGET_REVEAL_MS = 7000;
+const MIN_INTERVAL_MS = 700;
+const MAX_INTERVAL_MS = 1800;
+
+function revealIntervalFor(playerCount: number) {
+  if (playerCount <= 0) return MAX_INTERVAL_MS;
+  const even = TARGET_REVEAL_MS / playerCount;
+  return Math.round(Math.min(MAX_INTERVAL_MS, Math.max(MIN_INTERVAL_MS, even)));
+}
+
 export function GameComplete({ players, onNewGame }: GameCompleteProps) {
   const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
   const isMobile = useMobile();
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const animate = !prefersReducedMotion;
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+
+  // One sequence over every player, revealed worst-placed first. Runners-up
+  // (4th and below) come out in reverse order, then the podium counts 3rd →
+  // 2nd → 1st, so the winner is always the final beat.
+  const intervalMs = revealIntervalFor(sortedPlayers.length);
+  const revealed = useRevealSequence(sortedPlayers.length, intervalMs, {
+    enabled: animate,
+  });
+
+  // Each score settles inside its own slot, before the next player lands.
+  const countUpMs = Math.round(intervalMs * 0.7);
+
+  const runnersUp = sortedPlayers.slice(3);
+  const podiumRevealed = Math.max(0, revealed - runnersUp.length);
+
+  // The winner is the last player revealed; the sequencer fires its first step
+  // one interval in, so the winner lands after `length` intervals.
+  const winnerRevealMs = sortedPlayers.length * intervalMs;
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
       {/* Decorative one-shot celebration; fixed canvas over the card,
-          pointer-events-none so it never intercepts clicks (issue #15). */}
-      <Fireworks />
+          pointer-events-none so it never intercepts clicks (issue #15).
+          Held until the winner's column lands, so it punctuates the reveal. */}
+      <Fireworks startDelayMs={animate ? winnerRevealMs : 0} />
       <div className="absolute top-4 right-4 z-10">
         <LanguageSwitcher />
       </div>
@@ -46,23 +83,30 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
           <h2 className="text-xl font-semibold mb-4">
             {t("gameComplete.finalStandings")}
           </h2>
-          <Podium players={sortedPlayers} />
-          {sortedPlayers.length > 3 && (
+          <Podium
+            players={sortedPlayers}
+            revealedCount={podiumRevealed}
+            countUpMs={countUpMs}
+            animate={animate}
+          />
+          {runnersUp.length > 0 && (
             <div className="space-y-2">
-              {sortedPlayers.slice(3).map((player, idx) => (
-                <div
-                  key={player.name}
-                  className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-muted-foreground font-bold w-6 text-center tabular-nums">
-                      {idx + 4}
-                    </span>
-                    <span className="font-medium">{player.name}</span>
-                  </div>
-                  <span className="font-bold tabular-nums">{player.score}</span>
-                </div>
-              ))}
+              {runnersUp.map((player, idx) => {
+                // Rendered best-to-worst down the page, but revealed worst
+                // first — so the last row is reveal step 0.
+                const revealStep = runnersUp.length - 1 - idx;
+                return (
+                  <RunnerUpRow
+                    key={player.name}
+                    name={player.name}
+                    score={player.score}
+                    place={idx + 4}
+                    revealed={revealed > revealStep}
+                    countUpMs={countUpMs}
+                    animate={animate}
+                  />
+                );
+              })}
             </div>
           )}
         </CardContent>

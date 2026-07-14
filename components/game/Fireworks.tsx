@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Fireworks as FireworksCanvas } from "@fireworks-js/react";
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 
 // Issue #15: one-shot fireworks celebration on the game-complete screen.
 //
@@ -13,6 +14,8 @@ import { Fireworks as FireworksCanvas } from "@fireworks-js/react";
 // so reduced-motion users see nothing move at all.
 
 export interface FireworksProps {
+  /** Wait this long before the first rocket — lets a reveal land its punchline. */
+  startDelayMs?: number;
   /** How long rockets keep launching before the show stops. */
   durationMs?: number;
   /** Rockets launched per burst tick — the library's `intensity`. */
@@ -25,21 +28,8 @@ export interface FireworksProps {
   hue?: { min: number; max: number };
 }
 
-function usePrefersReducedMotion() {
-  const [prefers, setPrefers] = useState(false);
-
-  useEffect(() => {
-    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefers(mql.matches);
-    const onChange = (e: MediaQueryListEvent) => setPrefers(e.matches);
-    mql.addEventListener("change", onChange);
-    return () => mql.removeEventListener("change", onChange);
-  }, []);
-
-  return prefers;
-}
-
 export function Fireworks({
+  startDelayMs = 0,
   durationMs = 6000,
   intensity = 30,
   explosion = 6,
@@ -47,17 +37,27 @@ export function Fireworks({
   hue = { min: 0, max: 360 },
 }: FireworksProps = {}) {
   const prefersReducedMotion = usePrefersReducedMotion();
+  const [started, setStarted] = useState(startDelayMs === 0);
   const [done, setDone] = useState(false);
 
-  // One-shot: stop launching after durationMs so the celebration doesn't run
-  // forever behind the final standings.
+  // Hold fire until startDelayMs, then run for durationMs and stop — one-shot,
+  // so the celebration doesn't loop forever behind the final standings.
   useEffect(() => {
     if (prefersReducedMotion) return;
-    const id = setTimeout(() => setDone(true), durationMs);
-    return () => clearTimeout(id);
-  }, [durationMs, prefersReducedMotion]);
 
-  if (prefersReducedMotion || done) return null;
+    const startId =
+      startDelayMs > 0
+        ? setTimeout(() => setStarted(true), startDelayMs)
+        : undefined;
+    const doneId = setTimeout(() => setDone(true), startDelayMs + durationMs);
+
+    return () => {
+      if (startId !== undefined) clearTimeout(startId);
+      clearTimeout(doneId);
+    };
+  }, [startDelayMs, durationMs, prefersReducedMotion]);
+
+  if (prefersReducedMotion || !started || done) return null;
 
   return (
     <FireworksCanvas

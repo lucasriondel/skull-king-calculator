@@ -1,65 +1,61 @@
-import { Trophy } from "lucide-react";
+import { PodiumColumn } from "@/components/game/PodiumColumn";
 
 interface Player {
   name: string;
   score: number;
 }
 
-const podiumColors = [
-  { bg: "bg-yellow-500", text: "text-black", border: "border-yellow-400" },
-  { bg: "bg-gray-300", text: "text-black", border: "border-gray-300" },
-  { bg: "bg-amber-700", text: "text-white", border: "border-amber-600" },
-];
+export interface PodiumProps {
+  players: Player[];
+  /**
+   * How many podium places have been revealed, counted 3rd → 2nd → 1st.
+   * Defaults to all three: the mid-game scoreboard shows standings outright,
+   * only the game-complete screen sequences them.
+   */
+  revealedCount?: number;
+  /** How long each score spends counting up. */
+  countUpMs?: number;
+  /** False under reduced motion, or wherever the reveal shouldn't animate. */
+  animate?: boolean;
+}
 
-const podiumHeights = ["h-28", "h-20", "h-14"];
+// Visual left-to-right arrangement is 2nd, 1st, 3rd — the classic podium shape.
+// Reveal order is the reverse of finishing order (3rd first, winner last), so the
+// two are tracked separately: `rankIdx` drives looks, `revealStep` drives timing.
+const LAYOUTS: Record<number, number[]> = {
+  1: [0],
+  2: [1, 0],
+  3: [1, 0, 2],
+};
 
-export function Podium({ players }: { players: Player[] }) {
+export function Podium({
+  players,
+  revealedCount = 3,
+  countUpMs = 0,
+  animate = false,
+}: PodiumProps) {
   const top3 = players.slice(0, 3);
-
-  // Display order depends on player count
-  const displayOrder =
-    top3.length >= 3
-      ? [top3[1], top3[0], top3[2]]
-      : top3.length === 2
-      ? [top3[1], top3[0]]
-      : [top3[0]];
-
-  const rankOrder =
-    top3.length >= 3 ? [1, 0, 2] : top3.length === 2 ? [1, 0] : [0];
+  const layout = LAYOUTS[top3.length] ?? [];
 
   return (
     <div className="flex items-end justify-center gap-2 mb-6">
-      {displayOrder.map((player, displayIdx) => {
+      {layout.map((rankIdx) => {
+        const player = top3[rankIdx];
         if (!player) return null;
-        const rankIdx = rankOrder[displayIdx];
-        const colors = podiumColors[rankIdx];
-        const height = podiumHeights[rankIdx];
+
+        // Last place on the podium reveals first, winner last.
+        const revealStep = top3.length - 1 - rankIdx;
 
         return (
-          <div
+          <PodiumColumn
             key={player.name}
-            className="flex flex-col items-center flex-1 max-w-[130px]"
-          >
-            <div className="flex flex-col items-center mb-2">
-              {rankIdx === 0 && (
-                <Trophy className="w-5 h-5 text-yellow-500 mb-1" />
-              )}
-              <span className="text-sm font-semibold truncate max-w-[100px] text-center">
-                {player.name}
-              </span>
-              <span className="text-xs text-muted-foreground font-bold tabular-nums">
-                {player.score}
-              </span>
-            </div>
-            <div
-              className={`w-full ${height} ${colors.bg} rounded-t-lg flex items-center justify-center border-2 ${colors.border} border-b-0 motion-safe:animate-podium-rise motion-reduce:animate-fade-in`}
-              style={{ animationDelay: `${displayIdx * 60}ms` }}
-            >
-              <span className={`text-2xl font-black ${colors.text}`}>
-                {rankIdx + 1}
-              </span>
-            </div>
-          </div>
+            name={player.name}
+            score={player.score}
+            rankIdx={rankIdx}
+            revealed={revealedCount > revealStep}
+            countUpMs={countUpMs}
+            animate={animate}
+          />
         );
       })}
     </div>

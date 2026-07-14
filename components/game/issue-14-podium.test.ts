@@ -2,52 +2,87 @@ import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 
-// Issue #14: Animate the podium bars rising in (staggered).
-// Bars start pushed down by a fraction of their own height and transparent,
-// then settle; 1st/2nd/3rd offset ~60ms apart in display order. Percentage
-// translate (no px), reuses the repo ease-out curve, stays under 300ms, and
-// falls back to opacity-only `fade-in` under reduced motion. Content-based
-// regression guards, matching the issue-8/issue-9 convention.
+// Issue #14: the podium bars rise in, one after another.
+//
+// Originally a CSS `podium-rise` keyframe staggered by animationDelay. The
+// dramatic reveal reworked this: bars now grow from zero to their full height
+// via a JS-driven height transition, sequenced 3rd → 2nd → 1st by
+// useRevealSequence, with scores counting up alongside. The keyframe is gone,
+// so these guards track the new mechanism — the intent (bars rise, staggered,
+// nothing animates under reduced motion) is unchanged.
 
 const root = join(import.meta.dir, "..", "..");
 const read = (rel: string) => readFileSync(join(root, rel), "utf8");
 
 const podium = read("components/game/Podium.tsx");
+const podiumColumn = read("components/game/PodiumColumn.tsx");
+const gameComplete = read("components/game/GameComplete.tsx");
 const tailwindConfig = read("tailwind.config.ts");
 
 describe("podium bars rise in", () => {
-  test("bars use a motion-safe rise animation with reduced-motion fade fallback", () => {
-    expect(podium).toMatch(/motion-safe:animate-podium-rise/);
-    expect(podium).toMatch(/motion-reduce:animate-fade-in/);
+  test("bars grow from zero height to their full height", () => {
+    // Collapsed until revealed, then interpolated up to the rank's height.
+    expect(podiumColumn).toMatch(/height: revealed \? fullHeight : 0/);
+    expect(podiumColumn).toMatch(/transition: animate/);
+    expect(podiumColumn).toMatch(/height \d+ms/);
   });
 
-  test("bars are staggered ~60ms apart in display order", () => {
-    expect(podium).toMatch(/animationDelay/);
-    expect(podium).toMatch(/60/);
+  test("bars reuse the repo ease-out curve", () => {
+    expect(podiumColumn).toMatch(/cubic-bezier\(0\.22, 1, 0\.36, 1\)/);
+  });
+
+  test("nothing animates when animate is false (reduced motion)", () => {
+    // No transition at all, so the bar is simply at full height on first paint.
+    expect(podiumColumn).toMatch(/transition: animate[\s\S]*?: undefined/);
   });
 });
 
-describe("podium-rise animation is defined", () => {
-  test("keyframe exists and translates by a percentage (no hardcoded px)", () => {
-    expect(tailwindConfig).toContain("'podium-rise'");
-    // A rise from below: positive percentage translateY, not px.
-    expect(tailwindConfig).toMatch(/translateY\(\d+%\)/);
+describe("podium reveals worst-placed first", () => {
+  test("the winner is the last podium column revealed", () => {
+    expect(podium).toMatch(/revealStep = top3\.length - 1 - rankIdx/);
+    expect(podium).toMatch(/revealed=\{revealedCount > revealStep\}/);
   });
 
-  test("animation reuses the repo ease-out curve and holds at its offset (fill-mode both)", () => {
-    expect(tailwindConfig).toMatch(
-      /podium-rise[^']*cubic-bezier\(0\.22, 1, 0\.36, 1\)[^']*both/
+  test("podium keeps its 2nd / 1st / 3rd visual layout", () => {
+    expect(podium).toMatch(/3: \[1, 0, 2\]/);
+  });
+
+  test("runners-up reveal before the podium, worst first", () => {
+    expect(gameComplete).toMatch(
+      /podiumRevealed = Math\.max\(0, revealed - runnersUp\.length\)/
     );
+    expect(gameComplete).toMatch(
+      /revealStep = runnersUp\.length - 1 - idx/
+    );
+  });
+});
+
+describe("scores count up", () => {
+  test("podium and runner-up scores both animate from 0", () => {
+    expect(podiumColumn).toMatch(/useCountUp/);
+    expect(read("components/game/RunnerUpRow.tsx")).toMatch(/useCountUp/);
+  });
+
+  test("count-up only starts once its row is revealed", () => {
+    expect(podiumColumn).toMatch(/active: revealed/);
+  });
+});
+
+describe("the reveal is skipped under reduced motion", () => {
+  test("GameComplete disables the sequence rather than delaying content", () => {
+    expect(gameComplete).toMatch(/usePrefersReducedMotion/);
+    expect(gameComplete).toMatch(/animate = !prefersReducedMotion/);
+    expect(gameComplete).toMatch(/enabled: animate/);
+  });
+});
+
+describe("tailwind config", () => {
+  test("the retired podium-rise keyframe is gone", () => {
+    expect(tailwindConfig).not.toContain("podium-rise");
   });
 
   test("every config animation duration stays under 300ms", () => {
-    // The win-celebration fireworks (issue #15) are an intentional exemption
-    // from the sub-300ms UI budget (AUDIT §2); drop `firework` lines first.
-    const scannable = tailwindConfig
-      .split("\n")
-      .filter((line) => !/firework/i.test(line))
-      .join("\n");
-    const durations = [...scannable.matchAll(/(\d+)ms/g)].map((m) =>
+    const durations = [...tailwindConfig.matchAll(/(\d+)ms/g)].map((m) =>
       Number(m[1])
     );
     expect(durations.length).toBeGreaterThan(0);
