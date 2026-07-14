@@ -52,7 +52,8 @@ export function Podium({ players }: { players: Player[] }) {
               </span>
             </div>
             <div
-              className={`w-full ${height} ${colors.bg} rounded-t-lg flex items-center justify-center border-2 ${colors.border} border-b-0`}
+              className={`w-full ${height} ${colors.bg} rounded-t-lg flex items-center justify-center border-2 ${colors.border} border-b-0 motion-safe:animate-podium-rise motion-reduce:animate-fade-in`}
+              style={{ animationDelay: `${displayIdx * 60}ms` }}
             >
               <span className={`text-2xl font-black ${colors.text}`}>
                 {rankIdx + 1}

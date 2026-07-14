@@ -105,6 +105,13 @@ const config: Config = {
   			'score-in': {
   				from: { opacity: '0', transform: 'scale(0.95)', filter: 'blur(4px)' },
   				to: { opacity: '1', transform: 'scale(1)', filter: 'blur(0)' }
+  			},
+  			// Podium bars rise from a fraction of their own height (issue #14).
+  			// Percentage translate so it scales with each bar; only applied via
+  			// `motion-safe:`, with `fade-in` as the reduced-motion fallback.
+  			'podium-rise': {
+  				from: { opacity: '0', transform: 'translateY(40%)' },
+  				to: { opacity: '1', transform: 'translateY(0)' }
   			}
   		},
   		animation: {
@@ -113,7 +120,11 @@ const config: Config = {
   			// Custom ease-out, well under a quarter second.
   			'fade-in': 'fade-in 150ms cubic-bezier(0.22, 1, 0.36, 1)',
   			'tab-in': 'tab-in 150ms cubic-bezier(0.22, 1, 0.36, 1)',
-  			'score-in': 'score-in 150ms cubic-bezier(0.22, 1, 0.36, 1)'
+  			'score-in': 'score-in 150ms cubic-bezier(0.22, 1, 0.36, 1)',
+  			// `both` fill-mode so a staggered bar holds at its start offset
+  			// during its delay instead of flashing at the final position.
+  			'podium-rise':
+  				'podium-rise 250ms cubic-bezier(0.22, 1, 0.36, 1) both'
   		}
   	}
   },
