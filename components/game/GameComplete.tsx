@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Trophy, Home } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useMobile } from "@/hooks/use-mobile";
-import LanguageSwitcher from "@/components/language-switcher";
 import { DetailsTab } from "@/components/game/DetailsTab";
 import { Podium } from "@/components/game/Podium";
 import { RunnerUpRow } from "@/components/game/RunnerUpRow";
@@ -71,9 +70,6 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
           pointer-events-none so it never intercepts clicks (issue #15).
           Held until the winner's column lands, so it punctuates the reveal. */}
       <Fireworks startDelayMs={animate ? winnerRevealMs : 0} />
-      <div className="absolute top-4 right-4 z-10">
-        <LanguageSwitcher />
-      </div>
       <Card className="relative z-10">
         <CardHeader className="text-center">
           <Trophy className="w-16 h-16 mx-auto text-yellow-500 mb-2" />
