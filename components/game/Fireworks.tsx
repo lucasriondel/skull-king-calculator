@@ -1,73 +1,85 @@
-import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
+import { Fireworks as FireworksCanvas } from "@fireworks-js/react";
 
-// Issue #15: one-shot, dependency-free fireworks behind the trophy card.
+// Issue #15: one-shot fireworks celebration on the game-complete screen.
 //
-// Three bursts fire once on mount, staggered ~250ms apart; each burst throws a
-// ring of small particles outward that fade and shrink to scale 0.4 over the
-// `firework` animation (~0.9s) then hold at opacity 0 (fill-mode forwards → no
-// residual dots). Geometry is fully deterministic (trig on the particle index,
-// never a random seed). The overlay is fixed / pointer-events-none / z-0 so the
-// card, New Game button and language switcher stay clickable and on top.
+// Canvas-backed (@fireworks-js/react) rather than CSS particles: it renders its
+// own full-viewport canvas, so it is not subject to the card's stacking context.
+// The overlay is fixed / pointer-events-none so the card, New Game button and
+// language switcher stay clickable.
 //
-// Everything is gated behind `motion-safe:`: the overlay is `hidden` by default
-// and only `motion-safe:block`, and particles only carry the animation under
-// `motion-safe:`, so reduced-motion users see nothing move at all.
+// Reduced motion is handled in JS, not `motion-safe:` — CSS cannot reach inside
+// a canvas. We check prefers-reduced-motion and simply never mount the canvas,
+// so reduced-motion users see nothing move at all.
 
-const PARTICLE_COUNT = 12;
-const RADIUS = 90; // px each particle travels outward from its burst center
-const STAGGER_MS = 250; // gap between successive bursts, so the pops land in sequence
+export interface FireworksProps {
+  /** How long rockets keep launching before the show stops. */
+  durationMs?: number;
+  /** Rockets launched per burst tick — the library's `intensity`. */
+  intensity?: number;
+  /** Explosion radius, roughly in particle spread. */
+  explosion?: number;
+  /** Particles per rocket. */
+  particles?: number;
+  /** Festive hue range, in degrees. */
+  hue?: { min: number; max: number };
+}
 
-// Festive palette; picked deterministically per particle, no randomness.
-const COLORS = [
-  "#fbbf24", // amber
-  "#f472b6", // pink
-  "#60a5fa", // blue
-  "#34d399", // emerald
-  "#f87171", // red
-  "#a78bfa", // violet
-];
+function usePrefersReducedMotion() {
+  const [prefers, setPrefers] = useState(false);
 
-// Burst centers as viewport percentages, behind the trophy card. They fire in
-// order, STAGGER_MS apart.
-const BURSTS = [
-  { cx: 50, cy: 26 },
-  { cx: 38, cy: 34 },
-  { cx: 62, cy: 32 },
-];
+  useEffect(() => {
+    const mql = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefers(mql.matches);
+    const onChange = (e: MediaQueryListEvent) => setPrefers(e.matches);
+    mql.addEventListener("change", onChange);
+    return () => mql.removeEventListener("change", onChange);
+  }, []);
 
-export function Fireworks() {
+  return prefers;
+}
+
+export function Fireworks({
+  durationMs = 6000,
+  intensity = 30,
+  explosion = 6,
+  particles = 90,
+  hue = { min: 0, max: 360 },
+}: FireworksProps = {}) {
+  const prefersReducedMotion = usePrefersReducedMotion();
+  const [done, setDone] = useState(false);
+
+  // One-shot: stop launching after durationMs so the celebration doesn't run
+  // forever behind the final standings.
+  useEffect(() => {
+    if (prefersReducedMotion) return;
+    const id = setTimeout(() => setDone(true), durationMs);
+    return () => clearTimeout(id);
+  }, [durationMs, prefersReducedMotion]);
+
+  if (prefersReducedMotion || done) return null;
+
   return (
-    <div
-      aria-hidden="true"
-      className="fixed inset-0 z-0 pointer-events-none hidden motion-safe:block overflow-hidden"
-    >
-      {BURSTS.map((burst, burstIndex) => (
-        <div
-          key={`${burst.cx}-${burst.cy}`}
-          className="absolute"
-          style={{ left: `${burst.cx}%`, top: `${burst.cy}%` }}
-        >
-          {Array.from({ length: PARTICLE_COUNT }).map((_, i) => {
-            const angle = (i / PARTICLE_COUNT) * 2 * Math.PI;
-            const x = Math.cos(angle) * RADIUS;
-            const y = Math.sin(angle) * RADIUS;
-            return (
-              <span
-                key={i}
-                className="absolute h-2 w-2 rounded-full opacity-0 motion-safe:animate-firework"
-                style={
-                  {
-                    backgroundColor: COLORS[(burstIndex + i) % COLORS.length],
-                    "--fw-x": `${x}px`,
-                    "--fw-y": `${y}px`,
-                    animationDelay: `${burstIndex * STAGGER_MS}ms`,
-                  } as CSSProperties
-                }
-              />
-            );
-          })}
-        </div>
-      ))}
-    </div>
+    <FireworksCanvas
+      options={{
+        intensity,
+        explosion,
+        particles,
+        hue,
+        // No audio on a score screen.
+        sound: { enabled: false },
+        // Decorative only — never react to clicks.
+        mouse: { click: false, move: false, max: 0 },
+      }}
+      style={{
+        position: "fixed",
+        inset: 0,
+        width: "100%",
+        height: "100%",
+        pointerEvents: "none",
+        zIndex: 50,
+        background: "transparent",
+      }}
+    />
   );
 }

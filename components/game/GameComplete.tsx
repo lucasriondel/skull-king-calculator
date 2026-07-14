@@ -31,8 +31,8 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
 
   return (
     <div className="container max-w-2xl mx-auto px-4 py-8 pb-24 md:pb-8 relative">
-      {/* Decorative one-shot celebration; fixed, pointer-events-none, z-0 so it
-          paints behind the card and never intercepts clicks (issue #15). */}
+      {/* Decorative one-shot celebration; fixed canvas over the card,
+          pointer-events-none so it never intercepts clicks (issue #15). */}
       <Fireworks />
       <div className="absolute top-4 right-4 z-10">
         <LanguageSwitcher />
