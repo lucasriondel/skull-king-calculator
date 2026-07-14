@@ -131,8 +131,12 @@ interface Player {
   score: number;
 }
 
-const toggleClass =
-  "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60";
+// Shared base class for every bonus ToggleGroupItem (color bonuses,
+// treasure/mermaid/pirate, skull king). Depresses to 0.96 on press —
+// matching the number-selector cells beside it — off an explicit
+// transform transition, neutralized under reduced motion (issue #12).
+export const toggleClass =
+  "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60 transition-[color,background-color,transform] active:scale-[0.96] motion-reduce:active:scale-100";
 
 // A +/- stepper that sits beside a bonus toggle. Each button is a 40x40 hit
 // target (size-10) laid out as a flex sibling of the toggle, so its hit zone

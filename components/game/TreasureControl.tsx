@@ -14,6 +14,7 @@ import {
   findPlayerTreasureGroups,
   findTreasurePartners,
   removeTreasureGroup,
+  toggleClass,
 } from "./BonusControls";
 
 interface Player {
@@ -60,7 +61,7 @@ export function TreasureControl({
         <ToggleGroupItem
           value="treasure"
           className={cn(
-            "rounded-none h-10 w-full min-w-0 px-0 border-0 data-[state=on]:bg-accent/60",
+            toggleClass,
             hasPartners && "ring-2 ring-inset ring-blue-400"
           )}
         >
