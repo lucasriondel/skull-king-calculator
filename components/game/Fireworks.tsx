@@ -15,6 +15,7 @@ import type { CSSProperties } from "react";
 
 const PARTICLE_COUNT = 12;
 const RADIUS = 90; // px each particle travels outward from its burst center
+const STAGGER_MS = 250; // gap between successive bursts, so the pops land in sequence
 
 // Festive palette; picked deterministically per particle, no randomness.
 const COLORS = [
@@ -26,12 +27,12 @@ const COLORS = [
   "#a78bfa", // violet
 ];
 
-// Burst centers as viewport percentages, behind the trophy card, staggered
-// ~250ms apart so the three pops land in sequence.
+// Burst centers as viewport percentages, behind the trophy card. They fire in
+// order, STAGGER_MS apart.
 const BURSTS = [
-  { cx: 50, cy: 26, delay: 0 },
-  { cx: 38, cy: 34, delay: 250 },
-  { cx: 62, cy: 32, delay: 500 },
+  { cx: 50, cy: 26 },
+  { cx: 38, cy: 34 },
+  { cx: 62, cy: 32 },
 ];
 
 export function Fireworks() {
@@ -40,7 +41,7 @@ export function Fireworks() {
       aria-hidden="true"
       className="fixed inset-0 z-0 pointer-events-none hidden motion-safe:block overflow-hidden"
     >
-      {BURSTS.map((burst) => (
+      {BURSTS.map((burst, burstIndex) => (
         <div
           key={`${burst.cx}-${burst.cy}`}
           className="absolute"
@@ -56,10 +57,10 @@ export function Fireworks() {
                 className="absolute h-2 w-2 rounded-full opacity-0 motion-safe:animate-firework"
                 style={
                   {
-                    backgroundColor: COLORS[(burst.delay / 250 + i) % COLORS.length],
+                    backgroundColor: COLORS[(burstIndex + i) % COLORS.length],
                     "--fw-x": `${x}px`,
                     "--fw-y": `${y}px`,
-                    animationDelay: `${burst.delay}ms`,
+                    animationDelay: `${burstIndex * STAGGER_MS}ms`,
                   } as CSSProperties
                 }
               />
