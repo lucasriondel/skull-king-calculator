@@ -46,4 +46,8 @@ export default defineConfig({
       "@": path.resolve(__dirname, "."),
     },
   },
+  server: {
+    port: 5140,
+    strictPort: true,
+  },
 });
