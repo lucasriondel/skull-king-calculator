@@ -1,7 +1,10 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { BidsTab } from "@/components/game/BidsTab";
-import { BonusType } from "@/components/game/BonusControls";
+import {
+  BonusType,
+  type ExclusiveBonus,
+} from "@/components/game/BonusControls";
 import { DetailsTab } from "@/components/game/DetailsTab";
 import { GameComplete } from "@/components/game/GameComplete";
 import { GameHeader } from "@/components/game/GameHeader";
@@ -146,23 +149,22 @@ function GamePage() {
       data.tricks <= cardsThisRound
   );
 
-  const getPlayerWithBonus = (
-    color: "green" | "yellow" | "purple" | "dark" | "skullKing"
-  ): number | null => {
+  const getPlayerWithBonus = (card: ExclusiveBonus): number | null => {
     const entry = Object.entries(bonuses).find(([_, playerBonuses]) => {
-      switch (color) {
-        case "green":
-          return playerBonuses.greenBonus;
-        case "yellow":
-          return playerBonuses.yellowBonus;
-        case "purple":
-          return playerBonuses.purpleBonus;
-        case "dark":
-          return playerBonuses.darkBonus;
+      switch (card) {
         case "skullKing":
           return playerBonuses.skullKing;
+        case "second":
+          return playerBonuses.second > 0;
+        // The suit cards (14 bonus, 8 and 7 of each suit) map onto boolean
+        // fields — "green" onto `greenBonus`, the rest name their field.
+        case "green":
+        case "yellow":
+        case "purple":
+        case "dark":
+          return playerBonuses[`${card}Bonus`];
         default:
-          return false;
+          return playerBonuses[card];
       }
     });
     return entry ? parseInt(entry[0]) : null;

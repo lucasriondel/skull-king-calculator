@@ -12,6 +12,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { SUITS } from "@/components/game/BonusControls";
+import { PlayerNameCell } from "@/components/game/PlayerNameCell";
 import { useGameStore, type RoundData } from "@/lib/store";
 import { ClipboardList } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -39,6 +41,14 @@ function calculateBaseScore(
   }
 }
 
+/** Count the captured 8s (`PlusFive`) or 7s (`MinusFive`) across all suits. */
+function countSuitCards(
+  bonuses: NonNullable<RoundData["bonuses"]>,
+  kind: "PlusFive" | "MinusFive"
+): number {
+  return SUITS.filter((suit) => bonuses[`${suit.key}${kind}`]).length;
+}
+
 function calculateBonusScore(
   bonuses: RoundData["bonuses"],
   effectiveTreasureCount: number,
@@ -59,6 +69,9 @@ function calculateBonusScore(
   if (bonuses.mermaid) bonusScore += bonuses.mermaid * 20;
   if (bonuses.pirate) bonusScore += bonuses.pirate * 30;
   if (bonuses.skullKing) bonusScore += 40;
+  bonusScore += countSuitCards(bonuses, "PlusFive") * 5;
+  bonusScore -= countSuitCards(bonuses, "MinusFive") * 5;
+  if (bonuses.second) bonusScore += bonuses.second * 30;
 
   if (rascalBet && rascalBet.playerIndex === playerIndex) {
     bonusScore += bidMet ? rascalBet.amount : -rascalBet.amount;
@@ -144,7 +157,10 @@ export function DetailsTab() {
                   if (!roundData) {
                     return (
                       <TableRow key={player.name}>
-                        <TableCell>{player.name}</TableCell>
+                        <PlayerNameCell
+                          name={player.name}
+                          colorIndex={playerIndex}
+                        />
                         <TableCell colSpan={3} className="text-center">
                           {t("noData")}
                         </TableCell>
@@ -182,9 +198,15 @@ export function DetailsTab() {
                   );
                   const newScore = scoreBeforeThisRound + roundScore;
 
+                  // Expansion 7s can drag a met bid's bonus negative, so the
+                  // badge tracks the bonus itself, not just whether it applied.
                   const bonusPointsBadge = (
                     <Badge
-                      variant={baseScore > 0 ? "success" : "destructive"}
+                      variant={
+                        baseScore > 0 && potentialBonusScore >= 0
+                          ? "success"
+                          : "destructive"
+                      }
                       className="cursor-pointer"
                     >
                       {potentialBonusScore}
@@ -193,7 +215,10 @@ export function DetailsTab() {
 
                   return (
                     <TableRow key={player.name}>
-                      <TableCell>{player.name}</TableCell>
+                      <PlayerNameCell
+                        name={player.name}
+                        colorIndex={playerIndex}
+                      />
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span>
@@ -208,12 +233,9 @@ export function DetailsTab() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        {potentialBonusScore > 0 ? (
+                        {potentialBonusScore !== 0 ? (
                           <Popover>
-                            <PopoverTrigger
-                              asChild
-                              disabled={potentialBonusScore <= 0}
-                            >
+                            <PopoverTrigger asChild>
                               {bonusPointsBadge}
                             </PopoverTrigger>
                             <PopoverContent>
@@ -311,6 +333,37 @@ export function DetailsTab() {
                                   ) : null}
                                   {roundData.bonuses?.skullKing ? (
                                     <li>💀👑 +40</li>
+                                  ) : null}
+                                  {roundData.bonuses
+                                    ? (() => {
+                                        const eights = countSuitCards(
+                                          roundData.bonuses,
+                                          "PlusFive"
+                                        );
+                                        const sevens = countSuitCards(
+                                          roundData.bonuses,
+                                          "MinusFive"
+                                        );
+                                        return (
+                                          <>
+                                            {eights > 0 ? (
+                                              <li>
+                                                {numberToEmoji(eights, "8️⃣")} x
+                                                5 = +{eights * 5}
+                                              </li>
+                                            ) : null}
+                                            {sevens > 0 ? (
+                                              <li>
+                                                {numberToEmoji(sevens, "7️⃣")} x
+                                                -5 = -{sevens * 5}
+                                              </li>
+                                            ) : null}
+                                          </>
+                                        );
+                                      })()
+                                    : null}
+                                  {(roundData.bonuses?.second ?? 0) > 0 ? (
+                                    <li>🫡 +30</li>
                                   ) : null}
                                   {roundData.rascalBet &&
                                   roundData.rascalBet.playerIndex ===

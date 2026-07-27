@@ -2,11 +2,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardButtonGrid } from "@/components/ui/card-button-grid";
+import { playerColorVars } from "@/lib/player-colors";
 import { useGameStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { BonusControls, BonusType } from "./BonusControls";
+import {
+  BonusControls,
+  BonusType,
+  type ExclusiveBonus,
+} from "./BonusControls";
 import { NumberSelector } from "./NumberSelector";
 
 interface Player {
@@ -37,9 +42,7 @@ interface TricksModeProps extends PlayerCardBaseProps {
   players: Player[];
   bonuses: Record<number, BonusType>;
   setBonuses: React.Dispatch<React.SetStateAction<Record<number, BonusType>>>;
-  getPlayerWithBonus: (
-    color: "green" | "yellow" | "purple" | "dark" | "skullKing"
-  ) => number | null;
+  getPlayerWithBonus: (color: ExclusiveBonus) => number | null;
   rascalBet: { playerIndex: number; amount: 10 | 20 } | null;
   setRascalBet: React.Dispatch<React.SetStateAction<{ playerIndex: number; amount: 10 | 20 } | null>>;
 }
@@ -113,37 +116,39 @@ function RascalBetRow({
 
 export function PlayerCard(props: PlayerCardProps) {
   const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
-  const { startingPlayerIndex, piratePowers } = useGameStore();
+  const { startingPlayerIndex, piratePowers, expansion } = useGameStore();
   const { player, playerIndex, cardsThisRound, mode } = props;
 
   const isStartingPlayer = playerIndex === startingPlayerIndex;
   const showScore = mode === "tricks" && props.tricks !== undefined;
 
   return (
-    <Card className="border-0 overflow-hidden ring-1 ring-border">
+    <Card
+      className="player-tinted player-tinted-surface player-tinted-ring border-0 overflow-hidden ring-1"
+      style={playerColorVars(playerIndex)}
+    >
       <CardHeader className="p-4 pb-3">
         <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
           <div className="flex flex-1 justify-between items-center gap-2">
-
-<div className="flex items-center gap-2">
-          <span>{player.name}</span>
-          {showScore && (
-            <Badge
-              variant={props.score >= 0 ? "success" : "destructive"}
-              className="tabular-nums motion-safe:animate-score-in motion-reduce:animate-fade-in"
-            >
-              {props.score >= 0 ? "+" : ""}
-              {props.score}
-            </Badge>
-          )}
-</div>
-
-          {isStartingPlayer && (
-            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-          )}
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="player-tinted-name font-semibold truncate">
+                {player.name}
+              </span>
+              {showScore && (
+                <Badge
+                  variant={props.score >= 0 ? "success" : "destructive"}
+                  className="tabular-nums motion-safe:animate-score-in motion-reduce:animate-fade-in"
+                >
+                  {props.score >= 0 ? "+" : ""}
+                  {props.score}
+                </Badge>
+              )}
+            </div>
+            {isStartingPlayer && (
+              <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+            )}
           </div>
         </CardTitle>
-        
       </CardHeader>
       {mode === "bids" ? (
         <NumberSelector
@@ -166,6 +171,7 @@ export function PlayerCard(props: PlayerCardProps) {
             bonuses={props.bonuses}
             setBonuses={props.setBonuses}
             getPlayerWithBonus={props.getPlayerWithBonus}
+            expansion={expansion}
             isLastSection={!piratePowers || (props.rascalBet !== null && props.rascalBet.playerIndex !== playerIndex)}
           />
           {piratePowers && (props.rascalBet === null || props.rascalBet.playerIndex === playerIndex) && (

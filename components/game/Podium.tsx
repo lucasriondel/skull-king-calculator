@@ -3,6 +3,12 @@ import { PodiumColumn } from "@/components/game/PodiumColumn";
 interface Player {
   name: string;
   score: number;
+  /**
+   * Index of the player in the game's player list. The podium is sorted by
+   * score, so this has to be carried in from the unsorted list — see
+   * `withPlayerColorIndex` in `lib/player-colors.ts`.
+   */
+  colorIndex: number;
 }
 
 export interface PodiumProps {
@@ -52,6 +58,7 @@ export function Podium({
             name={player.name}
             score={player.score}
             rankIdx={rankIdx}
+            colorIndex={player.colorIndex}
             revealed={revealedCount > revealStep}
             countUpMs={countUpMs}
             animate={animate}

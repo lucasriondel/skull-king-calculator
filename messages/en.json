@@ -44,7 +44,8 @@
     "playerNamePlaceholder": "Player name",
     "dragToReorder": "Drag to reorder",
     "randomizeStarter": "Randomize who starts first",
-    "piratePowers": "Playing with Pirate powers"
+    "piratePowers": "Playing with Pirate powers",
+    "expansion": "Playing with the expansion"
   },
   "GamePage": {
     "gameMode": "Game Mode",

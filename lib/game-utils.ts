@@ -1,4 +1,4 @@
-import { BonusType } from "@/components/game/BonusControls";
+import { BonusType, SUITS } from "@/components/game/BonusControls";
 
 export type PlayerBidTricks = { bid: number; tricks: number };
 
@@ -67,10 +67,23 @@ export function calculateScore(
   const pirateBonus = (playerBonuses?.pirate ?? 0) * 30;
   const skullKingBonus = playerBonuses.skullKing ? 40 : 0;
 
+  // Expansion capture cards. Like every other bonus these are gated on the
+  // bid being met — the `baseScore < 0` early return above handles that, so
+  // the 7s only subtract from players who already scored. One 8 and one 7 per
+  // suit, each worth +5 / -5.
+  const plusFiveBonus =
+    SUITS.filter((suit) => playerBonuses[`${suit.key}PlusFive`]).length * 5;
+  const minusFiveBonus =
+    SUITS.filter((suit) => playerBonuses[`${suit.key}MinusFive`]).length * -5;
+  const secondBonus = (playerBonuses?.second ?? 0) * 30;
+
   bonusScore += treasureBonus;
   bonusScore += mermaidBonus;
   bonusScore += pirateBonus;
   bonusScore += skullKingBonus;
+  bonusScore += plusFiveBonus;
+  bonusScore += minusFiveBonus;
+  bonusScore += secondBonus;
 
   // Rascal's bet: if this player placed the bet, add or subtract the amount
   if (rascalBet && rascalBet.playerIndex === playerIndex) {

@@ -1,11 +1,14 @@
 import { Trophy } from "lucide-react";
 import { useCountUp } from "@/hooks/use-count-up";
+import { playerColorVars } from "@/lib/player-colors";
 
 export interface PodiumColumnProps {
   name: string;
   score: number;
   /** 0-based finishing rank: 0 = winner. */
   rankIdx: number;
+  /** Index of the player in the game's player list — drives their color. */
+  colorIndex: number;
   /** Whether this column has been revealed yet by the sequencer. */
   revealed: boolean;
   /** How long the score spends counting up. */
@@ -28,6 +31,7 @@ export function PodiumColumn({
   name,
   score,
   rankIdx,
+  colorIndex,
   revealed,
   countUpMs,
   animate,
@@ -39,14 +43,19 @@ export function PodiumColumn({
     enabled: animate,
   });
 
+  // The bar keeps gold/silver/bronze — that reads as rank, and the player color
+  // must not overwrite it. Only the name carries the player's color.
   return (
-    <div className="flex flex-col items-center flex-1 max-w-[130px]">
+    <div
+      className="player-tinted flex flex-col items-center flex-1 max-w-[130px]"
+      style={playerColorVars(colorIndex)}
+    >
       <div
         className="flex flex-col items-center mb-2 transition-opacity duration-300"
         style={{ opacity: revealed ? 1 : 0 }}
       >
         {rankIdx === 0 && <Trophy className="w-5 h-5 text-yellow-500 mb-1" />}
-        <span className="text-sm font-semibold truncate max-w-[100px] text-center">
+        <span className="player-tinted-name text-sm font-bold truncate max-w-[100px] text-center">
           {name}
         </span>
         <span className="text-xs text-muted-foreground font-bold tabular-nums">

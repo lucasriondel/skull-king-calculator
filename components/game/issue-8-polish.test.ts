@@ -18,6 +18,9 @@ const playerCard = read("components/game/PlayerCard.tsx");
 // Podium score markup lives in PodiumColumn since the dramatic reveal split it out.
 const podiumColumn = read("components/game/PodiumColumn.tsx");
 const scoresTab = read("components/game/ScoresTab.tsx");
+// Standings-row markup lives in ScoreRow, shared by the mid-game scoreboard and
+// the game-complete reveal.
+const scoreRow = read("components/game/ScoreRow.tsx");
 const numberSelector = read("components/game/NumberSelector.tsx");
 const en = JSON.parse(read("messages/en.json"));
 const fr = JSON.parse(read("messages/fr.json"));
@@ -38,7 +41,7 @@ describe("tabular numbers on live/updating numbers", () => {
     expect(podiumColumn).toMatch(/tabular-nums/);
   });
   test("scores tab rows use tabular-nums", () => {
-    expect(scoresTab).toMatch(/tabular-nums/);
+    expect(scoreRow).toMatch(/tabular-nums/);
   });
   test("number-selector cells use tabular-nums", () => {
     expect(numberSelector).toMatch(/tabular-nums/);

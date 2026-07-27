@@ -7,10 +7,14 @@ const numberSelectorVariants = cva(
   {
     variants: {
       state: {
-        default: "bg-background hover:bg-accent",
+        // Unselected cells carry a half-strength pass of the player's color so
+        // the grid reads as part of the tinted card. `player-tinted-cell` is a
+        // no-op wherever no player color is in scope. The selected states opt
+        // out: `bg-primary` has to stay unambiguous.
+        default: "bg-background hover:bg-accent player-tinted-cell",
         selected: "bg-primary text-primary-foreground",
         highlighted:
-          "bg-background hover:bg-accent ring-2 ring-inset ring-yellow-500",
+          "bg-background hover:bg-accent ring-2 ring-inset ring-yellow-500 player-tinted-cell",
         selectedHighlighted:
           "bg-yellow-500 text-primary-foreground ring-2 ring-inset ring-yellow-500",
       },

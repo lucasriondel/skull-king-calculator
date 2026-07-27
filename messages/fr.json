@@ -44,7 +44,8 @@
     "playerNamePlaceholder": "Nom du joueur",
     "dragToReorder": "Glisser pour réordonner",
     "randomizeStarter": "Joueur de départ aléatoire",
-    "piratePowers": "Jouer avec les pouvoirs des Pirates"
+    "piratePowers": "Jouer avec les pouvoirs des Pirates",
+    "expansion": "Jouer avec l'extension"
   },
   "GamePage": {
     "gameMode": "Mode de Jeu",
