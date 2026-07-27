@@ -23,18 +23,34 @@ describe("palette", () => {
     const hues = PLAYER_COLORS.map((c) => Number(c.light.split(" ")[0]));
     expect(new Set(hues).size).toBe(PLAYER_COLORS.length);
   });
+
+  test("covers the eight-player cap without reusing a color", () => {
+    expect(PLAYER_COLORS.length).toBeGreaterThanOrEqual(8);
+  });
+
+  test("consecutive seats are far enough apart in hue to tell apart", () => {
+    // Seats are handed out in palette order, so neighbours in this list end up
+    // as neighbours in the player list — where confusable hues hurt most.
+    const hues = PLAYER_COLORS.map((c) => Number(c.light.split(" ")[0]));
+    for (let i = 1; i < hues.length; i++) {
+      const raw = Math.abs(hues[i] - hues[i - 1]);
+      const distance = Math.min(raw, 360 - raw);
+      expect(distance).toBeGreaterThan(30);
+    }
+  });
 });
 
 describe("playerColor", () => {
-  test("assigns a distinct color to each of the first six players", () => {
-    const names = [0, 1, 2, 3, 4, 5].map((i) => playerColor(i).name);
-    expect(new Set(names).size).toBe(6);
+  test("every seat in a full eight-player game gets its own color", () => {
+    // Games cap at eight players, so the palette covers every seat outright —
+    // nobody should ever share a color with another player at the table.
+    const names = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => playerColor(i).name);
+    expect(new Set(names).size).toBe(8);
   });
 
   test("wraps around past the end of the palette", () => {
-    // Games cap at eight players, so 7 and 8 reuse the first two hues.
-    expect(playerColor(6).name).toBe(playerColor(0).name);
-    expect(playerColor(7).name).toBe(playerColor(1).name);
+    // Unreachable at the eight-player cap, but the indexing must stay total.
+    expect(playerColor(8).name).toBe(playerColor(0).name);
   });
 
   test("never returns undefined for a junk index", () => {
@@ -97,6 +113,16 @@ describe("wiring", () => {
       expect(read(rel)).toMatch(/withPlayerColorIndex/);
       expect(read(rel)).toMatch(/colorIndex=\{player\.colorIndex\}/);
     }
+  });
+
+  test("the details table colors its player names by seat", () => {
+    // Details rows are already in seat order, so the row index is the color key.
+    const detailsTab = read("components/game/DetailsTab.tsx");
+    expect(detailsTab).toMatch(/PlayerNameCell/);
+    expect(detailsTab).not.toMatch(/<TableCell>\{player\.name\}<\/TableCell>/);
+    expect(read("components/game/PlayerNameCell.tsx")).toMatch(
+      /player-tinted-name/
+    );
   });
 
   test("the podium bar keeps its rank colors", () => {

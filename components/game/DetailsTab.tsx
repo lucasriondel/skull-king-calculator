@@ -13,6 +13,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { SUITS } from "@/components/game/BonusControls";
+import { PlayerNameCell } from "@/components/game/PlayerNameCell";
 import { useGameStore, type RoundData } from "@/lib/store";
 import { ClipboardList } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -156,7 +157,10 @@ export function DetailsTab() {
                   if (!roundData) {
                     return (
                       <TableRow key={player.name}>
-                        <TableCell>{player.name}</TableCell>
+                        <PlayerNameCell
+                          name={player.name}
+                          colorIndex={playerIndex}
+                        />
                         <TableCell colSpan={3} className="text-center">
                           {t("noData")}
                         </TableCell>
@@ -211,7 +215,10 @@ export function DetailsTab() {
 
                   return (
                     <TableRow key={player.name}>
-                      <TableCell>{player.name}</TableCell>
+                      <PlayerNameCell
+                        name={player.name}
+                        colorIndex={playerIndex}
+                      />
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <span>

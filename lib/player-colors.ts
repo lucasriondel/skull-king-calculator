@@ -8,9 +8,10 @@ import type { CSSProperties } from "react";
  * which changes from round to round. Anything that renders a sorted list has to
  * carry the original index along; see `withPlayerColorIndex`.
  *
- * The palette is six hue-spaced colors at matched chroma. Games are capped at
- * eight players, so 7 and 8 wrap around to violet/sky — the two most distinct
- * from their neighbours in the list.
+ * Games are capped at eight players, so the palette holds eight hue-spaced
+ * colors at matched chroma — one per seat, no wrapping in practice. The order
+ * matters: seats are handed out top-to-bottom, so the two closest hues
+ * (violet 262 / fuchsia 300) sit at seats 1 and 7 rather than side by side.
  *
  * Colors are stored as raw HSL channels (`H S% L%`) so they can be dropped into
  * `hsl(var(--player-color) / <alpha>)` and used at several opacities: a tint on
@@ -25,6 +26,8 @@ export const PLAYER_COLORS = [
   { name: "orange", light: "25 92% 52%", dark: "25 95% 62%" },
   { name: "pink", light: "340 78% 52%", dark: "340 85% 68%" },
   { name: "amber", light: "47 92% 45%", dark: "47 95% 60%" },
+  { name: "fuchsia", light: "300 70% 48%", dark: "300 80% 70%" },
+  { name: "lime", light: "85 70% 38%", dark: "85 65% 58%" },
 ] as const;
 
 export type PlayerColor = (typeof PLAYER_COLORS)[number];
