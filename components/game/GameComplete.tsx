@@ -15,6 +15,7 @@ import { RunnerUpRow } from "@/components/game/RunnerUpRow";
 import { Fireworks } from "@/components/game/Fireworks";
 import { useRevealSequence } from "@/hooks/use-reveal-sequence";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
+import { withPlayerColorIndex } from "@/lib/player-colors";
 
 interface Player {
   name: string;
@@ -44,7 +45,10 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
   const isMobile = useMobile();
   const prefersReducedMotion = usePrefersReducedMotion();
   const animate = !prefersReducedMotion;
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+  // Tag before sorting: a player's color follows their seat, not their rank.
+  const sortedPlayers = [...withPlayerColorIndex(players)].sort(
+    (a, b) => b.score - a.score
+  );
 
   // One sequence over every player, revealed worst-placed first. Runners-up
   // (4th and below) come out in reverse order, then the podium counts 3rd →
@@ -97,6 +101,7 @@ export function GameComplete({ players, onNewGame }: GameCompleteProps) {
                     name={player.name}
                     score={player.score}
                     place={idx + 4}
+                    colorIndex={player.colorIndex}
                     revealed={revealed > revealStep}
                     countUpMs={countUpMs}
                     animate={animate}

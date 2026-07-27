@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { ThemeToggleButton } from "@/components/ui/theme-toggle-button";
+import { PlayerColorDot } from "@/components/game/PlayerColorDot";
+import { playerColorVars } from "@/lib/player-colors";
 import { useGameStore } from "@/lib/store";
 import {
   closestCenter,
@@ -32,13 +34,19 @@ const SortablePlayerItem = forwardRef<
   {
     id: string;
     player: { id: string; name: string };
+    /**
+     * Position in the list, which becomes the player's seat index — and so
+     * their color. Reordering the list reassigns colors, which is the point:
+     * the swatch shown here is the one the game will use.
+     */
+    colorIndex: number;
     updatePlayerName: (id: string, name: string) => void;
     removePlayer: (id: string) => void;
     disableDelete: boolean;
     t: (key: string, params?: any) => string;
   }
 >(function SortablePlayerItem(
-  { id, player, updatePlayerName, removePlayer, disableDelete, t },
+  { id, player, colorIndex, updatePlayerName, removePlayer, disableDelete, t },
   ref
 ) {
   const {
@@ -51,6 +59,7 @@ const SortablePlayerItem = forwardRef<
   } = useSortable({ id });
 
   const style = {
+    ...playerColorVars(colorIndex),
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
@@ -60,10 +69,10 @@ const SortablePlayerItem = forwardRef<
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center gap-2 p-2 bg-background rounded-md shadow"
+      className="player-tinted player-tinted-surface flex items-center gap-2 p-2 bg-background rounded-md shadow"
     >
       <span
-        className="cursor-grab active:cursor-grabbing touch-none select-none flex items-center pr-2"
+        className="cursor-grab active:cursor-grabbing touch-none select-none flex items-center gap-2 pr-2"
         {...attributes}
         {...listeners}
         tabIndex={0}
@@ -71,6 +80,7 @@ const SortablePlayerItem = forwardRef<
         style={{ touchAction: "none" }}
       >
         <GripVertical className="w-5 h-5 text-muted-foreground" />
+        <PlayerColorDot colorIndex={colorIndex} />
       </span>
       <Input
         ref={ref}
@@ -282,6 +292,7 @@ function PlayersPage() {
                     key={player.id}
                     id={player.id}
                     player={player}
+                    colorIndex={idx}
                     updatePlayerName={updatePlayerName}
                     removePlayer={removePlayer}
                     disableDelete={playerList.length <= 2}

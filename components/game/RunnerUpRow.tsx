@@ -1,10 +1,13 @@
 import { useCountUp } from "@/hooks/use-count-up";
+import { ScoreRow } from "@/components/game/ScoreRow";
 
 export interface RunnerUpRowProps {
   name: string;
   score: number;
   /** 1-based place shown to the player: 4, 5, … */
   place: number;
+  /** Index of the player in the game's player list — drives their color. */
+  colorIndex: number;
   revealed: boolean;
   countUpMs: number;
   animate: boolean;
@@ -14,6 +17,7 @@ export function RunnerUpRow({
   name,
   score,
   place,
+  colorIndex,
   revealed,
   countUpMs,
   animate,
@@ -24,8 +28,10 @@ export function RunnerUpRow({
   });
 
   return (
-    <div
-      className="flex items-center justify-between p-3 rounded-lg bg-accent/50"
+    <ScoreRow
+      name={name}
+      place={place}
+      colorIndex={colorIndex}
       style={{
         opacity: revealed ? 1 : 0,
         transform: revealed ? "translateY(0)" : "translateY(8px)",
@@ -34,13 +40,7 @@ export function RunnerUpRow({
           : undefined,
       }}
     >
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-muted-foreground font-bold w-6 text-center tabular-nums">
-          {place}
-        </span>
-        <span className="font-medium">{name}</span>
-      </div>
-      <span className="font-bold tabular-nums">{displayScore}</span>
-    </div>
+      {displayScore}
+    </ScoreRow>
   );
 }

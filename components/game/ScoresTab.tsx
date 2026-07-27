@@ -5,6 +5,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Podium } from "@/components/game/Podium";
+import { ScoreRow } from "@/components/game/ScoreRow";
+import { withPlayerColorIndex } from "@/lib/player-colors";
 import { useTranslation } from "react-i18next";
 
 interface Player {
@@ -18,7 +20,10 @@ interface ScoresTabProps {
 
 export function ScoresTab({ players }: ScoresTabProps) {
   const { t } = useTranslation("translation", { keyPrefix: "GamePage" });
-  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+  // Tag before sorting: a player's color follows their seat, not their rank.
+  const sortedPlayers = [...withPlayerColorIndex(players)].sort(
+    (a, b) => b.score - a.score
+  );
   const remainingPlayers = sortedPlayers.slice(Math.min(3, sortedPlayers.length));
 
   return (
@@ -31,18 +36,14 @@ export function ScoresTab({ players }: ScoresTabProps) {
         {remainingPlayers.length > 0 && (
           <div className="space-y-2">
             {remainingPlayers.map((player, idx) => (
-              <div
+              <ScoreRow
                 key={player.name}
-                className="flex justify-between items-center p-3 rounded-lg bg-accent/50"
+                name={player.name}
+                place={idx + 4}
+                colorIndex={player.colorIndex}
               >
-                <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground font-bold w-6 text-center tabular-nums">
-                    {idx + 4}
-                  </span>
-                  <span className="font-medium">{player.name}</span>
-                </div>
-                <span className="font-bold tabular-nums">{player.score}</span>
-              </div>
+                {player.score}
+              </ScoreRow>
             ))}
           </div>
         )}

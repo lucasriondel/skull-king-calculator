@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { CardButtonGrid } from "@/components/ui/card-button-grid";
+import { playerColorVars } from "@/lib/player-colors";
 import { useGameStore } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import { X } from "lucide-react";
@@ -122,30 +123,32 @@ export function PlayerCard(props: PlayerCardProps) {
   const showScore = mode === "tricks" && props.tricks !== undefined;
 
   return (
-    <Card className="border-0 overflow-hidden ring-1 ring-border">
+    <Card
+      className="player-tinted player-tinted-surface player-tinted-ring border-0 overflow-hidden ring-1"
+      style={playerColorVars(playerIndex)}
+    >
       <CardHeader className="p-4 pb-3">
         <CardTitle className="flex items-center gap-2 flex-wrap text-base font-medium">
           <div className="flex flex-1 justify-between items-center gap-2">
-
-<div className="flex items-center gap-2">
-          <span>{player.name}</span>
-          {showScore && (
-            <Badge
-              variant={props.score >= 0 ? "success" : "destructive"}
-              className="tabular-nums motion-safe:animate-score-in motion-reduce:animate-fade-in"
-            >
-              {props.score >= 0 ? "+" : ""}
-              {props.score}
-            </Badge>
-          )}
-</div>
-
-          {isStartingPlayer && (
-            <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
-          )}
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="player-tinted-name font-semibold truncate">
+                {player.name}
+              </span>
+              {showScore && (
+                <Badge
+                  variant={props.score >= 0 ? "success" : "destructive"}
+                  className="tabular-nums motion-safe:animate-score-in motion-reduce:animate-fade-in"
+                >
+                  {props.score >= 0 ? "+" : ""}
+                  {props.score}
+                </Badge>
+              )}
+            </div>
+            {isStartingPlayer && (
+              <Badge>{t("startingPlayer", { default: "Starts" })}</Badge>
+            )}
           </div>
         </CardTitle>
-        
       </CardHeader>
       {mode === "bids" ? (
         <NumberSelector

@@ -103,6 +103,66 @@ body {
   }
 }
 
+/* Per-player identity color.
+
+   Every player gets a hue (see `lib/player-colors.ts`), applied as a wash over
+   the card plus the player's name in that color. `playerColorVars()` sets
+   `--player-color-light` / `--player-color-dark` inline on the element; the
+   theme picks which one becomes `--player-color` here, so switching themes
+   re-colors without a React re-render.
+
+   The wash is layered as a gradient over the element's own background rather
+   than replacing it, so `bg-card` / `bg-background` still show through and the
+   surface stays correct in both themes. */
+@layer components {
+  .player-tinted {
+    --player-color: var(--player-color-light);
+    --player-tint: 0.22;
+  }
+
+  .dark .player-tinted {
+    --player-color: var(--player-color-dark);
+  }
+
+  .player-tinted-surface {
+    background-image: linear-gradient(
+      hsl(var(--player-color) / var(--player-tint)),
+      hsl(var(--player-color) / var(--player-tint))
+    );
+  }
+
+  /* The number buttons sit inside the tinted card on their own `bg-background`,
+     so they get a lighter pass of the same hue — enough to stay part of the
+     card, not enough to fight the selected/highlighted states. Selected buttons
+     opt out entirely: they carry `bg-primary` and must stay unambiguous. */
+  .player-tinted-cell {
+    background-image: linear-gradient(
+      hsl(var(--player-color) / calc(var(--player-tint) * 0.5)),
+      hsl(var(--player-color) / calc(var(--player-tint) * 0.5))
+    );
+  }
+
+  /* The name is the one fully-saturated use of the color. In light mode the
+     palette's 45–52% lightness is a shade bright against white for text, so it
+     is darkened; dark mode uses the already-lightened dark channel as-is. */
+  .player-tinted-name {
+    color: hsl(var(--player-color));
+    filter: brightness(0.85);
+  }
+
+  .dark .player-tinted-name {
+    filter: none;
+  }
+
+  .player-tinted-ring {
+    --tw-ring-color: hsl(var(--player-color) / 0.45);
+  }
+
+  .player-tinted-dot {
+    background-color: hsl(var(--player-color));
+  }
+}
+
 /* Reduced-motion killswitch for the shadcn/Radix animation layer.
 
    The app's own keyframes are gated behind `motion-safe:` with a
