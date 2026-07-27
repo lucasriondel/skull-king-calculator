@@ -1,4 +1,4 @@
-import { BonusType } from "./BonusControls";
+import { BonusType, type ExclusiveBonus } from "./BonusControls";
 import { PlayerCard } from "./PlayerCard";
 
 interface Player {
@@ -20,9 +20,7 @@ interface TricksTabProps {
   cardsThisRound: number;
   bonuses: Record<number, BonusType>;
   setBonuses: React.Dispatch<React.SetStateAction<Record<number, BonusType>>>;
-  getPlayerWithBonus: (
-    color: "green" | "yellow" | "purple" | "dark" | "skullKing"
-  ) => number | null;
+  getPlayerWithBonus: (color: ExclusiveBonus) => number | null;
   calculateScore: (
     bid: number,
     tricks: number,

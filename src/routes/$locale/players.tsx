@@ -99,6 +99,7 @@ function PlayersPage() {
     setPlayers: setGamePlayers,
     setStartingPlayerIndex,
     setPiratePowers,
+    setExpansion,
     gameMode,
   } = useGameStore();
   const { t } = useTranslation("translation", { keyPrefix: "PlayersPage" });
@@ -194,6 +195,7 @@ function PlayersPage() {
 
   const [randomizeStarter, setRandomizeStarter] = useState(false);
   const [playingWithPiratePowers, setPlayingWithPiratePowers] = useState(false);
+  const [playingWithExpansion, setPlayingWithExpansion] = useState(false);
 
   const handleStartGame = () => {
     if (randomizeStarter) {
@@ -202,6 +204,7 @@ function PlayersPage() {
       setStartingPlayerIndex(0);
     }
     setPiratePowers(playingWithPiratePowers);
+    setExpansion(playingWithExpansion);
     setGamePlayers(
       playerList.map((player) => ({ name: player.name, score: 0, rounds: [] }))
     );
@@ -321,6 +324,16 @@ function PlayersPage() {
             className="select-none cursor-pointer"
           >
             {t("piratePowers")}
+          </label>
+        </div>
+        <div className="flex items-center mb-4 gap-2">
+          <Checkbox
+            id="expansion"
+            checked={playingWithExpansion}
+            onCheckedChange={(checked) => setPlayingWithExpansion(!!checked)}
+          />
+          <label htmlFor="expansion" className="select-none cursor-pointer">
+            {t("expansion")}
           </label>
         </div>
         <Button className="w-full" size="lg" onClick={handleStartGame}>
