@@ -27,7 +27,7 @@ export function BidsTab({
 }: BidsTabProps) {
   return (
     <>
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
         {players.map((player, index) => (
           <PlayerCard
             key={player.name}

@@ -45,7 +45,7 @@ export function TricksTab({
 }: TricksTabProps) {
   return (
     <div className="space-y-4">
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
         {players.map((player, index) => {
           const tricks = roundData[index]?.tricks;
           const score = calculateScore(
