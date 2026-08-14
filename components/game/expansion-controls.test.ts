@@ -176,11 +176,14 @@ describe("the Second sits beside the pirates", () => {
 
 describe("details breakdown covers the expansion", () => {
   const detailsTab = read("components/game/DetailsTab.tsx");
+  // The scoring arithmetic moved to `lib/round-stats.ts` when the charts
+  // started needing the same numbers; the details table renders from it.
+  const roundStats = read("lib/round-stats.ts");
 
   test("counts the per-suit 7s and 8s", () => {
-    expect(detailsTab).toMatch(/countSuitCards\(bonuses, "PlusFive"\) \* 5/);
-    expect(detailsTab).toMatch(/countSuitCards\(bonuses, "MinusFive"\) \* 5/);
-    expect(detailsTab).toMatch(/bonuses\.second \* 30/);
+    expect(roundStats).toMatch(/countSuitCards\(bonuses, "PlusFive"\) \* 5/);
+    expect(roundStats).toMatch(/countSuitCards\(bonuses, "MinusFive"\) \* 5/);
+    expect(roundStats).toMatch(/bonuses\.second \* 30/);
   });
 
   test("opens the breakdown for a negative bonus total, not just positive", () => {
