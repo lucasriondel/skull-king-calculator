@@ -86,6 +86,17 @@
       "finalStandings": "Classement Final",
       "newGame": "Nouvelle Partie"
     },
-    "rascalBet": "Pari du Gredin"
+    "rascalBet": "Pari du Gredin",
+    "charts": {
+      "progression": "Progression des scores",
+      "bonusPerRound": "Points bonus par manche",
+      "bidsWonLost": "Paris réussis vs perdus",
+      "zeroBids": "Paris à zéro",
+      "zeroBidsLabel": "Paris à zéro",
+      "bidsWon": "Réussis",
+      "bidsLost": "Perdus",
+      "round": "Manche",
+      "roundShort": "M"
+    }
   }
 }

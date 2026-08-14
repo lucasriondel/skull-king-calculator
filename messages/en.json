@@ -86,6 +86,17 @@
       "finalStandings": "Final Standings",
       "newGame": "New Game"
     },
-    "rascalBet": "Rascal's bet"
+    "rascalBet": "Rascal's bet",
+    "charts": {
+      "progression": "Score progression",
+      "bonusPerRound": "Bonus points per round",
+      "bidsWonLost": "Bids won vs lost",
+      "zeroBids": "Zero bids",
+      "zeroBidsLabel": "Zero bids",
+      "bidsWon": "Won",
+      "bidsLost": "Lost",
+      "round": "Round",
+      "roundShort": "R"
+    }
   }
 }

@@ -12,9 +12,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { SUITS } from "@/components/game/BonusControls";
+import { GameCharts } from "@/components/game/charts/GameCharts";
 import { PlayerNameCell } from "@/components/game/PlayerNameCell";
-import { useGameStore, type RoundData } from "@/lib/store";
+import { useGameStore } from "@/lib/store";
+import { breakdownForRound, countSuitCards } from "@/lib/round-stats";
 import { ClipboardList } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Fragment, ReactNode } from "react";
@@ -27,75 +28,6 @@ function numberToEmoji(number: number, emoji: string): ReactNode {
       ))}
     </>
   );
-}
-
-function calculateBaseScore(
-  bid: number,
-  tricks: number,
-  cardsThisRound: number
-): number {
-  if (bid === 0) {
-    return tricks === 0 ? 10 * cardsThisRound : -10 * cardsThisRound;
-  } else {
-    return bid === tricks ? 20 * bid : -10 * Math.abs(bid - tricks);
-  }
-}
-
-/** Count the captured 8s (`PlusFive`) or 7s (`MinusFive`) across all suits. */
-function countSuitCards(
-  bonuses: NonNullable<RoundData["bonuses"]>,
-  kind: "PlusFive" | "MinusFive"
-): number {
-  return SUITS.filter((suit) => bonuses[`${suit.key}${kind}`]).length;
-}
-
-function calculateBonusScore(
-  bonuses: RoundData["bonuses"],
-  effectiveTreasureCount: number,
-  rascalBet?: RoundData["rascalBet"],
-  playerIndex?: number,
-  bidMet?: boolean
-): number {
-  if (!bonuses) {
-    return 0;
-  }
-
-  let bonusScore = 0;
-  if (bonuses.greenBonus) bonusScore += 10;
-  if (bonuses.yellowBonus) bonusScore += 10;
-  if (bonuses.purpleBonus) bonusScore += 10;
-  if (bonuses.darkBonus) bonusScore += 20;
-  bonusScore += effectiveTreasureCount * 20;
-  if (bonuses.mermaid) bonusScore += bonuses.mermaid * 20;
-  if (bonuses.pirate) bonusScore += bonuses.pirate * 30;
-  if (bonuses.skullKing) bonusScore += 40;
-  bonusScore += countSuitCards(bonuses, "PlusFive") * 5;
-  bonusScore -= countSuitCards(bonuses, "MinusFive") * 5;
-  if (bonuses.second) bonusScore += bonuses.second * 30;
-
-  if (rascalBet && rascalBet.playerIndex === playerIndex) {
-    bonusScore += bidMet ? rascalBet.amount : -rascalBet.amount;
-  }
-
-  return bonusScore;
-}
-
-function getEffectiveTreasureCount(
-  bonuses: RoundData["bonuses"],
-  allRoundData: (RoundData | undefined)[]
-): number {
-  if (!bonuses?.treasureGroups?.length) {
-    return bonuses?.treasure ?? 0;
-  }
-  let count = 0;
-  for (const group of bonuses.treasureGroups) {
-    const everyoneMet = group.playerIndexes.every((i) => {
-      const data = allRoundData[i];
-      return data !== undefined && data.bid === data.tricks;
-    });
-    if (everyoneMet) count += group.treasureCount;
-  }
-  return count;
 }
 
 export function DetailsTab() {
@@ -123,6 +55,8 @@ export function DetailsTab() {
 
   return (
     <div className="space-y-4">
+      <GameCharts players={players} />
+
       {rounds.map((roundNumber) => {
         const roundDataForThisRound = players.map((player, playerIndex) => {
           const roundData = player.rounds[roundNumber - 1];
@@ -168,25 +102,12 @@ export function DetailsTab() {
                     );
                   }
 
-                  const baseScore = calculateBaseScore(
-                    roundData.bid,
-                    roundData.tricks ?? 0,
-                    roundData.cardsThisRound || 0
-                  );
-                  const effectiveTreasureCount = getEffectiveTreasureCount(
-                    roundData.bonuses,
-                    allRoundDataForThisRound
-                  );
-                  const bidMet = roundData.bid === (roundData.tricks ?? 0);
-                  const potentialBonusScore = calculateBonusScore(
-                    roundData.bonuses,
-                    effectiveTreasureCount,
-                    roundData.rascalBet,
-                    playerIndex,
-                    bidMet
-                  );
-                  const bonusScore = baseScore > 0 ? potentialBonusScore : 0;
-                  const roundScore = baseScore + bonusScore;
+                  const { baseScore, potentialBonusScore, roundScore } =
+                    breakdownForRound(
+                      roundData,
+                      playerIndex,
+                      allRoundDataForThisRound
+                    );
 
                   const previousRounds = player.rounds.slice(
                     0,
