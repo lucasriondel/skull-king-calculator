@@ -28,9 +28,9 @@ function GamePage() {
     moveToNextStartingPlayer,
   } = useGameStore();
   const [currentRound, setCurrentRound] = useState(1);
-  const [activeTab, setActiveTab] = useState<
-    "bids" | "tricks" | "scores" | "details"
-  >("bids");
+  const [activeTab, setActiveTab] = useState<"bids" | "tricks" | "scores">(
+    "bids"
+  );
   const [roundData, setRoundData] = useState<RoundData[]>([]);
   const [gameComplete, setGameComplete] = useState(false);
   const [bonuses, setBonuses] = useState<Record<number, BonusType>>({});
@@ -180,7 +180,7 @@ function GamePage() {
   }
 
   return (
-    <div className="flex flex-col h-dvh max-w-2xl mx-auto">
+    <div className="flex flex-col h-dvh max-w-2xl md:max-w-5xl mx-auto">
       <GameHeader
         gameModeName={gameMode?.name || ""}
         currentRound={currentRound}
@@ -230,15 +230,14 @@ function GamePage() {
 
           <TabsContent value="scores">
             <ScoresTab players={players} />
-          </TabsContent>
-
-          <TabsContent value="details">
-            <DetailsTab />
+            <div className="mt-8">
+              <DetailsTab />
+            </div>
           </TabsContent>
         </div>
 
         {(activeTab === "bids" || activeTab === "tricks") && (
-          <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg">
+          <div className="shrink-0 bg-background border-t border-border p-4 border-x min-[673px]:rounded-t-lg md:rounded-t-none min-[1025px]:rounded-t-lg">
             {activeTab === "bids" && (
               <Button
                 className="w-full"
@@ -264,7 +263,7 @@ function GamePage() {
         )}
 
         <TabsList
-          className={`shrink-0 grid w-full grid-cols-4 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x ${activeTab !== "bids" && activeTab !== "tricks" ? "border-t border-border min-[673px]:rounded-t-lg" : ""}`}
+          className={`shrink-0 grid w-full grid-cols-3 h-14 rounded-none bg-background pb-[env(safe-area-inset-bottom)] border-x ${activeTab !== "bids" && activeTab !== "tricks" ? "border-t border-border min-[673px]:rounded-t-lg md:rounded-t-none min-[1025px]:rounded-t-lg" : ""}`}
         >
           <TabsTrigger
             value="bids"
@@ -284,12 +283,6 @@ function GamePage() {
             className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
           >
             {t("tabs.scores")}
-          </TabsTrigger>
-          <TabsTrigger
-            value="details"
-            className="py-3 rounded-none data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:text-primary data-[state=active]:border-t-2 data-[state=active]:border-primary"
-          >
-            {t("tabs.details")}
           </TabsTrigger>
         </TabsList>
       </Tabs>

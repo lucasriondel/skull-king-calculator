@@ -56,8 +56,7 @@
     "tabs": {
       "bids": "Enchères",
       "tricks": "Plis",
-      "scores": "Scores",
-      "details": "Détails"
+      "scores": "Scores"
     },
     "DetailsTab": {
       "round": "Manche",
