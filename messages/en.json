@@ -56,8 +56,7 @@
     "tabs": {
       "bids": "Bids",
       "tricks": "Tricks",
-      "scores": "Scores",
-      "details": "Details"
+      "scores": "Scores"
     },
     "DetailsTab": {
       "round": "Round",
