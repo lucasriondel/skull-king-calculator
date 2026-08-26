@@ -5,23 +5,23 @@
 
 # build output
 /dist
-/out
 
 # debug
 npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
+logs/
 
 # env files
 .env*
 
-# vercel
-.vercel
-
 # typescript
 *.tsbuildinfo
 
-# dokploy
+# os
+.DS_Store
+
+# deploy
 .dokploy.yml
-logs/
+
+# tooling
+.sandcastle/
 .tanstack/
